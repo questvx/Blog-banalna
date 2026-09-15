@@ -1,0 +1,133 @@
+.site-header {
+  align-items: center;
+  background: linear-gradient(180deg, #fbffff 0%, #e9f8f8 100%);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  height: 153px;
+  justify-content: space-between;
+  padding: 10px 42px 0;
+  position: relative;
+}
+.site-header::before {
+  background:
+    radial-gradient(
+      ellipse at 15% 100%,
+      rgba(171, 225, 225, 0.38),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 85% 0%,
+      rgba(249, 226, 193, 0.26),
+      transparent 48%
+    );
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+.header-center {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  position: relative;
+}
+.header-socials {
+  display: flex;
+  gap: 12px;
+  position: absolute;
+  right: 43px;
+  top: 26px;
+  z-index: 1;
+}
+.header-socials a {
+  color: #686c6b;
+  font-family: var(--sans);
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.wordmark {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 39px;
+  font-style: italic;
+  letter-spacing: -2px;
+  line-height: 1;
+  text-decoration: none;
+}
+.tagline {
+  border-top: 1px solid rgba(130, 190, 190, 0.3);
+  color: #4d9d9d;
+  font-family: var(--serif);
+  font-size: 16px;
+  margin: 8px 0 0;
+  padding-top: 7px;
+  text-align: center;
+  width: 280px;
+}
+.main-nav {
+  display: flex;
+  gap: 28px;
+  margin: 13px 0 0;
+}
+.main-nav a {
+  color: #4e5553;
+  font-size: 12px;
+  padding: 0;
+  text-decoration: none;
+}
+.main-nav a:hover,
+.main-nav .active {
+  color: var(--ink);
+}
+.main-nav .active {
+  border-bottom: 2px solid var(--coral);
+}
+.search-button {
+  background: none;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--serif);
+  font-size: 31px;
+  line-height: 1;
+  padding: 8px;
+  transform: rotate(-20deg);
+  visibility: hidden;
+}
+@media (max-width: 900px) {
+  .site-header {
+    padding-inline: 24px;
+  }
+  .header-socials {
+    right: 24px;
+  }
+}
+@media (max-width: 700px) {
+  .site-header {
+    height: 104px;
+    padding: 8px 20px 0;
+  }
+  .wordmark {
+    font-size: 28px;
+  }
+  .header-socials {
+    right: 18px;
+    top: 12px;
+  }
+  .header-socials a {
+    font-size: 16px;
+  }
+  .tagline {
+    font-size: 13px;
+    width: 230px;
+  }
+  .main-nav {
+    gap: 15px;
+    margin-top: 10px;
+  }
+  .main-nav a {
+    font-size: 10px;
+  }
+}

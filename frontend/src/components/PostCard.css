@@ -1,0 +1,128 @@
+.post-card {
+  border: 0px solid rgba(224, 217, 207, 0.7);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(104, 89, 71, 0.04);
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+.post-card-gradient-1 {
+  background: linear-gradient(135deg, #fff 0%, #e9faff 52%, #bde3fd 100%);
+}
+.post-card-gradient-2 {
+  background: linear-gradient(55deg, #bde3fd 0%, #e4f4ff 55%, #ffd7bc 100%);
+}
+.post-card-gradient-3 {
+  background: linear-gradient(190deg, #bde3fd 0%, #d2f8ff 52%, #ffd7bc 100%);
+}
+.post-card-gradient-4 {
+  background: linear-gradient(155deg, #bde3fd 0%, #fff9df 82%, #ffd7bc 100%);
+}
+.post-card-gradient-5 {
+  background: linear-gradient(125deg, #ffd7bc 0%, #fdf3dd 72%, #fffffa 100%);
+}
+.post-card-gradient-6 {
+  background: linear-gradient(185deg, #ffd7bc 0%, #fff5e2 82%, #f8fcff 100%);
+}
+.post-image {
+  display: block;
+  height: 168px;
+  overflow: hidden;
+  position: relative;
+}
+.post-card-featured .post-image {
+  height: 190px;
+}
+.post-image img {
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+  width: 100%;
+}
+.post-image:hover img {
+  transform: scale(1.04);
+}
+.post-category {
+  background: var(--paper);
+  bottom: 0;
+  color: var(--coral);
+  font-size: 10px;
+  left: 0;
+  letter-spacing: 0.14em;
+  padding: 8px 11px;
+  position: absolute;
+  text-transform: uppercase;
+}
+.post-content {
+  padding: 14px 15px 17px;
+}
+.post-meta {
+  color: #777b77;
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0;
+  margin: 0 0 10px;
+  text-transform: none;
+}
+.post-meta span {
+  color: var(--muted);
+  padding: 0 4px;
+}
+.post-content h3 {
+  font-family: var(--sans);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.18;
+  margin: 0 0 9px;
+}
+.post-content h3 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+.post-content h3 a:hover {
+  color: var(--coral);
+}
+.post-excerpt {
+  color: #5c625f;
+  font-size: 11px;
+  line-height: 1.45;
+  max-width: none;
+}
+.read-more {
+  background: #f0a061;
+  border: 0;
+  border-radius: 3px;
+  color: #fff;
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 0;
+  margin-top: 14px;
+  padding: 7px 12px;
+  text-decoration: none;
+}
+.post-card-gradient-1 .read-more,
+.post-card-gradient-4 .read-more,
+.post-card-gradient-5 .read-more {
+  background: #ee9a58;
+}
+.post-card-gradient-2 .read-more,
+.post-card-gradient-3 .read-more,
+.post-card-gradient-6 .read-more {
+  background: #55bfc2;
+}
+
+.read-more span {
+  display: none;
+}
+@media (max-width: 700px) {
+  .post-image,
+  .post-card-featured .post-image {
+    height: 260px;
+  }
+  .post-content {
+    padding: 22px 15px 17px;
+  }
+  .post-content h3 {
+    font-size: 17px;
+  }
+}
