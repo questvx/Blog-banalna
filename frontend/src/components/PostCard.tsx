@@ -11,7 +11,7 @@ function PostCard({ post, featured = false, gradientIndex }: PostCardProps) {
         <span className="post-category">{post.category}</span>
       </a>
       <div className="post-content">
-        <p className="post-meta">{post.date} <span>·</span> {post.readTime}</p>
+        <p className="post-meta">{post.date}</p>
         <h3><a href={`#post-${post.id}`}>{post.title}</a></h3>
         <p className="post-excerpt">{post.excerpt}</p>
         <a className="read-more" href={`#post-${post.id}`}>Czytaj więcej <span aria-hidden="true">›</span></a>
