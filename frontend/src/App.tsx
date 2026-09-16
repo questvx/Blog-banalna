@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Footer from './components/Footer'
 import Header from './components/Header'
+import TeaserManager from './components/teasers/TeaserManager'
 import { posts } from './data/posts'
 import HomePage from './pages/HomePage'
 import PostPage from './pages/posts/PostPage'
@@ -25,6 +26,7 @@ function App() {
       <Header onSearchFocus={() => document.getElementById('post-search')?.focus()} />
       {post ? <PostPage post={post} /> : <HomePage />}
       <Footer />
+      <TeaserManager />
     </div>
   )
 }
