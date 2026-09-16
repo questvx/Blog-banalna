@@ -1,6 +1,9 @@
 .sidebar {
+  align-self: start;
   min-width: 0;
   padding: 0 0 0 clamp(10px, 1.6vw, 18px);
+  position: sticky;
+  top: 173px;
 }
 .sidebar-block,
 .recommended-block {
@@ -142,5 +145,6 @@
   .sidebar {
     border-top: 1px solid var(--line);
     padding: 30px 0 0;
+    position: static;
   }
 }

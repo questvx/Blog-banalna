@@ -1,8 +1,8 @@
 .site-shell {
-  background: #fff;
+  background: hsl(0, 0%, 100%);
   margin: 0 auto;
   max-width: 1120px;
-  overflow: hidden;
+  overflow: clip;
 }
 .content-layout {
   display: grid;

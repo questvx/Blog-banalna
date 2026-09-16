@@ -1,12 +1,15 @@
 .site-header {
   align-items: center;
   background: linear-gradient(180deg, #fbffff 0%, #e9f8f8 100%);
-  border-bottom: 1px solid var(--line);
+  box-shadow: 0px -10px 20px 0px rgb(130, 251, 255);
   display: flex;
   height: 153px;
   justify-content: space-between;
   padding: 10px 42px 0;
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-radius: 0 0 8px 8px;
 }
 .site-header::before {
   background:

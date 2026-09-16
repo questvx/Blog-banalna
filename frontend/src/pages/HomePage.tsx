@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import Header from '../components/Header'
 import Hero from '../components/Hero'
 import PostCard from '../components/PostCard'
 import Sidebar from '../components/Sidebar'
@@ -27,7 +26,6 @@ function HomePage() {
 
   return (
     <div className="site-shell">
-      <Header onSearchFocus={() => searchRef.current?.focus()} />
       <main>
         <Hero />
         <div className="content-layout">
