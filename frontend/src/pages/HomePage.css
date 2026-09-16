@@ -53,24 +53,6 @@
   color: var(--muted);
   padding-top: 25px;
 }
-footer {
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  display: flex;
-  font-size: 10px;
-  justify-content: space-between;
-  letter-spacing: 0.12em;
-  margin: 0 42px;
-  padding: 23px 0;
-  text-transform: uppercase;
-}
-footer span:first-child {
-  color: var(--ink);
-  font-family: var(--serif);
-  font-size: 17px;
-  letter-spacing: -0.3px;
-  text-transform: none;
-}
 @media (max-width: 900px) {
   .content-layout {
     grid-template-columns: minmax(0, 1fr) 230px;
@@ -90,11 +72,5 @@ footer span:first-child {
   }
   .post-column:nth-child(2) {
     margin-top: 0;
-  }
-  footer {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 10px;
-    margin: 0 20px;
   }
 }

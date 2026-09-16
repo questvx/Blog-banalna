@@ -40,7 +40,6 @@ function HomePage() {
           <Sidebar searchValue={searchValue} onSearchChange={setSearchValue} searchRef={searchRef} />
         </div>
       </main>
-      <footer><span>banalna i tyle...</span><span>© 2026 · robione powoli</span></footer>
     </div>
   )
 }

@@ -9,10 +9,10 @@ function RecommendedBlock() {
         <br />
         warto przeczytać.
       </h2>
-      <ul>
-        <li>Małe rytuały na dobry dzień.</li>
-        <li>Jak zwolnić i odpocząć.</li>
-        <li>Pomysły na idealny weekend.</li>
+      <ul className="recommended-list">
+        <li><a href="#rytualy">Małe rytuały na dobry dzień.</a></li>
+        <li><a href="#odpoczynek">Jak zwolnić i odpocząć.</a></li>
+        <li><a href="#weekend">Pomysły na idealny weekend.</a></li>
       </ul>
       <a className="text-link" href="#posts">
         zobacz więcej <span aria-hidden="true">↗</span>

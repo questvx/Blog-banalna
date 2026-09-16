@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Footer from './components/Footer'
 import Header from './components/Header'
 import { posts } from './data/posts'
 import HomePage from './pages/HomePage'
@@ -23,6 +24,7 @@ function App() {
     <div className="app-shell">
       <Header onSearchFocus={() => document.getElementById('post-search')?.focus()} />
       {post ? <PostPage post={post} /> : <HomePage />}
+      <Footer />
     </div>
   )
 }
