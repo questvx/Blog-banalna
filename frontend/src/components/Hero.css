@@ -1,6 +1,9 @@
 .welcome-banner {
   align-items: center;
-  background: linear-gradient(100deg, #fffdf4, #e8faf8);
+  background:
+    linear-gradient(40deg, rgba(212, 252, 255, 0.8), transparent 70.71%),
+    linear-gradient(90deg, rgba(251, 252, 252, 0.8), transparent 70.71%),
+    linear-gradient(180deg, rgba(227, 255, 254, 0.8));
   border-radius: 12px;
   display: flex;
   gap: 18px;

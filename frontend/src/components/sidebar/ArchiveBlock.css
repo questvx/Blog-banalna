@@ -1,0 +1,30 @@
+.archive-block {
+  background: linear-gradient(160deg, #d7f0ff 0%, #ffe1c9 72%, #fcddc9 100%);
+  border: 0;
+  border-radius: 9px;
+  margin-bottom: 13px;
+  padding: clamp(13px, 1.4vw, 15px);
+  width: 100%;
+}
+.archive-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.archive-list li {
+  display: flex;
+  font-size: 12px;
+  justify-content: space-between;
+  margin: 13px 0;
+}
+.archive-list a {
+  color: var(--muted);
+  text-decoration: none;
+}
+.archive-list a:hover {
+  color: var(--coral);
+}
+.archive-list span {
+  color: #b8b1a9;
+  font-size: 11px;
+}
