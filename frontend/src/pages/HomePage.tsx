@@ -7,9 +7,10 @@ import './HomePage.css'
 
 type HomePageProps = {
   posts: Post[]
+  onRandomPost: () => void
 }
 
-function HomePage({ posts }: HomePageProps) {
+function HomePage({ posts, onRandomPost }: HomePageProps) {
   const [searchValue, setSearchValue] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [visibleCount, setVisibleCount] = useState(4)
@@ -67,6 +68,7 @@ function HomePage({ posts }: HomePageProps) {
             categories={categories}
             selectedCategories={selectedCategories}
             onCategoryChange={handleCategoryChange}
+            onRandomPost={onRandomPost}
           />
         </div>
       </main>

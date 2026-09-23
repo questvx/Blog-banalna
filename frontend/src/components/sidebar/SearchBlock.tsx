@@ -5,9 +5,10 @@ type SearchBlockProps = {
   searchValue: string
   onSearchChange: (value: string) => void
   searchRef: RefObject<HTMLInputElement | null>
+  onRandomPost: () => void
 }
 
-function SearchBlock({ searchValue, onSearchChange, searchRef }: SearchBlockProps) {
+function SearchBlock({ searchValue, onSearchChange, searchRef, onRandomPost }: SearchBlockProps) {
   return (
     <div className="sidebar-block search-block">
       <label htmlFor="post-search">Szukaj</label>
@@ -27,9 +28,9 @@ function SearchBlock({ searchValue, onSearchChange, searchRef }: SearchBlockProp
           ⌕
         </button>
       </div>
-      <a className="random-link" href="#losowy">
+      <button className="random-link" type="button" onClick={onRandomPost}>
         ⚄ &nbsp; Losowy wpis <span>›</span>
-      </a>
+      </button>
     </div>
   )
 }

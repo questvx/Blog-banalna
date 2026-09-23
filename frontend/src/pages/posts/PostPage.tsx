@@ -5,9 +5,10 @@ import './PostPage.css'
 
 type PostPageProps = {
   post: Post
+  onRandomPost: () => void
 }
 
-function PostPage({ post }: PostPageProps) {
+function PostPage({ post, onRandomPost }: PostPageProps) {
   const [searchValue, setSearchValue] = useState('')
   const searchRef = useRef<HTMLInputElement>(null)
 
@@ -27,7 +28,7 @@ function PostPage({ post }: PostPageProps) {
             </div>
           </div>
         </article>
-        <Sidebar searchValue={searchValue} onSearchChange={setSearchValue} searchRef={searchRef} />
+        <Sidebar searchValue={searchValue} onSearchChange={setSearchValue} searchRef={searchRef} onRandomPost={onRandomPost} />
       </main>
     </div>
   )

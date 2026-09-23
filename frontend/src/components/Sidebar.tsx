@@ -11,14 +11,15 @@ type SidebarProps = {
   categories?: string[];
   selectedCategories?: string[];
   onCategoryChange?: (category: string) => void;
+  onRandomPost: () => void;
 };
 
 import "./Sidebar.css";
 
-function Sidebar({ searchValue, onSearchChange, searchRef, categories = [], selectedCategories = [], onCategoryChange }: SidebarProps) {
+function Sidebar({ searchValue, onSearchChange, searchRef, categories = [], selectedCategories = [], onCategoryChange, onRandomPost }: SidebarProps) {
   return (
     <aside className="sidebar">
-      <SearchBlock searchValue={searchValue} onSearchChange={onSearchChange} searchRef={searchRef} />
+      <SearchBlock searchValue={searchValue} onSearchChange={onSearchChange} searchRef={searchRef} onRandomPost={onRandomPost} />
       <RecommendedBlock />
       {onCategoryChange && <TagsBlock categories={categories} selectedCategories={selectedCategories} onCategoryChange={onCategoryChange} />}
       <ArchiveBlock />

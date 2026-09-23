@@ -1,4 +1,6 @@
-type HeaderProps = { onSearchFocus: () => void }
+type HeaderProps = {
+  onSearchFocus: () => void
+}
 
 import './Header.css'
 

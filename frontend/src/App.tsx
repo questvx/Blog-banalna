@@ -37,13 +37,22 @@ function App() {
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [posts])
 
+  const handleRandomPost = () => {
+    const availablePosts = posts.filter((candidate) => candidate.id !== post?.id)
+    const randomPost = availablePosts[Math.floor(Math.random() * availablePosts.length)]
+    if (!randomPost) return
+
+    setPost(randomPost)
+    window.location.hash = `post-${randomPost.id}`
+  }
+
   if (isLoading) return <div className="app-state">Ładowanie wpisów...</div>
   if (error) return <div className="app-state app-state-error">{error}</div>
 
   return (
     <div className="app-shell">
       <Header onSearchFocus={() => document.getElementById('post-search')?.focus()} />
-      {post ? <PostPage post={post} /> : <HomePage posts={posts} />}
+      {post ? <PostPage post={post} onRandomPost={handleRandomPost} /> : <HomePage posts={posts} onRandomPost={handleRandomPost} />}
       <Footer />
       <TeaserManager />
     </div>

@@ -42,10 +42,8 @@
   transform: scale(1.05);
 }
 .tag-list button.active {
-  filter: saturate(1.65) brightness(1.0);
+  filter: saturate(1.35) brightness(1.04);
   color: var(--coral);
-  /* outline: 1px solid var(--ink); */
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.35);
-  outline-offset: 1px;
   transform: scale(1.05);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
 }
