@@ -1,20 +1,22 @@
 import "./RecommendedBlock.css";
+import type { Post } from "../../data/posts";
 
-function RecommendedBlock() {
+type RecommendedBlockProps = {
+  posts: Post[]
+}
+
+function RecommendedBlock({ posts }: RecommendedBlockProps) {
+  const recommendedPosts = posts.filter((post) => post.featured)
+
   return (
     <div className="recommended-block">
       <p className="sidebar-label">Polecane wpisy</p>
-      {/* <h2>
-        Wpisy, które
-        <br />
-        warto przeczytać.
-      </h2> */}
       <ul className="recommended-list">
-        <li><a href="#rytualy">Małe rytuały na dobry dzień.</a></li>
-        <li><a href="#odpoczynek">Jak zwolnić i odpocząć.</a></li>
-        <li><a href="#weekend">Pomysły na idealny weekend.</a></li>
+        {recommendedPosts.map((post) => (
+          <li key={post.id}><a href={`#post-${post.id}`}>{post.title}</a></li>
+        ))}
       </ul>
-      <a className="text-link" href="#posts">
+      <a className="text-link" href="#najnowsze">
         zobacz więcej <span aria-hidden="true">↗</span>
       </a>
     </div>
