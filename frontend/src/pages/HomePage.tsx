@@ -11,22 +11,39 @@ type HomePageProps = {
 
 function HomePage({ posts }: HomePageProps) {
   const [searchValue, setSearchValue] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('wszystkie')
   const [visibleCount, setVisibleCount] = useState(4)
   const searchRef = useRef<HTMLInputElement>(null)
   const loadMoreRef = useRef<HTMLDivElement>(null)
-  const visiblePosts = posts.filter((post) => `${post.title} ${post.excerpt} ${post.category}`.toLowerCase().includes(searchValue.toLowerCase())).slice(0, visibleCount)
+  const categories = [...new Set(posts.map((post) => post.category))]
+  const filteredPosts = posts.filter((post) => {
+    const matchesSearch = `${post.title} ${post.excerpt} ${post.category}`.toLowerCase().includes(searchValue.toLowerCase())
+    const matchesCategory = selectedCategory === 'wszystkie' || post.category === selectedCategory
+    return matchesSearch && matchesCategory
+  })
+  const visiblePosts = filteredPosts.slice(0, visibleCount)
+
+  const handleSearchChange = (value: string) => {
+    setSearchValue(value)
+    setVisibleCount(4)
+  }
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category)
+    setVisibleCount(4)
+  }
 
   useEffect(() => {
     const sentinel = loadMoreRef.current
-    if (!sentinel || visibleCount >= posts.length) return
+    if (!sentinel || visibleCount >= filteredPosts.length) return
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setVisibleCount((count) => Math.min(count + 2, posts.length))
+      if (entry.isIntersecting) setVisibleCount((count) => Math.min(count + 2, filteredPosts.length))
     }, { rootMargin: '240px' })
     observer.observe(sentinel)
     return () => observer.disconnect()
-  }, [posts.length, visibleCount])
+  }, [filteredPosts.length, visibleCount])
 
-  const loadMore = () => setVisibleCount((count) => Math.min(count + 2, posts.length))
+  const loadMore = () => setVisibleCount((count) => Math.min(count + 2, filteredPosts.length))
 
   return (
     <div className="site-shell">
@@ -39,9 +56,16 @@ function HomePage({ posts }: HomePageProps) {
               <div className="post-column">{visiblePosts.filter((_, index) => index % 2 === 0).map((post, index) => <PostCard key={post.id} post={post} gradientIndex={index * 2} featured={index === 0} />)}</div>
               <div className="post-column">{visiblePosts.filter((_, index) => index % 2 !== 0).map((post, index) => <PostCard key={post.id} post={post} gradientIndex={index * 2 + 1} />)}</div>
             </div> : <p className="empty-state">Nie znalazłam niczego pod tą frazą. Spróbuj inaczej.</p>}
-            {visibleCount < posts.length && visiblePosts.length > 0 && <><div className="load-more-sentinel" ref={loadMoreRef} /><button className="load-more" type="button" onClick={loadMore}>pokaż starsze wpisy <span aria-hidden="true">↓</span></button></>}
+            {visibleCount < filteredPosts.length && visiblePosts.length > 0 && <><div className="load-more-sentinel" ref={loadMoreRef} /><button className="load-more" type="button" onClick={loadMore}>pokaż starsze wpisy <span aria-hidden="true">↓</span></button></>}
           </section>
-          <Sidebar searchValue={searchValue} onSearchChange={setSearchValue} searchRef={searchRef} />
+          <Sidebar
+            searchValue={searchValue}
+            onSearchChange={handleSearchChange}
+            searchRef={searchRef}
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+          />
         </div>
       </main>
     </div>

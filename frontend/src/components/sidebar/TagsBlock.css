@@ -11,30 +11,32 @@
   flex-wrap: wrap;
   gap: 8px;
 }
-.tag-list a {
+.tag-list button {
   background: #f8d3d5;
   border-radius: 30px;
+  border: 0;
   color: var(--ink);
+  cursor: pointer;
   font-size: 11px;
   padding: 7px 9px;
-  text-decoration: none;
 }
-.tag-list a:nth-child(2) {
+.tag-list button:nth-child(2) {
   background: #a5fffb;
 }
-.tag-list a:nth-child(3) {
+.tag-list button:nth-child(3) {
   background: #fff9d0;
 }
-.tag-list a:nth-child(4) {
+.tag-list button:nth-child(4) {
   background: #ffd9c2;
 }
-.tag-list a:nth-child(5) {
+.tag-list button:nth-child(5) {
   background: #fdcdff;
 }
-.tag-list a:nth-child(6) {
+.tag-list button:nth-child(6) {
   background: #c3ffcd;
 }
-.tag-list a:hover {
+.tag-list button:hover,
+.tag-list button.active {
   filter: brightness(0.95);
   color: var(--coral);
   transform: scale(1.05);

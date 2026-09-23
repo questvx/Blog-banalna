@@ -1,16 +1,25 @@
 import './TagsBlock.css'
 
-const tags = ['filmy', 'książka', 'nowości', 'inspiracje', 'technologie', 'kuchnia']
+type TagsBlockProps = {
+  categories: string[]
+  selectedCategory: string
+  onCategoryChange: (category: string) => void
+}
 
-function TagsBlock() {
+function TagsBlock({ categories, selectedCategory, onCategoryChange }: TagsBlockProps) {
   return (
     <div className="tags-block sidebar-block">
-      <p className="sidebar-label">Tagi</p>
+      <p className="sidebar-label">Kategorie</p>
       <div className="tag-list">
-        {tags.map((tag) => (
-          <a href={`#${tag}`} key={tag}>
-            {tag}
-          </a>
+        {['wszystkie', ...categories].map((category) => (
+          <button
+            className={selectedCategory === category ? 'active' : ''}
+            key={category}
+            type="button"
+            onClick={() => onCategoryChange(category)}
+          >
+            {category}
+          </button>
         ))}
       </div>
     </div>
