@@ -2,27 +2,31 @@ import { useEffect, useRef, useState } from 'react'
 import Hero from '../components/Hero'
 import PostCard from '../components/PostCard'
 import Sidebar from '../components/Sidebar'
-import { posts } from '../data/posts'
+import type { Post } from '../data/posts'
 import './HomePage.css'
 
-function HomePage() {
+type HomePageProps = {
+  posts: Post[]
+}
+
+function HomePage({ posts }: HomePageProps) {
   const [searchValue, setSearchValue] = useState('')
   const [visibleCount, setVisibleCount] = useState(4)
   const searchRef = useRef<HTMLInputElement>(null)
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const visiblePosts = posts.filter((post) => `${post.title} ${post.excerpt} ${post.category}`.toLowerCase().includes(searchValue.toLowerCase())).slice(0, visibleCount)
 
-  const loadMore = () => setVisibleCount((count) => Math.min(count + 2, posts.length))
-
   useEffect(() => {
     const sentinel = loadMoreRef.current
     if (!sentinel || visibleCount >= posts.length) return
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) loadMore()
+      if (entry.isIntersecting) setVisibleCount((count) => Math.min(count + 2, posts.length))
     }, { rootMargin: '240px' })
     observer.observe(sentinel)
     return () => observer.disconnect()
-  }, [visibleCount])
+  }, [posts.length, visibleCount])
+
+  const loadMore = () => setVisibleCount((count) => Math.min(count + 2, posts.length))
 
   return (
     <div className="site-shell">
