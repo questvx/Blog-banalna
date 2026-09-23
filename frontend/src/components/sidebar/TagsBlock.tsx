@@ -2,18 +2,19 @@ import './TagsBlock.css'
 
 type TagsBlockProps = {
   categories: string[]
-  selectedCategory: string
+  selectedCategories: string[]
   onCategoryChange: (category: string) => void
 }
 
-function TagsBlock({ categories, selectedCategory, onCategoryChange }: TagsBlockProps) {
+function TagsBlock({ categories, selectedCategories, onCategoryChange }: TagsBlockProps) {
   return (
     <div className="tags-block sidebar-block">
-      <p className="sidebar-label">Kategorie</p>
+      <p className="sidebar-label">Wybierz kategorie</p>
       <div className="tag-list">
-        {['wszystkie', ...categories].map((category) => (
+        {categories.map((category) => (
           <button
-            className={selectedCategory === category ? 'active' : ''}
+            aria-pressed={selectedCategories.includes(category)}
+            className={selectedCategories.includes(category) ? 'active' : ''}
             key={category}
             type="button"
             onClick={() => onCategoryChange(category)}

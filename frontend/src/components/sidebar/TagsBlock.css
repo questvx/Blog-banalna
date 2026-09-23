@@ -19,6 +19,7 @@
   cursor: pointer;
   font-size: 11px;
   padding: 7px 9px;
+  transition: all 0.2s ease-in-out;
 }
 .tag-list button:nth-child(2) {
   background: #a5fffb;
@@ -35,10 +36,16 @@
 .tag-list button:nth-child(6) {
   background: #c3ffcd;
 }
-.tag-list button:hover,
-.tag-list button.active {
+.tag-list button:hover {
   filter: brightness(0.95);
   color: var(--coral);
   transform: scale(1.05);
-  transition: all 0.2s ease-in-out;
+}
+.tag-list button.active {
+  filter: saturate(1.65) brightness(1.0);
+  color: var(--coral);
+  /* outline: 1px solid var(--ink); */
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.35);
+  outline-offset: 1px;
+  transform: scale(1.05);
 }

@@ -9,18 +9,18 @@ type SidebarProps = {
   onSearchChange: (value: string) => void;
   searchRef: RefObject<HTMLInputElement | null>;
   categories?: string[];
-  selectedCategory?: string;
+  selectedCategories?: string[];
   onCategoryChange?: (category: string) => void;
 };
 
 import "./Sidebar.css";
 
-function Sidebar({ searchValue, onSearchChange, searchRef, categories = [], selectedCategory = 'wszystkie', onCategoryChange }: SidebarProps) {
+function Sidebar({ searchValue, onSearchChange, searchRef, categories = [], selectedCategories = [], onCategoryChange }: SidebarProps) {
   return (
     <aside className="sidebar">
       <SearchBlock searchValue={searchValue} onSearchChange={onSearchChange} searchRef={searchRef} />
       <RecommendedBlock />
-      {onCategoryChange && <TagsBlock categories={categories} selectedCategory={selectedCategory} onCategoryChange={onCategoryChange} />}
+      {onCategoryChange && <TagsBlock categories={categories} selectedCategories={selectedCategories} onCategoryChange={onCategoryChange} />}
       <ArchiveBlock />
     </aside>
   );

@@ -11,14 +11,14 @@ type HomePageProps = {
 
 function HomePage({ posts }: HomePageProps) {
   const [searchValue, setSearchValue] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('wszystkie')
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [visibleCount, setVisibleCount] = useState(4)
   const searchRef = useRef<HTMLInputElement>(null)
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const categories = [...new Set(posts.map((post) => post.category))]
   const filteredPosts = posts.filter((post) => {
     const matchesSearch = `${post.title} ${post.excerpt} ${post.category}`.toLowerCase().includes(searchValue.toLowerCase())
-    const matchesCategory = selectedCategory === 'wszystkie' || post.category === selectedCategory
+    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(post.category)
     return matchesSearch && matchesCategory
   })
   const visiblePosts = filteredPosts.slice(0, visibleCount)
@@ -29,7 +29,9 @@ function HomePage({ posts }: HomePageProps) {
   }
 
   const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category)
+    setSelectedCategories((currentCategories) => currentCategories.includes(category)
+      ? currentCategories.filter((currentCategory) => currentCategory !== category)
+      : [...currentCategories, category])
     setVisibleCount(4)
   }
 
@@ -63,7 +65,7 @@ function HomePage({ posts }: HomePageProps) {
             onSearchChange={handleSearchChange}
             searchRef={searchRef}
             categories={categories}
-            selectedCategory={selectedCategory}
+            selectedCategories={selectedCategories}
             onCategoryChange={handleCategoryChange}
           />
         </div>
