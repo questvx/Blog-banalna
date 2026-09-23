@@ -52,7 +52,7 @@ function App() {
   return (
     <div className="app-shell">
       <Header onSearchFocus={() => document.getElementById('post-search')?.focus()} />
-      {post ? <PostPage post={post} onRandomPost={handleRandomPost} /> : <HomePage posts={posts} onRandomPost={handleRandomPost} />}
+  {post ? <PostPage post={post} posts={posts} onRandomPost={handleRandomPost} /> : <HomePage posts={posts} onRandomPost={handleRandomPost} />}
       <Footer />
       <TeaserManager />
     </div>

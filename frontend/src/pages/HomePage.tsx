@@ -69,6 +69,7 @@ function HomePage({ posts, onRandomPost }: HomePageProps) {
             selectedCategories={selectedCategories}
             onCategoryChange={handleCategoryChange}
             onRandomPost={onRandomPost}
+            posts={posts}
           />
         </div>
       </main>
