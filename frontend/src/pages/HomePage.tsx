@@ -10,13 +10,14 @@ type HomePageProps = {
   onRandomPost: () => void
 }
 
+const categories = ['kuchnia', 'filmy', 'książka', 'technologia', 'sport', 'dlaczego?', 'inne']
+
 function HomePage({ posts, onRandomPost }: HomePageProps) {
   const [searchValue, setSearchValue] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [visibleCount, setVisibleCount] = useState(4)
   const searchRef = useRef<HTMLInputElement>(null)
   const loadMoreRef = useRef<HTMLDivElement>(null)
-  const categories = [...new Set(posts.map((post) => post.category))]
   const filteredPosts = posts.filter((post) => {
     const matchesSearch = `${post.title} ${post.excerpt} ${post.category}`.toLowerCase().includes(searchValue.toLowerCase())
     const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(post.category)
