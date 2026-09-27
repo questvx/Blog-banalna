@@ -1,5 +1,6 @@
-import type { FormEvent, MouseEvent } from 'react'
+import { useState, type FormEvent, type MouseEvent } from 'react'
 import { authorCategories, type AuthorPostForm } from './authorPostForm'
+import AuthorImageUploader from './AuthorImageUploader'
 import './AuthorPostEditor.css'
 
 type AuthorPostEditorProps = {
@@ -12,8 +13,18 @@ type AuthorPostEditorProps = {
 }
 
 function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubmit }: AuthorPostEditorProps) {
+  const [isImageUploading, setIsImageUploading] = useState(false)
+
   const handleBackdropMouseDown = (event: MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget && !isSaving) onClose()
+  }
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    if (isImageUploading) {
+      event.preventDefault()
+      return
+    }
+    onSubmit(event)
   }
 
   return (
@@ -26,7 +37,7 @@ function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubm
           </div>
           <button className="author-editor-close" type="button" aria-label="Zamknij edytor" onClick={onClose} disabled={isSaving}>×</button>
         </div>
-        <form className="author-editor-form" onSubmit={onSubmit}>
+        <form className="author-editor-form" onSubmit={handleSubmit}>
           <label htmlFor="post-title">Tytuł</label>
           <input id="post-title" required maxLength={255} value={form.title} onChange={(event) => onChange('title', event.target.value)} />
           <label htmlFor="post-excerpt">Zajawka</label>
@@ -45,6 +56,13 @@ function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubm
               </select>
             </div>
           </div>
+          <p className="author-image-section-label">Zdjęcie wpisu</p>
+          <AuthorImageUploader
+            imageUrl={form.image}
+            disabled={isSaving}
+            onUploaded={(url) => onChange('image', url)}
+            onUploadingChange={setIsImageUploading}
+          />
           <label htmlFor="post-image">Adres obrazu</label>
           <input id="post-image" required type="url" value={form.image} onChange={(event) => onChange('image', event.target.value)} />
           <div className="author-editor-grid author-editor-options">
@@ -70,9 +88,9 @@ function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubm
             </div>
           </div>
           <div className="author-editor-actions">
-            <button className="author-editor-cancel" type="button" onClick={onClose} disabled={isSaving}>Anuluj</button>
-            <button className="author-dashboard-primary" type="submit" disabled={isSaving}>
-              {isSaving ? 'Zapisuję...' : editingId === null ? 'Dodaj wpis' : 'Zapisz zmiany'}
+            <button className="author-editor-cancel" type="button" onClick={onClose} disabled={isSaving || isImageUploading}>Anuluj</button>
+            <button className="author-dashboard-primary" type="submit" disabled={isSaving || isImageUploading}>
+              {isImageUploading ? 'Wgrywam zdjęcie...' : isSaving ? 'Zapisuję...' : editingId === null ? 'Dodaj wpis' : 'Zapisz zmiany'}
             </button>
           </div>
         </form>
