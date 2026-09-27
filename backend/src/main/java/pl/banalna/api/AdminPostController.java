@@ -11,22 +11,22 @@ import pl.banalna.post.PostResponse;
 import pl.banalna.post.PostService;
 
 @RestController
-@RequestMapping("/api/posts")
-public class PostController {
+@RequestMapping("/api/admin/posts")
+public class AdminPostController {
 
     private final PostService postService;
 
-    public PostController(PostService postService) {
+    public AdminPostController(PostService postService) {
         this.postService = postService;
     }
 
     @GetMapping
     public List<PostResponse> findAll() {
-        return postService.findPublished();
+        return postService.findAllForAuthor();
     }
 
     @GetMapping("/{id}")
     public PostResponse findById(@PathVariable Long id) {
-        return postService.findPublishedById(id);
+        return postService.findByIdForAuthor(id);
     }
 }

@@ -7,6 +7,7 @@ export type Post = {
   category: string
   image: string
   featured?: boolean
+  status?: 'DRAFT' | 'PUBLISHED'
 }
 
 export const posts: Post[] = [

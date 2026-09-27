@@ -32,7 +32,7 @@
 .recommended-list a {
   color: var(--muted);
   font-size: 12px;
-  line-height: 1.5;
+  line-height: 1.2;
   text-decoration: none;
 }
 .recommended-list a:hover {

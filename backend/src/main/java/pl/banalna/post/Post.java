@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,6 +40,10 @@ public class Post {
     @Column(nullable = false)
     private boolean featured;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private PostStatus status;
+
     protected Post() {
     }
 
@@ -71,5 +77,9 @@ public class Post {
 
     public boolean isFeatured() {
         return featured;
+    }
+
+    public PostStatus getStatus() {
+        return status;
     }
 }

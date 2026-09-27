@@ -16,6 +16,17 @@ spring:
 
 server:
   port: ${PORT:8080}
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: ${SESSION_COOKIE_SECURE:false}
+        same-site: lax
 
 cors:
   allowed-origin: ${FRONTEND_URL:http://localhost:5173}
+
+app:
+  author:
+    username: ${ADMIN_USERNAME:}
+    password: ${ADMIN_PASSWORD:}

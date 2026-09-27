@@ -12,7 +12,8 @@ public record PostResponse(
         LocalDate date,
         String category,
         String image,
-        boolean featured) {
+        boolean featured,
+        PostStatus status) {
 
     public static PostResponse from(Post post) {
         List<String> paragraphs = Arrays.stream(post.getContent().split("\\R\\s*\\R"))
@@ -28,6 +29,7 @@ public record PostResponse(
                 post.getPublishedDate(),
                 post.getCategory(),
                 post.getImageUrl(),
-                post.isFeatured());
+                post.isFeatured(),
+                post.getStatus());
     }
 }
