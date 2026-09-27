@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import AuthorLogin from './pages/AuthorLogin'
 import { fetchPosts } from './api/posts'
 import Footer from './components/Footer'
 import Header from './components/Header'
@@ -13,7 +14,7 @@ function getPostFromHash(posts: Post[]) {
   return posts.find((post) => post.id === Number(match[1]))
 }
 
-function App() {
+function BlogApp() {
   const [posts, setPosts] = useState<Post[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string>()
@@ -57,6 +58,14 @@ function App() {
       <TeaserManager />
     </div>
   )
+}
+
+function App() {
+  if (window.location.pathname === '/autorka' || window.location.pathname.startsWith('/autorka/')) {
+    return <AuthorLogin />
+  }
+
+  return <BlogApp />
 }
 
 export default App
