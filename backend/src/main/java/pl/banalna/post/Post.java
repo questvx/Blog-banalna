@@ -47,6 +47,21 @@ public class Post {
     protected Post() {
     }
 
+    public Post(PostRequest request) {
+        update(request);
+    }
+
+    public void update(PostRequest request) {
+        title = request.title();
+        excerpt = request.excerpt();
+        content = String.join("\n\n", request.content());
+        publishedDate = request.date();
+        category = request.category();
+        imageUrl = request.image();
+        featured = request.featured();
+        status = request.status();
+    }
+
     public Long getId() {
         return id;
     }

@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { getAuthorSession, loginAuthor, logoutAuthor, type AuthorSession } from '../api/auth'
+import { AuthorDashboard } from '../components/author'
 import './AuthorLogin.css'
 
 function AuthorLogin() {
@@ -50,6 +51,10 @@ function AuthorLogin() {
     }
   }
 
+  if (session) {
+    return <AuthorDashboard session={session} error={error} isLoggingOut={isSubmitting} onLogout={handleLogout} />
+  }
+
   return (
     <main className="author-login-page">
       <a className="author-login-wordmark" href="/">banalna... i tyle</a>
@@ -60,13 +65,6 @@ function AuthorLogin() {
 
         {isCheckingSession ? (
           <p className="author-login-status" role="status">Sprawdzam sesję...</p>
-        ) : session ? (
-          <div className="author-session-view">
-            <p className="author-login-status" role="status">Zalogowano jako <strong>{session.username}</strong>.</p>
-            <button className="author-login-submit" type="button" disabled={isSubmitting} onClick={handleLogout}>
-              {isSubmitting ? 'Wylogowywanie...' : 'Wyloguj się'}
-            </button>
-          </div>
         ) : (
           <form className="author-login-form" onSubmit={handleSubmit}>
             <label htmlFor="author-username">Login</label>
@@ -95,7 +93,6 @@ function AuthorLogin() {
           </form>
         )}
 
-        {error && session && <p className="author-login-error" role="alert">{error}</p>}
       </section>
       <a className="author-login-back" href="/">Wróć na stronę główną</a>
     </main>

@@ -9,7 +9,7 @@ export type AuthorSession = {
   username: string
 }
 
-async function fetchCsrfToken(): Promise<CsrfResponse> {
+export async function fetchCsrfToken(): Promise<CsrfResponse> {
   const response = await fetch(`${API_URL}/auth/csrf`, { credentials: 'include' })
   if (!response.ok) throw new Error('Nie udało się przygotować bezpiecznego logowania.')
   return response.json() as Promise<CsrfResponse>

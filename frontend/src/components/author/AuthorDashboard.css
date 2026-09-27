@@ -1,0 +1,254 @@
+.author-dashboard-page {
+  background: #f1f4f0;
+  color: #26372f;
+  min-height: 100vh;
+  padding-bottom: 56px;
+}
+
+.author-dashboard-header {
+  align-items: center;
+  background: #fffefa;
+  border-bottom: 1px solid #d8e1d8;
+  display: flex;
+  justify-content: space-between;
+  min-height: 76px;
+  padding: 14px max(24px, calc((100vw - 1120px) / 2));
+}
+
+.author-dashboard-wordmark {
+  color: #26372f;
+  font-family: var(--serif);
+  font-size: 24px;
+  font-style: italic;
+  text-decoration: none;
+}
+
+.author-dashboard-account {
+  align-items: center;
+  color: #6d776f;
+  display: flex;
+  font-size: 12px;
+  gap: 18px;
+}
+
+.author-dashboard-account strong {
+  color: #26372f;
+}
+
+.author-dashboard-logout,
+.author-post-actions button {
+  background: transparent;
+  border: 1px solid #cbd5cc;
+  border-radius: 3px;
+  color: #435348;
+  cursor: pointer;
+  font-size: 12px;
+  min-height: 36px;
+  padding: 7px 12px;
+}
+
+.author-dashboard-logout:hover:not(:disabled),
+.author-post-actions button:hover:not(:disabled) {
+  background: #edf3ed;
+}
+
+.author-dashboard-logout:disabled,
+.author-post-actions button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.author-dashboard-content {
+  margin: 0 auto;
+  max-width: 1120px;
+  padding: 48px 24px 0;
+}
+
+.author-dashboard-title-row {
+  align-items: end;
+  border-bottom: 1px solid #d5ddd5;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 22px;
+}
+
+.author-dashboard-title-row .author-login-eyebrow {
+  margin-bottom: 7px;
+}
+
+.author-dashboard-title-row h1 {
+  color: #26372f;
+  font-family: var(--serif);
+  font-size: 36px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.author-dashboard-primary {
+  background: #385b48;
+  border: 1px solid #385b48;
+  border-radius: 3px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  min-height: 42px;
+  padding: 9px 16px;
+  white-space: nowrap;
+}
+
+.author-dashboard-primary:hover:not(:disabled) {
+  background: #294636;
+}
+
+.author-dashboard-primary:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.author-dashboard-message {
+  border-left: 3px solid;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 16px;
+  padding: 10px 13px;
+}
+
+.author-dashboard-message.is-error {
+  background: #fff1ef;
+  border-color: #bf5a4b;
+  color: #8a3027;
+}
+
+.author-dashboard-message.is-notice {
+  background: #eaf3eb;
+  border-color: #668b70;
+  color: #365942;
+}
+
+.author-dashboard-empty {
+  background: #fffefa;
+  border: 1px solid #d8e1d8;
+  color: #6d776f;
+  font-size: 14px;
+  margin: 0;
+  padding: 28px;
+}
+
+.author-post-list {
+  border-top: 1px solid #d8e1d8;
+}
+
+.author-post-row {
+  align-items: center;
+  background: #fffefa;
+  border: 1px solid #d8e1d8;
+  border-top: 0;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(180px, 1fr) auto auto auto;
+  min-height: 82px;
+  padding: 14px 18px;
+}
+
+.author-post-info {
+  min-width: 0;
+}
+
+.author-post-info h2 {
+  color: #26372f;
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 0 0 5px;
+  overflow-wrap: anywhere;
+}
+
+.author-post-info p {
+  color: #7a837b;
+  font-size: 11px;
+  margin: 0;
+}
+
+.author-post-status,
+.author-post-featured {
+  border-radius: 2px;
+  font-size: 10px;
+  padding: 5px 8px;
+  white-space: nowrap;
+}
+
+.author-post-status.is-published {
+  background: #e5f1e7;
+  color: #376447;
+}
+
+.author-post-status.is-draft {
+  background: #f6edda;
+  color: #80642d;
+}
+
+.author-post-featured {
+  background: #f8e8e2;
+  color: #905541;
+}
+
+.author-post-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.author-post-actions .is-danger {
+  border-color: #e5c9c4;
+  color: #9a473d;
+}
+
+.author-post-actions .is-danger:hover:not(:disabled) {
+  background: #fff1ef;
+}
+
+@media (max-width: 760px) {
+  .author-dashboard-header {
+    padding-inline: 18px;
+  }
+
+  .author-dashboard-content {
+    padding: 34px 18px 0;
+  }
+
+  .author-post-row {
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .author-post-info {
+    grid-column: 1 / -1;
+  }
+
+  .author-post-actions {
+    justify-content: end;
+  }
+}
+
+@media (max-width: 480px) {
+  .author-dashboard-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .author-dashboard-account {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .author-dashboard-title-row h1 {
+    font-size: 31px;
+  }
+
+  .author-dashboard-primary {
+    padding-inline: 11px;
+  }
+}
