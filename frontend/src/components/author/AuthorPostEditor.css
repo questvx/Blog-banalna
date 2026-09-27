@@ -1,6 +1,6 @@
 .author-editor-backdrop {
   align-items: center;
-  background: rgba(27, 39, 32, 0.48);
+  background: rgba(35, 59, 74, 0.48);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -11,9 +11,9 @@
 }
 
 .author-editor {
-  background: #fffefa;
-  border-top: 4px solid #668b70;
-  box-shadow: 0 18px 60px rgba(22, 38, 27, 0.22);
+  background: var(--author-surface);
+  border-top: 4px solid var(--author-blue);
+  box-shadow: 0 18px 60px rgba(35, 59, 74, 0.22);
   margin: auto;
   max-height: calc(100vh - 44px);
   max-width: 720px;
@@ -24,7 +24,7 @@
 
 .author-editor-heading {
   align-items: start;
-  border-bottom: 1px solid #d8e1d8;
+  border-bottom: 1px solid var(--author-line);
   display: flex;
   justify-content: space-between;
   margin-bottom: 23px;
@@ -36,7 +36,7 @@
 }
 
 .author-editor-heading h2 {
-  color: #26372f;
+  color: var(--author-ink);
   font-family: var(--serif);
   font-size: 27px;
   font-weight: 500;
@@ -46,7 +46,7 @@
 .author-editor-close {
   background: transparent;
   border: 0;
-  color: #66746a;
+  color: var(--author-muted);
   cursor: pointer;
   font-size: 28px;
   line-height: 1;
@@ -59,14 +59,14 @@
 }
 
 .author-editor-form label {
-  color: #39483f;
+  color: var(--author-ink);
   font-size: 12px;
   font-weight: 700;
   margin: 0 0 7px;
 }
 
 .author-editor-form label span {
-  color: #818981;
+  color: var(--author-muted);
   font-size: 11px;
   font-weight: 400;
   margin-left: 6px;
@@ -76,9 +76,9 @@
 .author-editor-form textarea,
 .author-editor-form select {
   background: #fff;
-  border: 1px solid #ccd6cd;
+  border: 1px solid var(--author-line);
   border-radius: 3px;
-  color: #26372f;
+  color: var(--author-ink);
   font: inherit;
   font-size: 13px;
   margin: 0 0 16px;
@@ -96,8 +96,8 @@
 .author-editor-form textarea:focus-visible,
 .author-editor-form select:focus-visible,
 .author-editor-close:focus-visible {
-  border-color: #668b70;
-  outline: 3px solid rgba(102, 139, 112, 0.2);
+  border-color: var(--author-blue);
+  outline: 3px solid rgba(75, 130, 159, 0.2);
 }
 
 .author-editor-grid {
@@ -120,23 +120,52 @@
   flex-direction: column;
 }
 
-.author-editor-form .author-editor-checkbox {
-  align-items: center;
-  display: flex;
-  gap: 9px;
-  margin: 8px 0 0;
-  min-height: 42px;
+.author-editor-options > .author-editor-featured {
+  flex-direction: row;
 }
 
-.author-editor-checkbox input {
-  accent-color: #385b48;
-  height: 16px;
+.author-editor-featured {
+  align-items: center;
+  display: flex;
+  gap: 12px;
   margin: 0;
-  width: 16px;
+  min-height: 42px;
+  color: var(--author-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.author-editor-star {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  color: #7d8e98;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 30px;
+  height: 42px;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  width: 42px;
+}
+
+.author-editor-star:hover {
+  background: var(--author-blue-light);
+}
+
+.author-editor-star.is-active {
+  color: #e5ad27;
+}
+
+.author-editor-star:focus-visible {
+  outline: 3px solid rgba(75, 130, 159, 0.3);
+  outline-offset: 2px;
 }
 
 .author-editor-actions {
-  border-top: 1px solid #d8e1d8;
+  border-top: 1px solid var(--author-line);
   display: flex;
   gap: 10px;
   justify-content: end;
@@ -150,9 +179,9 @@
 
 .author-editor-cancel {
   background: transparent;
-  border: 1px solid #cbd5cc;
+  border: 1px solid var(--author-line);
   border-radius: 3px;
-  color: #435348;
+  color: var(--author-muted);
   cursor: pointer;
   font-size: 12px;
   min-height: 36px;
@@ -160,7 +189,7 @@
 }
 
 .author-editor-cancel:hover:not(:disabled) {
-  background: #edf3ed;
+  background: var(--author-blue-light);
 }
 
 .author-editor-cancel:disabled {

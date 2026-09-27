@@ -48,10 +48,19 @@ function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubm
           <label htmlFor="post-image">Adres obrazu</label>
           <input id="post-image" required type="url" value={form.image} onChange={(event) => onChange('image', event.target.value)} />
           <div className="author-editor-grid author-editor-options">
-            <label className="author-editor-checkbox">
-              <input type="checkbox" checked={form.featured} onChange={(event) => onChange('featured', event.target.checked)} />
-              Polecany wpis
-            </label>
+            <div className="author-editor-featured">
+              <span>Wpis polecany</span>
+              <button
+                aria-label={form.featured ? 'Usuń wpis z polecanych' : 'Dodaj wpis do polecanych'}
+                aria-pressed={form.featured}
+                className={`author-editor-star ${form.featured ? 'is-active' : ''}`}
+                title={form.featured ? 'Usuń z polecanych' : 'Dodaj do polecanych'}
+                type="button"
+                onClick={() => onChange('featured', !form.featured)}
+              >
+                <span aria-hidden="true">{form.featured ? '★' : '☆'}</span>
+              </button>
+            </div>
             <div>
               <label htmlFor="post-status">Status</label>
               <select id="post-status" value={form.status} onChange={(event) => onChange('status', event.target.value as AuthorPostForm['status'])}>
