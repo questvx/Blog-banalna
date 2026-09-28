@@ -136,6 +136,110 @@
   padding: 28px;
 }
 
+.author-post-filters {
+  align-items: end;
+  background: var(--author-surface);
+  border: 1px solid var(--author-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+  margin-bottom: 14px;
+  padding: 12px 16px;
+}
+
+.author-post-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 170px;
+}
+
+.author-post-filter-field > span,
+.author-post-featured-filter legend {
+  color: var(--author-muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.author-post-filter-field select {
+  background: #fff;
+  border: 1px solid var(--author-line);
+  border-radius: 3px;
+  color: var(--author-ink);
+  font: inherit;
+  font-size: 12px;
+  min-height: 36px;
+  padding: 6px 9px;
+}
+
+.author-post-filter-field select:focus-visible {
+  border-color: var(--author-blue);
+  outline: 3px solid rgba(75, 130, 159, 0.2);
+}
+
+.author-post-featured-filter {
+  border: 0;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.author-post-featured-filter legend {
+  margin-bottom: 5px;
+  padding: 0;
+}
+
+.author-post-filter-segmented {
+  display: flex;
+  min-height: 36px;
+}
+
+.author-post-filter-segmented button {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--author-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+
+.author-post-filter-segmented button[aria-pressed="true"] {
+  background: var(--author-blue-light);
+  border-bottom-color: var(--author-blue);
+  color: var(--author-ink);
+  font-weight: 700;
+}
+
+.author-post-filter-segmented button:focus-visible,
+.author-post-filter-reset:focus-visible {
+  outline: 3px solid rgba(75, 130, 159, 0.25);
+  outline-offset: 2px;
+}
+
+.author-post-filter-count {
+  color: var(--author-muted);
+  font-size: 11px;
+  margin: 0 0 10px auto;
+  white-space: nowrap;
+}
+
+.author-post-filter-reset {
+  background: transparent;
+  border: 0;
+  color: var(--author-blue-dark);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  margin-bottom: 9px;
+  padding: 2px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
 .author-post-list {
   border-top: 1px solid var(--author-line);
 }
@@ -216,6 +320,15 @@
 
   .author-dashboard-content {
     padding: 34px 18px 0;
+  }
+
+  .author-post-filters {
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .author-post-filter-count {
+    margin-left: 0;
   }
 
   .author-post-row {
