@@ -93,3 +93,15 @@ The backend reads configuration from environment variables:
 | `UPLOAD_DIR` | `uploads` | Directory for uploaded images |
 
 For production, use HTTPS, set `SESSION_COOKIE_SECURE=true`, provide secrets through the deployment environment, and store uploads on persistent storage. The frontend can target a custom API base URL with `VITE_API_URL`.
+
+## Preview photos: User interface
+<img width="1899" height="923" alt="image" src="https://github.com/user-attachments/assets/69cd9478-424c-4a39-9fee-cb6ec6a6f165" />
+<img width="1901" height="941" alt="image" src="https://github.com/user-attachments/assets/930e1e55-9ea0-497e-9d5e-577d92c3d7de" />
+
+## Preview photos: Author interface
+<img width="1913" height="940" alt="image" src="https://github.com/user-attachments/assets/601a359f-9c1b-4230-99b3-1d1361bb9bec" />
+<img width="1915" height="939" alt="image" src="https://github.com/user-attachments/assets/cc86ce6b-baba-43b0-b29f-c495fd405a25" />
+
+
+
+
