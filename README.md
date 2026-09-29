@@ -1,6 +1,6 @@
-# Banalna
+# Personal blog
 
-**Banalna** is a full-stack editorial blog with a dedicated author dashboard. Visitors can browse and search published articles, while the author can manage content and upload images through a protected interface.
+**Banalna i tyle** is a full-stack editorial blog with a dedicated author dashboard. Visitors can browse and search published articles, while the author can manage content and upload images through a protected interface.
 
 ## What it does
 
