@@ -1,7 +1,17 @@
-import { useEffect, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { deleteAdminPost, fetchAdminPosts, saveAdminPost, type AuthorPost } from '../../api/adminPosts'
+import {
+  addDaysToDate,
+  fetchAdminHoroscopes,
+  getCurrentHoroscopeWeekStart,
+  saveAdminHoroscope,
+  type AdminHoroscopeWeek,
+  type HoroscopeTexts,
+} from '../../api/adminHoroscopes'
 import type { AuthorSession } from '../../api/auth'
 import AuthorPostEditor from './AuthorPostEditor'
+import AuthorHoroscopeEditor from './AuthorHoroscopeEditor'
+import AuthorHoroscopeList from './AuthorHoroscopeList'
 import AuthorPostList from './AuthorPostList'
 import {
   authorPostFormToInput,
@@ -20,6 +30,7 @@ type AuthorDashboardProps = {
 
 const dashboardTabs = ['posts', 'horoscope'] as const
 type DashboardTab = (typeof dashboardTabs)[number]
+const INITIAL_HOROSCOPE_WEEKS = 12
 
 function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut }: AuthorDashboardProps) {
   const [activeTab, setActiveTab] = useState<DashboardTab>('posts')
@@ -30,6 +41,13 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [horoscopes, setHoroscopes] = useState<AdminHoroscopeWeek[]>([])
+  const [horoscopeLoadingError, setHoroscopeLoadingError] = useState('')
+  const [horoscopeSaveError, setHoroscopeSaveError] = useState('')
+  const [isHoroscopeLoading, setIsHoroscopeLoading] = useState(true)
+  const [isHoroscopeSaving, setIsHoroscopeSaving] = useState(false)
+  const [editingHoroscopeWeek, setEditingHoroscopeWeek] = useState<string | null>(null)
+  const [horoscopeWeekCount, setHoroscopeWeekCount] = useState(INITIAL_HOROSCOPE_WEEKS)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
@@ -41,6 +59,25 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
       })
       .finally(() => setIsLoading(false))
   }, [])
+
+  useEffect(() => {
+    fetchAdminHoroscopes()
+      .then(setHoroscopes)
+      .catch((loadError: unknown) => {
+        setHoroscopeLoadingError(loadError instanceof Error ? loadError.message : 'Nie udało się pobrać horoskopów.')
+      })
+      .finally(() => setIsHoroscopeLoading(false))
+  }, [])
+
+  const horoscopeWeeks = useMemo(() => {
+    const weeks = new Set(horoscopes.map(({ weekStart }) => weekStart))
+    let weekStart = getCurrentHoroscopeWeekStart()
+    for (let index = 0; index < horoscopeWeekCount; index += 1) {
+      weeks.add(weekStart)
+      weekStart = addDaysToDate(weekStart, 7)
+    }
+    return [...weeks].sort()
+  }, [horoscopes, horoscopeWeekCount])
 
   const updateForm = <K extends keyof AuthorPostForm>(key: K, value: AuthorPostForm[K]) => {
     setForm((current) => ({ ...current, [key]: value }))
@@ -105,6 +142,27 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
     }
   }
 
+  const handleSaveHoroscope = async (signs: HoroscopeTexts) => {
+    if (!editingHoroscopeWeek) return
+    setHoroscopeSaveError('')
+    setNotice('')
+    setIsHoroscopeSaving(true)
+
+    try {
+      const savedHoroscope = await saveAdminHoroscope(editingHoroscopeWeek, signs)
+      setHoroscopes((current) => [
+        ...current.filter((week) => week.weekStart !== savedHoroscope.weekStart),
+        savedHoroscope,
+      ])
+      setNotice('Horoskop tygodniowy został zapisany.')
+      setEditingHoroscopeWeek(null)
+    } catch (saveError: unknown) {
+      setHoroscopeSaveError(saveError instanceof Error ? saveError.message : 'Nie udało się zapisać horoskopu.')
+    } finally {
+      setIsHoroscopeSaving(false)
+    }
+  }
+
   const handleTabKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const currentIndex = dashboardTabs.indexOf(activeTab)
     let nextIndex: number
@@ -147,7 +205,7 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
         <div className="author-dashboard-title-row">
           <div>
             <p className="author-login-eyebrow">Strefa autorki</p>
-            <h1 id="author-dashboard-title">{activeTab === 'posts' ? 'Posty' : 'Horoskop'}</h1>
+            <h1 id="author-dashboard-title">{activeTab === 'posts' ? 'Posty' : 'Horoskopy'}</h1>
           </div>
           {activeTab === 'posts' && (
             <button className="author-dashboard-primary" type="button" onClick={openNewPost}>+ Nowy wpis</button>
@@ -177,12 +235,19 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
             tabIndex={activeTab === 'horoscope' ? 0 : -1}
             onClick={() => setActiveTab('horoscope')}
           >
-            Horoskop
+            Horoskopy
           </button>
         </div>
 
         {(error || sessionError) && <p className="author-dashboard-message is-error" role="alert">{error || sessionError}</p>}
         {notice && <p className="author-dashboard-message is-notice" role="status">{notice}</p>}
+
+        {activeTab === 'horoscope' && horoscopeLoadingError && (
+          <p className="author-dashboard-message is-error" role="alert">{horoscopeLoadingError}</p>
+        )}
+        {activeTab === 'horoscope' && horoscopeSaveError && (
+          <p className="author-dashboard-message is-error" role="alert">{horoscopeSaveError}</p>
+        )}
 
         <div
           className="author-dashboard-tabpanel"
@@ -197,12 +262,26 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
             ) : (
               <AuthorPostList posts={posts} deletingId={deletingId} onEdit={openEditPost} onDelete={handleDelete} />
             )
+          ) : isHoroscopeLoading ? (
+            <p className="author-dashboard-empty" role="status">Pobieram horoskopy...</p>
           ) : (
-            <div className="author-dashboard-horoscope">
-              <p className="author-login-eyebrow">Sekcja horoskopu</p>
-              <h2>Horoskop</h2>
-              <p>Ta sekcja jest gotowa na horoskop. Jej zawartość dodamy później.</p>
-            </div>
+            <>
+              <AuthorHoroscopeList
+                weeks={horoscopeWeeks}
+                horoscopes={horoscopes}
+                onEdit={(weekStart) => {
+                  setHoroscopeSaveError('')
+                  setEditingHoroscopeWeek(weekStart)
+                }}
+              />
+              <button
+                className="author-dashboard-more-weeks"
+                type="button"
+                onClick={() => setHoroscopeWeekCount((count) => count + INITIAL_HOROSCOPE_WEEKS)}
+              >
+                Pokaż kolejne tygodnie
+              </button>
+            </>
           )}
         </div>
       </section>
@@ -215,6 +294,16 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
           onChange={updateForm}
           onClose={closeForm}
           onSubmit={handleSave}
+        />
+      )}
+      {editingHoroscopeWeek && (
+        <AuthorHoroscopeEditor
+          key={editingHoroscopeWeek}
+          weekStart={editingHoroscopeWeek}
+          initialSigns={horoscopes.find((week) => week.weekStart === editingHoroscopeWeek)?.signs ?? {}}
+          isSaving={isHoroscopeSaving}
+          onClose={() => setEditingHoroscopeWeek(null)}
+          onSubmit={handleSaveHoroscope}
         />
       )}
     </main>
