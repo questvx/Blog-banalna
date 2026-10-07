@@ -82,6 +82,16 @@
   margin: 20px 0 0;
   text-align: center;
 }
+.horoscope-unavailable {
+  background: rgba(255, 249, 237, 0.06);
+  border: 1px solid rgba(255, 249, 237, 0.15);
+  border-radius: 12px;
+  color: rgba(255, 249, 237, 0.78);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 18px 0 0;
+  padding: 12px 14px;
+}
 @media (max-width: 500px) {
   .horoscope-sign-grid {
     gap: 7px;

@@ -23,6 +23,8 @@ export type AdminHoroscopeWeek = {
   signs: Partial<Record<HoroscopeSign, string>>
 }
 
+export type CurrentHoroscope = AdminHoroscopeWeek
+
 const API_URL = import.meta.env.VITE_API_URL ?? '/api'
 
 async function ensureSuccess(response: Response): Promise<Response> {
@@ -36,6 +38,13 @@ export async function fetchAdminHoroscopes(): Promise<AdminHoroscopeWeek[]> {
   const response = await fetch(`${API_URL}/admin/horoscopes`, { credentials: 'include' })
   await ensureSuccess(response)
   return response.json() as Promise<AdminHoroscopeWeek[]>
+}
+
+export async function fetchCurrentHoroscope(signal?: AbortSignal): Promise<CurrentHoroscope | null> {
+  const response = await fetch(`${API_URL}/horoscopes/current`, { signal })
+  if (response.status === 404) return null
+  if (!response.ok) throw new Error(`Nie udało się pobrać horoskopu (${response.status}).`)
+  return response.json() as Promise<CurrentHoroscope>
 }
 
 export async function saveAdminHoroscope(
