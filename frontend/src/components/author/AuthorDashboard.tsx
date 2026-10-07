@@ -1,9 +1,11 @@
 import { useEffect, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { deleteAdminPost, fetchAdminPosts, saveAdminPost, type AuthorPost } from '../../api/adminPosts'
 import type { AuthorSession } from '../../api/auth'
+import AuthorPostFilters, { type FeaturedFilter, type PostDateSort } from './AuthorPostFilters'
 import AuthorPostEditor from './AuthorPostEditor'
 import AuthorPostList from './AuthorPostList'
 import {
+  authorCategories,
   authorPostFormToInput,
   authorPostToForm,
   createEmptyAuthorPostForm,
@@ -30,8 +32,19 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState('ALL')
+  const [featuredFilter, setFeaturedFilter] = useState<FeaturedFilter>('ALL')
+  const [dateSort, setDateSort] = useState<PostDateSort>('NEWEST')
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+
+  const filteredPosts = [...posts]
+    .filter((post) => selectedCategory === 'ALL' || post.category === selectedCategory)
+    .filter((post) => featuredFilter === 'ALL'
+      || (featuredFilter === 'FEATURED' ? post.featured : !post.featured))
+    .sort((first, second) => dateSort === 'NEWEST'
+      ? second.date.localeCompare(first.date)
+      : first.date.localeCompare(second.date))
 
   useEffect(() => {
     fetchAdminPosts()
