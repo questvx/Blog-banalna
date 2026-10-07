@@ -3,13 +3,14 @@ import type { AuthorPost } from '../../api/adminPosts'
 type AuthorPostListProps = {
   posts: AuthorPost[]
   deletingId: number | null
+  emptyMessage: string
   onEdit: (post: AuthorPost) => void
   onDelete: (post: AuthorPost) => void
 }
 
-function AuthorPostList({ posts, deletingId, onEdit, onDelete }: AuthorPostListProps) {
+function AuthorPostList({ posts, deletingId, emptyMessage, onEdit, onDelete }: AuthorPostListProps) {
   if (posts.length === 0) {
-    return <p className="author-dashboard-empty">Nie ma jeszcze żadnych wpisów.</p>
+    return <p className="author-dashboard-empty">{emptyMessage}</p>
   }
 
   return (

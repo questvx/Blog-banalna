@@ -9,11 +9,13 @@ import {
   type HoroscopeTexts,
 } from '../../api/adminHoroscopes'
 import type { AuthorSession } from '../../api/auth'
+import AuthorPostFilters, { type FeaturedFilter, type PostDateSort } from './AuthorPostFilters'
 import AuthorPostEditor from './AuthorPostEditor'
 import AuthorHoroscopeEditor from './AuthorHoroscopeEditor'
 import AuthorHoroscopeList from './AuthorHoroscopeList'
 import AuthorPostList from './AuthorPostList'
 import {
+  authorCategories,
   authorPostFormToInput,
   authorPostToForm,
   createEmptyAuthorPostForm,
@@ -48,8 +50,19 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
   const [isHoroscopeSaving, setIsHoroscopeSaving] = useState(false)
   const [editingHoroscopeWeek, setEditingHoroscopeWeek] = useState<string | null>(null)
   const [horoscopeWeekCount, setHoroscopeWeekCount] = useState(INITIAL_HOROSCOPE_WEEKS)
+  const [selectedCategory, setSelectedCategory] = useState('ALL')
+  const [featuredFilter, setFeaturedFilter] = useState<FeaturedFilter>('ALL')
+  const [dateSort, setDateSort] = useState<PostDateSort>('NEWEST')
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+
+  const filteredPosts = [...posts]
+    .filter((post) => selectedCategory === 'ALL' || post.category === selectedCategory)
+    .filter((post) => featuredFilter === 'ALL'
+      || (featuredFilter === 'FEATURED' ? post.featured : !post.featured))
+    .sort((first, second) => dateSort === 'NEWEST'
+      ? second.date.localeCompare(first.date)
+      : first.date.localeCompare(second.date))
 
   useEffect(() => {
     fetchAdminPosts()
