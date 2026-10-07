@@ -2,6 +2,8 @@ package pl.banalna.horoscope;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +26,16 @@ public class HoroscopeService {
         return horoscopeWeekRepository.findAllByOrderByWeekStartAsc().stream()
                 .map(HoroscopeWeekResponse::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public HoroscopeWeekResponse findCurrent() {
+        LocalDate weekStart = LocalDate.now(ZoneId.of("Europe/Warsaw"))
+                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        return horoscopeWeekRepository.findByWeekStart(weekStart)
+                .map(HoroscopeWeekResponse::from)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "No horoscope has been published for the current week."));
     }
 
     @Transactional
