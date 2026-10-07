@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { deleteAdminPost, fetchAdminPosts, saveAdminPost, type AuthorPost } from '../../api/adminPosts'
 import type { AuthorSession } from '../../api/auth'
 import AuthorPostEditor from './AuthorPostEditor'
@@ -18,7 +18,11 @@ type AuthorDashboardProps = {
   isLoggingOut: boolean
 }
 
+const dashboardTabs = ['posts', 'horoscope'] as const
+type DashboardTab = (typeof dashboardTabs)[number]
+
 function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut }: AuthorDashboardProps) {
+  const [activeTab, setActiveTab] = useState<DashboardTab>('posts')
   const [posts, setPosts] = useState<AuthorPost[]>([])
   const [form, setForm] = useState<AuthorPostForm>(createEmptyAuthorPostForm)
   const [editingId, setEditingId] = useState<number | null>(null)
@@ -101,6 +105,32 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
     }
   }
 
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const currentIndex = dashboardTabs.indexOf(activeTab)
+    let nextIndex: number
+
+    switch (event.key) {
+      case 'ArrowRight':
+        nextIndex = (currentIndex + 1) % dashboardTabs.length
+        break
+      case 'ArrowLeft':
+        nextIndex = (currentIndex - 1 + dashboardTabs.length) % dashboardTabs.length
+        break
+      case 'Home':
+        nextIndex = 0
+        break
+      case 'End':
+        nextIndex = dashboardTabs.length - 1
+        break
+      default:
+        return
+    }
+
+    event.preventDefault()
+    setActiveTab(dashboardTabs[nextIndex])
+    event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIndex]?.focus()
+  }
+
   return (
     <main className="author-dashboard-page">
       <header className="author-dashboard-header">
@@ -117,19 +147,64 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
         <div className="author-dashboard-title-row">
           <div>
             <p className="author-login-eyebrow">Strefa autorki</p>
-            <h1 id="author-dashboard-title">Wpisy</h1>
+            <h1 id="author-dashboard-title">{activeTab === 'posts' ? 'Posty' : 'Horoskop'}</h1>
           </div>
-          <button className="author-dashboard-primary" type="button" onClick={openNewPost}>+ Nowy wpis</button>
+          {activeTab === 'posts' && (
+            <button className="author-dashboard-primary" type="button" onClick={openNewPost}>+ Nowy wpis</button>
+          )}
+        </div>
+
+        <div className="author-dashboard-tabs" role="tablist" aria-label="Sekcje panelu autorki" onKeyDown={handleTabKeyDown}>
+          <button
+            id="author-tab-posts"
+            className="author-dashboard-tab"
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'posts'}
+            aria-controls="author-tabpanel"
+            tabIndex={activeTab === 'posts' ? 0 : -1}
+            onClick={() => setActiveTab('posts')}
+          >
+            Posty
+          </button>
+          <button
+            id="author-tab-horoscope"
+            className="author-dashboard-tab"
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'horoscope'}
+            aria-controls="author-tabpanel"
+            tabIndex={activeTab === 'horoscope' ? 0 : -1}
+            onClick={() => setActiveTab('horoscope')}
+          >
+            Horoskop
+          </button>
         </div>
 
         {(error || sessionError) && <p className="author-dashboard-message is-error" role="alert">{error || sessionError}</p>}
         {notice && <p className="author-dashboard-message is-notice" role="status">{notice}</p>}
 
-        {isLoading ? (
-          <p className="author-dashboard-empty" role="status">Pobieram wpisy...</p>
-        ) : (
-          <AuthorPostList posts={posts} deletingId={deletingId} onEdit={openEditPost} onDelete={handleDelete} />
-        )}
+        <div
+          className="author-dashboard-tabpanel"
+          id="author-tabpanel"
+          role="tabpanel"
+          aria-labelledby={`author-tab-${activeTab}`}
+          tabIndex={0}
+        >
+          {activeTab === 'posts' ? (
+            isLoading ? (
+              <p className="author-dashboard-empty" role="status">Pobieram posty...</p>
+            ) : (
+              <AuthorPostList posts={posts} deletingId={deletingId} onEdit={openEditPost} onDelete={handleDelete} />
+            )
+          ) : (
+            <div className="author-dashboard-horoscope">
+              <p className="author-login-eyebrow">Sekcja horoskopu</p>
+              <h2>Horoskop</h2>
+              <p>Ta sekcja jest gotowa na horoskop. Jej zawartość dodamy później.</p>
+            </div>
+          )}
+        </div>
       </section>
 
       {isFormOpen && (
