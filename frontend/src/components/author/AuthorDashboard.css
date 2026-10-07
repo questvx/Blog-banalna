@@ -85,6 +85,70 @@
   margin: 0;
 }
 
+.author-dashboard-tabs {
+  border-bottom: 1px solid var(--author-line);
+  display: flex;
+  gap: 26px;
+  margin-bottom: 20px;
+}
+
+.author-dashboard-tab {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--author-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  margin-bottom: -1px;
+  padding: 12px 2px;
+}
+
+.author-dashboard-tab:hover {
+  color: var(--author-ink);
+}
+
+.author-dashboard-tab[aria-selected="true"] {
+  border-bottom-color: var(--author-blue);
+  color: var(--author-blue-dark);
+  font-weight: 700;
+}
+
+.author-dashboard-tab:focus-visible,
+.author-dashboard-tabpanel:focus-visible {
+  outline: 2px solid var(--author-blue);
+  outline-offset: 3px;
+}
+
+.author-dashboard-tabpanel {
+  outline: none;
+}
+
+.author-dashboard-horoscope {
+  background: var(--author-surface);
+  border: 1px solid var(--author-line);
+  padding: 28px;
+}
+
+.author-dashboard-horoscope .author-login-eyebrow {
+  margin: 0 0 8px;
+}
+
+.author-dashboard-horoscope h2 {
+  color: var(--author-ink);
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0 0 8px;
+}
+
+.author-dashboard-horoscope > p:last-child {
+  color: var(--author-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
 .author-dashboard-primary {
   background: var(--author-blue);
   border: 1px solid var(--author-blue);
