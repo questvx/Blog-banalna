@@ -10,6 +10,7 @@ import {
 } from '../../api/adminHoroscopes'
 import type { AuthorSession } from '../../api/auth'
 import AuthorPostFilters, { type FeaturedFilter, type PostDateSort } from './AuthorPostFilters'
+import AuthorHeroMessageEditor from './AuthorHeroMessageEditor'
 import AuthorPostEditor from './AuthorPostEditor'
 import AuthorHoroscopeEditor from './AuthorHoroscopeEditor'
 import AuthorHoroscopeList from './AuthorHoroscopeList'
@@ -30,9 +31,14 @@ type AuthorDashboardProps = {
   isLoggingOut: boolean
 }
 
-const dashboardTabs = ['posts', 'horoscope'] as const
+const dashboardTabs = ['posts', 'horoscope', 'heroMessage'] as const
 type DashboardTab = (typeof dashboardTabs)[number]
 const INITIAL_HOROSCOPE_WEEKS = 12
+const dashboardTabLabels: Record<DashboardTab, string> = {
+  posts: 'Posty',
+  horoscope: 'Horoskopy',
+  heroMessage: 'Wiadomość',
+}
 
 function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut }: AuthorDashboardProps) {
   const [activeTab, setActiveTab] = useState<DashboardTab>('posts')
@@ -218,7 +224,7 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
         <div className="author-dashboard-title-row">
           <div>
             <p className="author-login-eyebrow">Strefa autorki</p>
-            <h1 id="author-dashboard-title">{activeTab === 'posts' ? 'Posty' : 'Horoskopy'}</h1>
+            <h1 id="author-dashboard-title">{dashboardTabLabels[activeTab]}</h1>
           </div>
           {activeTab === 'posts' && (
             <button className="author-dashboard-primary" type="button" onClick={openNewPost}>+ Nowy wpis</button>
@@ -249,6 +255,18 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
             onClick={() => setActiveTab('horoscope')}
           >
             Horoskopy
+          </button>
+          <button
+            id="author-tab-heroMessage"
+            className="author-dashboard-tab"
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'heroMessage'}
+            aria-controls="author-tabpanel"
+            tabIndex={activeTab === 'heroMessage' ? 0 : -1}
+            onClick={() => setActiveTab('heroMessage')}
+          >
+            Wiadomość
           </button>
         </div>
 
@@ -294,9 +312,9 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
                 />
               </>
             )
-          ) : isHoroscopeLoading ? (
+          ) : activeTab === 'horoscope' && isHoroscopeLoading ? (
             <p className="author-dashboard-empty" role="status">Pobieram horoskopy...</p>
-          ) : (
+          ) : activeTab === 'horoscope' ? (
             <>
               <AuthorHoroscopeList
                 weeks={horoscopeWeeks}
@@ -314,6 +332,8 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
                 Pokaż kolejne tygodnie
               </button>
             </>
+          ) : (
+            <AuthorHeroMessageEditor />
           )}
         </div>
       </section>
