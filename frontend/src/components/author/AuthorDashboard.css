@@ -85,6 +85,113 @@
   margin: 0;
 }
 
+.author-dashboard-tabs {
+  border-bottom: 1px solid var(--author-line);
+  display: flex;
+  gap: 26px;
+  margin-bottom: 20px;
+}
+
+.author-dashboard-tab {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--author-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  margin-bottom: -1px;
+  padding: 12px 2px;
+}
+
+.author-dashboard-tab:hover {
+  color: var(--author-ink);
+}
+
+.author-dashboard-tab[aria-selected="true"] {
+  border-bottom-color: var(--author-blue);
+  color: var(--author-blue-dark);
+  font-weight: 700;
+}
+
+.author-dashboard-tab:focus-visible,
+.author-dashboard-tabpanel:focus-visible {
+  outline: 2px solid var(--author-blue);
+  outline-offset: 3px;
+}
+
+.author-dashboard-tabpanel {
+  outline: none;
+}
+
+.author-horoscope-list {
+  border-top: 1px solid var(--author-line);
+}
+
+.author-horoscope-row {
+  align-items: center;
+  background: var(--author-surface);
+  border: 1px solid var(--author-line);
+  border-top: 0;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(180px, 1fr) auto auto;
+  min-height: 82px;
+  padding: 14px 18px;
+}
+
+.author-horoscope-info h2 {
+  color: var(--author-ink);
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 0 0 5px;
+}
+
+.author-horoscope-info p {
+  color: var(--author-muted);
+  font-size: 11px;
+  margin: 0;
+}
+
+.author-horoscope-status {
+  background: #f6edda;
+  border-radius: 2px;
+  color: #80642d;
+  font-size: 10px;
+  padding: 5px 8px;
+  white-space: nowrap;
+}
+
+.author-horoscope-status.is-complete {
+  background: var(--author-blue-light);
+  color: #365d74;
+}
+
+.author-horoscope-edit,
+.author-dashboard-more-weeks {
+  background: transparent;
+  border: 1px solid var(--author-line);
+  border-radius: 3px;
+  color: var(--author-muted);
+  cursor: pointer;
+  font-size: 12px;
+  min-height: 36px;
+  padding: 7px 12px;
+}
+
+.author-horoscope-edit:hover,
+.author-dashboard-more-weeks:hover {
+  background: var(--author-blue-light);
+}
+
+.author-dashboard-more-weeks {
+  display: block;
+  margin: 18px auto 0;
+  min-height: 40px;
+}
+
 .author-dashboard-primary {
   background: var(--author-blue);
   border: 1px solid var(--author-blue);
@@ -254,6 +361,19 @@
   grid-template-columns: minmax(180px, 1fr) auto auto auto;
   min-height: 82px;
   padding: 14px 18px;
+}
+
+.author-horoscope-row {
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.author-horoscope-info {
+  grid-column: 1 / -1;
+}
+
+.author-horoscope-edit {
+  justify-self: end;
 }
 
 .author-post-info {
