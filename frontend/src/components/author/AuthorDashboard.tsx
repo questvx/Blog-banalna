@@ -273,7 +273,26 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
             isLoading ? (
               <p className="author-dashboard-empty" role="status">Pobieram posty...</p>
             ) : (
-              <AuthorPostList posts={posts} deletingId={deletingId} onEdit={openEditPost} onDelete={handleDelete} />
+              <>
+                <AuthorPostFilters
+                  categories={authorCategories}
+                  totalCount={posts.length}
+                  resultCount={filteredPosts.length}
+                  selectedCategory={selectedCategory}
+                  featuredFilter={featuredFilter}
+                  dateSort={dateSort}
+                  onCategoryChange={setSelectedCategory}
+                  onFeaturedFilterChange={setFeaturedFilter}
+                  onDateSortChange={setDateSort}
+                />
+                <AuthorPostList
+                  posts={filteredPosts}
+                  deletingId={deletingId}
+                  emptyMessage={posts.length ? 'Nie znaleziono wpisów dla wybranych filtrów.' : 'Nie ma jeszcze żadnych wpisów.'}
+                  onEdit={openEditPost}
+                  onDelete={handleDelete}
+                />
+              </>
             )
           ) : isHoroscopeLoading ? (
             <p className="author-dashboard-empty" role="status">Pobieram horoskopy...</p>
