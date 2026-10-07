@@ -124,29 +124,72 @@
   outline: none;
 }
 
-.author-dashboard-horoscope {
+.author-horoscope-list {
+  border-top: 1px solid var(--author-line);
+}
+
+.author-horoscope-row {
+  align-items: center;
   background: var(--author-surface);
   border: 1px solid var(--author-line);
-  padding: 28px;
+  border-top: 0;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(180px, 1fr) auto auto;
+  min-height: 82px;
+  padding: 14px 18px;
 }
 
-.author-dashboard-horoscope .author-login-eyebrow {
-  margin: 0 0 8px;
-}
-
-.author-dashboard-horoscope h2 {
+.author-horoscope-info h2 {
   color: var(--author-ink);
   font-family: var(--serif);
-  font-size: 24px;
+  font-size: 17px;
   font-weight: 500;
-  margin: 0 0 8px;
+  line-height: 1.35;
+  margin: 0 0 5px;
 }
 
-.author-dashboard-horoscope > p:last-child {
+.author-horoscope-info p {
   color: var(--author-muted);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 11px;
   margin: 0;
+}
+
+.author-horoscope-status {
+  background: #f6edda;
+  border-radius: 2px;
+  color: #80642d;
+  font-size: 10px;
+  padding: 5px 8px;
+  white-space: nowrap;
+}
+
+.author-horoscope-status.is-complete {
+  background: var(--author-blue-light);
+  color: #365d74;
+}
+
+.author-horoscope-edit,
+.author-dashboard-more-weeks {
+  background: transparent;
+  border: 1px solid var(--author-line);
+  border-radius: 3px;
+  color: var(--author-muted);
+  cursor: pointer;
+  font-size: 12px;
+  min-height: 36px;
+  padding: 7px 12px;
+}
+
+.author-horoscope-edit:hover,
+.author-dashboard-more-weeks:hover {
+  background: var(--author-blue-light);
+}
+
+.author-dashboard-more-weeks {
+  display: block;
+  margin: 18px auto 0;
+  min-height: 40px;
 }
 
 .author-dashboard-primary {
@@ -318,6 +361,19 @@
   grid-template-columns: minmax(180px, 1fr) auto auto auto;
   min-height: 82px;
   padding: 14px 18px;
+}
+
+.author-horoscope-row {
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.author-horoscope-info {
+  grid-column: 1 / -1;
+}
+
+.author-horoscope-edit {
+  justify-self: end;
 }
 
 .author-post-info {
