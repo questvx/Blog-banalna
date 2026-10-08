@@ -25,6 +25,13 @@
   font-size: 15px;
   line-height: 1.35;
   margin: 0;
+  white-space: pre-line;
+}
+.welcome-message-error {
+  color: #756f68;
+  display: block;
+  font-size: 10px;
+  margin-top: 4px;
 }
 .welcome-sun {
   color: #f4c451;
