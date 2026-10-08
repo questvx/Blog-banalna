@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class SiteSettingService {
 
     private static final String HERO_MESSAGE_KEY = "hero-message";
+    private static final String DEFAULT_HERO_MESSAGE =
+            "„Dziś jestem zmotywowana tak samo jak moje kapcie;\ndo siedzenia i dumnego patrzenia na świat.”";
 
     private final SiteSettingRepository siteSettingRepository;
 
@@ -18,7 +20,7 @@ public class SiteSettingService {
     public HeroMessageResponse getHeroMessage() {
         String message = siteSettingRepository.findById(HERO_MESSAGE_KEY)
                 .map(SiteSetting::getValue)
-                .orElse("");
+                .orElse(DEFAULT_HERO_MESSAGE);
         return new HeroMessageResponse(message);
     }
 
