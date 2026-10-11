@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import Sidebar from '../../components/Sidebar'
+import SafePostContent from '../../components/SafePostContent'
 import type { Post } from '../../data/posts'
 import './PostPage.css'
 
@@ -25,7 +26,11 @@ function PostPage({ post, posts, onRandomPost }: PostPageProps) {
             <h1>{post.title}</h1>
             <p className="post-article-lead">{post.excerpt}</p>
             <div className="post-body">
-              {post.content.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+              {post.content.map((paragraph, index) => (
+                <div className="post-body-paragraph" key={`${index}-${paragraph}`}>
+                  <SafePostContent content={paragraph} />
+                </div>
+              ))}
             </div>
           </div>
         </article>

@@ -28,7 +28,7 @@
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  font-size: 12px;
+  font-size: 13px;
   gap: 5px;
   justify-content: center;
   min-height: 72px;
@@ -45,7 +45,7 @@
 }
 .horoscope-sign-symbol {
   color: #f8d98a;
-  font-size: 22px;
+  font-size: 35px;
   line-height: 1;
 }
 .horoscope-reading {
@@ -60,13 +60,13 @@
 }
 .horoscope-reading-symbol {
   color: #f8d98a;
-  font-size: 30px;
+  font-size: 40px;
   line-height: 1.2;
 }
 .horoscope-reading h3 {
   color: #f8d98a;
   font-family: var(--serif);
-  font-size: 20px;
+  font-size: 30px;
   font-weight: 400;
   margin: 0 0 5px;
 }

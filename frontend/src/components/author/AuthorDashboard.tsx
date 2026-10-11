@@ -223,7 +223,7 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
       <section className="author-dashboard-content" aria-labelledby="author-dashboard-title">
         <div className="author-dashboard-title-row">
           <div>
-            <p className="author-login-eyebrow">Strefa autorki</p>
+            <p className="author-login-eyebrow">Panel autorki</p>
             <h1 id="author-dashboard-title">{dashboardTabLabels[activeTab]}</h1>
           </div>
           {activeTab === 'posts' && (
@@ -245,6 +245,18 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
             Posty
           </button>
           <button
+            id="author-tab-heroMessage"
+            className="author-dashboard-tab"
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'heroMessage'}
+            aria-controls="author-tabpanel"
+            tabIndex={activeTab === 'heroMessage' ? 0 : -1}
+            onClick={() => setActiveTab('heroMessage')}
+          >
+            Powitanie
+          </button>
+          <button
             id="author-tab-horoscope"
             className="author-dashboard-tab"
             type="button"
@@ -255,18 +267,6 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
             onClick={() => setActiveTab('horoscope')}
           >
             Horoskopy
-          </button>
-          <button
-            id="author-tab-heroMessage"
-            className="author-dashboard-tab"
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'heroMessage'}
-            aria-controls="author-tabpanel"
-            tabIndex={activeTab === 'heroMessage' ? 0 : -1}
-            onClick={() => setActiveTab('heroMessage')}
-          >
-            Wiadomość
           </button>
         </div>
 
