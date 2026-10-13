@@ -1,5 +1,3 @@
-import './AuthorPostFilters.css'
-
 type AuthorPostFiltersProps = {
   categories: string[]
   totalCount: number
@@ -41,9 +39,9 @@ function AuthorPostFilters({
       <fieldset className="author-post-featured-filter">
         <legend>Polecane</legend>
         <div className="author-post-filter-segmented">
-          <button className="author-post-filter-button" type="button" aria-pressed={featuredFilter === 'ALL'} onClick={() => onFeaturedFilterChange('ALL')}>Wszystkie</button>
-          <button className="author-post-filter-button" type="button" aria-pressed={featuredFilter === 'FEATURED'} onClick={() => onFeaturedFilterChange('FEATURED')}>Polecane</button>
-          <button className="author-post-filter-button" type="button" aria-pressed={featuredFilter === 'NOT_FEATURED'} onClick={() => onFeaturedFilterChange('NOT_FEATURED')}>Pozostałe</button>
+          <button type="button" aria-pressed={featuredFilter === 'ALL'} onClick={() => onFeaturedFilterChange('ALL')}>Wszystkie</button>
+          <button type="button" aria-pressed={featuredFilter === 'FEATURED'} onClick={() => onFeaturedFilterChange('FEATURED')}>Polecane</button>
+          <button type="button" aria-pressed={featuredFilter === 'NOT_FEATURED'} onClick={() => onFeaturedFilterChange('NOT_FEATURED')}>Pozostałe</button>
         </div>
       </fieldset>
 
