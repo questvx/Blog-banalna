@@ -1,5 +1,5 @@
 .author-dashboard-page {
-  background: #f3f9fd;
+  background: #fffef8;
   color: var(--author-ink);
   min-height: 100vh;
   padding-bottom: 56px;
@@ -406,18 +406,22 @@
 }
 
 .author-post-status.is-published {
-  background: var(--author-blue-light);
+  background: rgb(189, 250, 189);
   color: #365d74;
+  font-size: 12px;
 }
 
 .author-post-status.is-draft {
-  background: #f6edda;
-  color: #80642d;
+  background: #b2e7ff;
+  color: #1e3055;
+  font-weight: 900;
+  font-size: 12px;
 }
 
 .author-post-featured {
   background: #fff2cc;
-  color: #765b1a;
+  color: #4d3a10;
+  font-size: 12px;
 }
 
 .author-post-actions {
