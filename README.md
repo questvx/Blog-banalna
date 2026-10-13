@@ -27,24 +27,6 @@ frontend/  React and TypeScript web application
 
 ## Run locally
 
-### Run with Docker Compose
-
-This is the recommended option for running the blog on the author's computer. Install Docker Desktop and open PowerShell in the repository root. If you do not already have a `.env` file, copy the example settings; then edit `.env` and change the example passwords before the first start:
-
-```powershell
-Copy-Item .env.example .env
-notepad .env
-docker compose up --build -d
-```
-
-When the containers have started, open `http://localhost:8080`; the author dashboard is at `http://localhost:8080/autorka`. The first startup may take a few minutes while Docker builds the application and MySQL initializes. Posts, database contents, and uploaded images are kept in Docker volumes when the containers are stopped.
-
-To stop the application without deleting its data:
-
-```powershell
-docker compose down
-```
-
 ### Prerequisites
 
 - JDK 21 and Maven
@@ -119,4 +101,7 @@ For production, use HTTPS, set `SESSION_COOKIE_SECURE=true`, provide secrets thr
 ## Preview photos: Author interface
 <img width="1913" height="940" alt="image" src="https://github.com/user-attachments/assets/601a359f-9c1b-4230-99b3-1d1361bb9bec" />
 <img width="1915" height="939" alt="image" src="https://github.com/user-attachments/assets/cc86ce6b-baba-43b0-b29f-c495fd405a25" />
+
+
+
 
