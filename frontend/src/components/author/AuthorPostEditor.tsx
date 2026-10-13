@@ -40,10 +40,29 @@ function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubm
         <form className="author-editor-form" onSubmit={handleSubmit}>
           <label htmlFor="post-title">Tytuł</label>
           <input id="post-title" required maxLength={255} value={form.title} onChange={(event) => onChange('title', event.target.value)} />
-          <label htmlFor="post-excerpt">Zajawka</label>
+          <label htmlFor="post-excerpt">Nagłówek</label>
           <textarea id="post-excerpt" required rows={2} value={form.excerpt} onChange={(event) => onChange('excerpt', event.target.value)} />
-          <label htmlFor="post-content">Treść <span>Oddziel akapity pustą linią.</span></label>
-          <textarea id="post-content" required rows={8} value={form.content} onChange={(event) => onChange('content', event.target.value)} />
+          <label htmlFor="post-content">Treść <span>Enter = nowa linia, pusty wiersz = nowy akapit.</span></label>
+          <div className="author-editor-content-layout">
+            <textarea className="author-editor-content" id="post-content" required rows={8} value={form.content} onChange={(event) => onChange('content', event.target.value)} />
+            <aside className="author-editor-html-help" aria-labelledby="author-editor-html-help-title">
+              <h3 id="author-editor-html-help-title">Ściągawka HTML</h3>
+              <p><code>&lt;b&gt;pogrubione&lt;/b&gt;</code></p>
+              <p><code>&lt;strong&gt;ważne&lt;/strong&gt;</code></p>
+              <p><code>&lt;i&gt;pochylony tekst&lt;/i&gt;</code></p>
+              <p><code>&lt;em&gt;wyróżnione&lt;/em&gt;</code></p>
+              <p><code>&lt;u&gt;podkreślone&lt;/u&gt;</code></p>
+              <p><code>&lt;mark&gt;flamaster&lt;/mark&gt;</code></p>
+              <p><code>&lt;small&gt;małe&lt;/small&gt;</code></p>
+              <p><code>&lt;serif&gt;większy tekst szeryfowy&lt;/serif&gt;</code></p>
+              <p><code>&lt;ciekawostka&gt;treść ciekawostki&lt;/ciekawostka&gt;</code></p>
+              <p><code>&lt;del&gt;skreślone&lt;/del&gt;</code></p>
+              <p><code>&lt;br&gt;</code> — nowa linia</p>
+              <p><code>&lt;blockquote&gt;cytat&lt;/blockquote&gt;</code></p>
+              <p><code>&lt;a href="https://..."&gt;link&lt;/a&gt;</code></p>
+              <p className="author-editor-html-note">Wpisz tekst między znacznikiem otwierającym i zamykającym.</p>
+            </aside>
+          </div>
           <div className="author-editor-grid">
             <div>
               <label htmlFor="post-date">Data</label>

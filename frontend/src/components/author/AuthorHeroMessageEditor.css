@@ -1,0 +1,73 @@
+.author-hero-message-editor {
+  background: var(--author-surface);
+  border: 1px solid var(--author-line);
+  padding: 28px;
+}
+
+.author-hero-message-editor .author-login-eyebrow {
+  margin: 0 0 8px;
+}
+
+.author-hero-message-editor h2 {
+  color: var(--author-ink);
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0 0 8px;
+}
+
+.author-hero-message-intro {
+  color: var(--author-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+
+.author-hero-message-form {
+  display: grid;
+  gap: 8px;
+}
+
+.author-hero-message-form label {
+  color: var(--author-ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.author-hero-message-form textarea {
+  border: 1px solid var(--author-line);
+  border-radius: 2px;
+  color: var(--author-ink);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 11px 12px;
+  resize: vertical;
+  width: 100%;
+}
+
+.author-hero-message-form textarea:focus-visible {
+  outline: 2px solid var(--author-blue);
+  outline-offset: 2px;
+}
+
+.author-hero-message-form-footer {
+  align-items: center;
+  color: var(--author-muted);
+  display: flex;
+  font-size: 11px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+@media (max-width: 480px) {
+  .author-hero-message-editor {
+    padding: 20px 16px;
+  }
+
+  .author-hero-message-form-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

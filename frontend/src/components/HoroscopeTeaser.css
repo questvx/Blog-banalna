@@ -21,14 +21,21 @@
 .horoscope-teaser-link {
   align-items: center;
   background: #21174d;
+  border: 0;
   border-radius: 50px;
   box-shadow: 0 10px 28px rgba(31, 29, 27, 0.2);
   color: #fff9ed;
+  cursor: pointer;
   display: flex;
   gap: 12px;
   padding: 10px 22px 10px 12px;
-  text-decoration: none;
+  text-align: left;
   width: min(300px, calc(100vw - 28px));
+}
+.horoscope-teaser-link:focus-visible,
+.horoscope-close:focus-visible {
+  outline: 2px solid #f8d98a;
+  outline-offset: 3px;
 }
 .horoscope-moon {
   background: #f8d98a;
