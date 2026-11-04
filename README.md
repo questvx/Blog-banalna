@@ -27,6 +27,30 @@ frontend/  React and TypeScript web application
 
 ## Run locally
 
+### Run with Docker Compose
+
+Install and start Docker Desktop, then open PowerShell in the repository root:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Edit `.env` and replace all placeholder passwords. Start the blog with:
+
+```powershell
+docker compose up --build -d
+```
+
+Open `http://localhost:8088`; the author dashboard is at `http://localhost:8088/autorka`. Sign in using `ADMIN_USERNAME` and `ADMIN_PASSWORD` from `.env`. MySQL and the backend are private to the Compose network; only the frontend is published to the host.
+
+Stop the containers without removing saved posts or uploaded images:
+
+```powershell
+docker compose down
+```
+
+The database and uploaded images are kept in Docker volumes. Do not use `docker compose down -v` unless you want to permanently delete that local content.
+
 ### Prerequisites
 
 - JDK 21 and Maven

@@ -51,7 +51,6 @@ function AuthorHeroMessageEditor() {
 
   return (
     <section className="author-hero-message-editor" aria-labelledby="author-hero-message-title">
-      <p className="author-login-eyebrow">Treść strony głównej</p>
       <h2 id="author-hero-message-title">Wiadomość powitalna</h2>
       <p className="author-hero-message-intro">
         Wpisz tekst, który ma pojawić się pod nagłówkiem „Dzień dobry! Miło Cię widzieć!”.
