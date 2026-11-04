@@ -7,10 +7,15 @@ import './PostPage.css'
 type PostPageProps = {
   post: Post
   posts: Post[]
+  categories: string[]
+  selectedCategories: string[]
+  onCategoryChange: (category: string) => void
   onRandomPost: () => void
+  onShowRecommended: () => void
+  showFeaturedOnly: boolean
 }
 
-function PostPage({ post, posts, onRandomPost }: PostPageProps) {
+function PostPage({ post, posts, categories, selectedCategories, onCategoryChange, onRandomPost, onShowRecommended, showFeaturedOnly }: PostPageProps) {
   const [searchValue, setSearchValue] = useState('')
   const searchRef = useRef<HTMLInputElement>(null)
 
@@ -22,7 +27,7 @@ function PostPage({ post, posts, onRandomPost }: PostPageProps) {
     <div className="post-page-shell">
       <main className="post-page-layout">
         <article className="post-article">
-          <a className="back-link" href="#najnowsze">← Wróć do wpisów</a>
+          <a className="back-link" href={showFeaturedOnly ? '#polecane' : '#najnowsze'}>← Wróć do wpisów</a>
           <img className="post-hero-image" src={post.image} alt="" />
           <div className="post-article-content">
             <p className="post-article-category">{post.category}</p>
@@ -38,7 +43,17 @@ function PostPage({ post, posts, onRandomPost }: PostPageProps) {
             </div>
           </div>
         </article>
-      <Sidebar searchValue={searchValue} onSearchChange={setSearchValue} searchRef={searchRef} posts={posts} onRandomPost={onRandomPost} />
+      <Sidebar
+        searchValue={searchValue}
+        onSearchChange={setSearchValue}
+        searchRef={searchRef}
+        categories={categories}
+        selectedCategories={selectedCategories}
+        onCategoryChange={onCategoryChange}
+        posts={posts}
+        onRandomPost={onRandomPost}
+        onShowRecommended={onShowRecommended}
+      />
       </main>
     </div>
   )

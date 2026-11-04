@@ -44,6 +44,7 @@
   background: #63c7c5;
   border-radius: 3px;
   border: 0;
+  box-shadow: 0 3px 10px rgba(39, 37, 34, 0.14);
   color: white;
   cursor: pointer;
   display: block;
@@ -51,10 +52,28 @@
   text-align: left;
   margin-top: 11px;
   padding: 9px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   width: 100%;
 }
+.random-link:hover {
+  background: #59b8b6;
+  box-shadow: 0 5px 14px rgba(39, 37, 34, 0.2);
+  transform: translateY(-1px);
+}
+.random-link:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.random-link:active {
+  transform: translateY(0);
+}
 .random-link span {
+  display: inline-block;
   float: right;
   font-size: 20px;
   line-height: 12px;
+  transition: transform 0.2s ease;
+}
+.random-link:hover span {
+  transform: translateX(2px);
 }
