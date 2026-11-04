@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import Sidebar from '../../components/Sidebar'
 import type { Post } from '../../data/posts'
 import './PostPage.css'
@@ -12,6 +12,10 @@ type PostPageProps = {
 function PostPage({ post, posts, onRandomPost }: PostPageProps) {
   const [searchValue, setSearchValue] = useState('')
   const searchRef = useRef<HTMLInputElement>(null)
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [post.id])
 
   return (
     <div className="post-page-shell">

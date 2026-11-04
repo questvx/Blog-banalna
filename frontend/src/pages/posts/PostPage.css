@@ -15,7 +15,7 @@
 .back-link {
   color: var(--muted);
   display: inline-block;
-  font-size: 11px;
+  font-size: 15px;
   margin: 20px 0;
   text-decoration: none;
 }
@@ -34,14 +34,14 @@
 }
 .post-article-category {
   color: var(--coral);
-  font-size: 10px;
+  font-size: 14px;
   letter-spacing: 0.14em;
   margin: 0 0 10px;
   text-transform: uppercase;
 }
 .post-article-date {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   margin: 0 0 18px;
 }
 .post-article h1 {
@@ -56,13 +56,13 @@
 .post-article-lead {
   color: var(--ink);
   font-family: var(--serif);
-  font-size: 19px;
+  font-size: 20px;
   line-height: 1.5;
   margin: 0 0 28px;
 }
 .post-body {
-  color: var(--muted);
-  font-size: 15px;
+  color: var(--ink);
+  font-size: 17px;
   line-height: 1.8;
 }
 .post-body p {

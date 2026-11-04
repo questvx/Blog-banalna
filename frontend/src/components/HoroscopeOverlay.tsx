@@ -42,22 +42,7 @@ function HoroscopeOverlay({ onClose }: HoroscopeOverlayProps) {
       {!isLoading && !error && !horoscope && (
         <p className="horoscope-unavailable" role="status">Horoskop na ten tydzień nie został jeszcze opublikowany.</p>
       )}
-      <p className="horoscope-sign-prompt">Wybierz swój znak zodiaku</p>
-      <div className="horoscope-sign-grid" aria-label="Znaki zodiaku">
-        {horoscopeSigns.map((sign) => (
-          <button
-            key={sign.id}
-            className={`horoscope-sign${selectedSign?.id === sign.id ? ' is-selected' : ''}`}
-            type="button"
-            onClick={() => setSelectedSign(sign)}
-            aria-pressed={selectedSign?.id === sign.id}
-          >
-            <span className="horoscope-sign-symbol" aria-hidden="true">{sign.symbol}</span>
-            <span>{sign.name}</span>
-          </button>
-        ))}
-      </div>
-      {selectedSign && (
+      {selectedSign ? (
         <div className="horoscope-reading" aria-live="polite">
           <span className="horoscope-reading-symbol" aria-hidden="true">{selectedSign.symbol}</span>
           <div>
@@ -71,6 +56,23 @@ function HoroscopeOverlay({ onClose }: HoroscopeOverlayProps) {
             )}
           </div>
         </div>
+      ) : (
+        <>
+          <p className="horoscope-sign-prompt">Wybierz swój znak zodiaku</p>
+          <div className="horoscope-sign-grid" aria-label="Znaki zodiaku">
+            {horoscopeSigns.map((sign) => (
+              <button
+                key={sign.id}
+                className="horoscope-sign"
+                type="button"
+                onClick={() => setSelectedSign(sign)}
+              >
+                <span className="horoscope-sign-symbol" aria-hidden="true">{sign.symbol}</span>
+                <span>{sign.name}</span>
+              </button>
+            ))}
+          </div>
+        </>
       )}
       {!isLoading && !error && horoscope && (
         <p className="horoscope-disclaimer">Potraktuj horoskop jako lekką inspirację.</p>

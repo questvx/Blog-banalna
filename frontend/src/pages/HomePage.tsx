@@ -31,9 +31,7 @@ function HomePage({ posts, onRandomPost }: HomePageProps) {
   }
 
   const handleCategoryChange = (category: string) => {
-    setSelectedCategories((currentCategories) => currentCategories.includes(category)
-      ? currentCategories.filter((currentCategory) => currentCategory !== category)
-      : [...currentCategories, category])
+    setSelectedCategories((currentCategories) => currentCategories.includes(category) ? [] : [category])
     setVisibleCount(4)
   }
 
