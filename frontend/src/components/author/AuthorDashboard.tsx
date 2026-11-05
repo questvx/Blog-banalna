@@ -14,6 +14,7 @@ import AuthorHeroMessageEditor from './AuthorHeroMessageEditor'
 import AuthorPostEditor from './AuthorPostEditor'
 import AuthorHoroscopeEditor from './AuthorHoroscopeEditor'
 import AuthorHoroscopeList from './AuthorHoroscopeList'
+import AuthorUploadedImages from './AuthorUploadedImages'
 import AuthorPostList from './AuthorPostList'
 import {
   authorCategories,
@@ -31,17 +32,28 @@ type AuthorDashboardProps = {
   isLoggingOut: boolean
 }
 
-const dashboardTabs = ['posts', 'horoscope', 'heroMessage'] as const
+const uploadedImagesPath = '/autorka/wgrane-zdjecia'
+const dashboardTabs = ['posts', 'heroMessage', 'horoscope', 'images'] as const
 type DashboardTab = (typeof dashboardTabs)[number]
 const INITIAL_HOROSCOPE_WEEKS = 12
 const dashboardTabLabels: Record<DashboardTab, string> = {
   posts: 'Posty',
   horoscope: 'Horoskopy',
   heroMessage: 'Wiadomość',
+  images: 'Wgrane zdjęcia',
+}
+
+function getInitialDashboardTab(): DashboardTab {
+  if (window.location.pathname === uploadedImagesPath) return 'images'
+
+  const requestedTab = new URLSearchParams(window.location.search).get('tab')
+  if (requestedTab === 'horoscope' || requestedTab === 'heroMessage') return requestedTab
+  return 'posts'
 }
 
 function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut }: AuthorDashboardProps) {
-  const [activeTab, setActiveTab] = useState<DashboardTab>('posts')
+  const isUploadedImagesPage = window.location.pathname === uploadedImagesPath
+  const [activeTab, setActiveTab] = useState<DashboardTab>(getInitialDashboardTab)
   const [posts, setPosts] = useState<AuthorPost[]>([])
   const [form, setForm] = useState<AuthorPostForm>(createEmptyAuthorPostForm)
   const [editingId, setEditingId] = useState<number | null>(null)
@@ -204,8 +216,29 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
     }
 
     event.preventDefault()
-    setActiveTab(dashboardTabs[nextIndex])
-    event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIndex]?.focus()
+    const nextTab = dashboardTabs[nextIndex]
+    if (isUploadedImagesPage && nextTab !== 'images') {
+      window.location.href = `/autorka?tab=${nextTab}`
+      return
+    }
+    if (nextTab === 'images' && !isUploadedImagesPage) {
+      window.location.href = uploadedImagesPath
+      return
+    }
+    setActiveTab(nextTab)
+    event.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]')[nextIndex]?.focus()
+  }
+
+  const handleTabChange = (tab: DashboardTab) => {
+    if (tab === 'images') {
+      if (!isUploadedImagesPage) window.location.href = uploadedImagesPath
+      return
+    }
+    if (isUploadedImagesPage) {
+      window.location.href = `/autorka?tab=${tab}`
+      return
+    }
+    setActiveTab(tab)
   }
 
   return (
@@ -224,9 +257,9 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
         <div className="author-dashboard-title-row">
           <div>
             <p className="author-login-eyebrow">Panel autorki</p>
-            <h1 id="author-dashboard-title">{dashboardTabLabels[activeTab]}</h1>
+            <h1 id="author-dashboard-title">{isUploadedImagesPage ? 'Wgrane zdjęcia' : dashboardTabLabels[activeTab]}</h1>
           </div>
-          {activeTab === 'posts' && (
+          {!isUploadedImagesPage && activeTab === 'posts' && (
             <button className="author-dashboard-primary" type="button" onClick={openNewPost}>+ Nowy wpis</button>
           )}
         </div>
@@ -240,7 +273,7 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
             aria-selected={activeTab === 'posts'}
             aria-controls="author-tabpanel"
             tabIndex={activeTab === 'posts' ? 0 : -1}
-            onClick={() => setActiveTab('posts')}
+            onClick={() => handleTabChange('posts')}
           >
             Posty
           </button>
@@ -252,7 +285,7 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
             aria-selected={activeTab === 'heroMessage'}
             aria-controls="author-tabpanel"
             tabIndex={activeTab === 'heroMessage' ? 0 : -1}
-            onClick={() => setActiveTab('heroMessage')}
+            onClick={() => handleTabChange('heroMessage')}
           >
             Powitanie
           </button>
@@ -264,19 +297,30 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
             aria-selected={activeTab === 'horoscope'}
             aria-controls="author-tabpanel"
             tabIndex={activeTab === 'horoscope' ? 0 : -1}
-            onClick={() => setActiveTab('horoscope')}
+            onClick={() => handleTabChange('horoscope')}
           >
             Horoskopy
           </button>
+          <a
+            id="author-tab-images"
+            className="author-dashboard-tab author-dashboard-tab-link"
+            href={uploadedImagesPath}
+            role="tab"
+            aria-selected={activeTab === 'images'}
+            aria-controls="author-tabpanel"
+            tabIndex={activeTab === 'images' ? 0 : -1}
+          >
+            Wgrane zdjęcia
+          </a>
         </div>
 
-        {(error || sessionError) && <p className="author-dashboard-message is-error" role="alert">{error || sessionError}</p>}
-        {notice && <p className="author-dashboard-message is-notice" role="status">{notice}</p>}
+        {!isUploadedImagesPage && (error || sessionError) && <p className="author-dashboard-message is-error" role="alert">{error || sessionError}</p>}
+        {!isUploadedImagesPage && notice && <p className="author-dashboard-message is-notice" role="status">{notice}</p>}
 
-        {activeTab === 'horoscope' && horoscopeLoadingError && (
+        {!isUploadedImagesPage && activeTab === 'horoscope' && horoscopeLoadingError && (
           <p className="author-dashboard-message is-error" role="alert">{horoscopeLoadingError}</p>
         )}
-        {activeTab === 'horoscope' && horoscopeSaveError && (
+        {!isUploadedImagesPage && activeTab === 'horoscope' && horoscopeSaveError && (
           <p className="author-dashboard-message is-error" role="alert">{horoscopeSaveError}</p>
         )}
 
@@ -287,7 +331,9 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
           aria-labelledby={`author-tab-${activeTab}`}
           tabIndex={0}
         >
-          {activeTab === 'posts' ? (
+          {isUploadedImagesPage ? (
+            <AuthorUploadedImages />
+          ) : activeTab === 'posts' ? (
             isLoading ? (
               <p className="author-dashboard-empty" role="status">Pobieram posty...</p>
             ) : (

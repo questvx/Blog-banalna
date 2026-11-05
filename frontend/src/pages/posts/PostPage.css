@@ -24,8 +24,7 @@
 }
 .post-hero-image {
   display: block;
-  height: clamp(180px, 35vw, 420px);
-  object-fit: cover;
+  height: auto;
   width: 100%;
 }
 .post-article-content {
@@ -116,6 +115,12 @@
   border-left: 3px solid var(--coral);
   margin: 16px 0;
   padding-left: 16px;
+}
+.post-body img {
+  display: block;
+  height: auto;
+  margin: 18px auto;
+  max-width: 100%;
 }
 @media (max-width: 700px) {
   .post-page-shell {
