@@ -116,6 +116,7 @@
   background: #f0a061;
   border: 0;
   border-radius: 3px;
+  box-shadow: 0 3px 10px rgba(39, 37, 34, 0.14);
   color: #fff;
   display: inline-block;
   font-size: 10px;
@@ -123,6 +124,19 @@
   margin-top: 14px;
   padding: 7px 12px;
   text-decoration: none;
+  transition: filter 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.read-more:hover {
+  box-shadow: 0 5px 14px rgba(39, 37, 34, 0.2);
+  filter: brightness(0.92);
+  transform: translateY(-1px);
+}
+.read-more:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.read-more:active {
+  transform: translateY(0);
 }
 .post-card-gradient-1 .read-more,
 .post-card-gradient-4 .read-more,

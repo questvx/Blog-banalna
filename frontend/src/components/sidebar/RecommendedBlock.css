@@ -7,7 +7,7 @@
   width: 100%;
 }
 .recommended-block .sidebar-label {
-  margin-bottom: 5px;
+  margin-bottom: 0px;
 }
 .recommended-block h2 {
   color: var(--ink);
@@ -19,7 +19,7 @@
 }
 .recommended-list {
   list-style: disc;
-  margin: 0 0 17px;
+  margin: 0 0 10px;
   padding-left: 18px;
 }
 .recommended-list li {
@@ -37,4 +37,45 @@
 }
 .recommended-list a:hover {
   color: var(--coral);
+}
+.recommended-more {
+  align-items: left;
+  background: #63c7c5;
+  border: 0;
+  border-radius: 999px;
+  box-shadow: 0 3px 10px rgba(39, 37, 34, 0.14);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font: 500 11px var(--sans);
+  justify-content: center;
+  letter-spacing: 0.04em;
+  padding: 7px 8px 7px 8px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  width: 50%;
+}
+.recommended-more:hover {
+  background: #59b8b6;
+  box-shadow: 0 5px 14px rgba(39, 37, 34, 0.2);
+  transform: translateY(-1px);
+}
+.recommended-more:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.recommended-more:active {
+  transform: translateY(0);
+}
+.recommended-more span {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: inline-flex;
+  height: 24px;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  width: 24px;
+}
+.recommended-more:hover span {
+  transform: translateX(2px);
 }

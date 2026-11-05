@@ -31,6 +31,46 @@
 .section-heading {
   display: none;
 }
+.featured-posts-heading {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 16px 0;
+}
+.featured-posts-heading h2 {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 400;
+  margin: 0;
+}
+.featured-posts-heading button {
+  background: transparent;
+  border: 1px solid rgba(39, 37, 34, 0.16);
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 8px 12px;
+  text-align: right;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+.featured-posts-heading button:hover {
+  background: rgba(99, 199, 197, 0.12);
+  border-color: rgba(99, 199, 197, 0.55);
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+.featured-posts-heading button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.featured-posts-heading button:active {
+  transform: translateY(0);
+}
 .load-more {
   background: none;
   border: 1px solid var(--line);
