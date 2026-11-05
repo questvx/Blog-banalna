@@ -53,6 +53,10 @@
   background: var(--author-blue-light);
 }
 
+.author-dashboard-tab-link {
+  text-decoration: none;
+}
+
 .author-dashboard-logout:disabled,
 .author-post-actions button:disabled {
   cursor: wait;

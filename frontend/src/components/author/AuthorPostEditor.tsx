@@ -1,4 +1,5 @@
 import { useState, type FormEvent, type MouseEvent } from 'react'
+import { fetchAuthorImages } from '../../api/authorMedia'
 import { authorCategories, type AuthorPostForm } from './authorPostForm'
 import AuthorImageUploader from './AuthorImageUploader'
 import './AuthorPostEditor.css'
@@ -14,6 +15,24 @@ type AuthorPostEditorProps = {
 
 function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubmit }: AuthorPostEditorProps) {
   const [isImageUploading, setIsImageUploading] = useState(false)
+  const [isImageLibraryOpen, setIsImageLibraryOpen] = useState(false)
+  const [isImageLibraryLoading, setIsImageLibraryLoading] = useState(false)
+  const [imageLibraryError, setImageLibraryError] = useState('')
+  const [uploadedImages, setUploadedImages] = useState<string[]>([])
+
+  const handleOpenImageLibrary = async () => {
+    setIsImageLibraryOpen(true)
+    setIsImageLibraryLoading(true)
+    setImageLibraryError('')
+
+    try {
+      setUploadedImages(await fetchAuthorImages())
+    } catch (loadError: unknown) {
+      setImageLibraryError(loadError instanceof Error ? loadError.message : 'Nie udało się pobrać zdjęć.')
+    } finally {
+      setIsImageLibraryLoading(false)
+    }
+  }
 
   const handleBackdropMouseDown = (event: MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget && !isSaving) onClose()
@@ -60,6 +79,7 @@ function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubm
               <p><code>&lt;br&gt;</code> — nowa linia</p>
               <p><code>&lt;blockquote&gt;cytat&lt;/blockquote&gt;</code></p>
               <p><code>&lt;a href="https://..."&gt;link&lt;/a&gt;</code></p>
+              <p><code>&lt;img src="adres zdjęcia" alt="Opis zdjęcia"&gt;</code></p>
               <p className="author-editor-html-note">Wpisz tekst między znacznikiem otwierającym i zamykającym.</p>
             </aside>
           </div>
@@ -79,9 +99,44 @@ function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubm
           <AuthorImageUploader
             imageUrl={form.image}
             disabled={isSaving}
+            isImageLibraryLoading={isImageLibraryLoading}
+            onChooseFromLibrary={handleOpenImageLibrary}
             onUploaded={(url) => onChange('image', url)}
             onUploadingChange={setIsImageUploading}
           />
+          {isImageLibraryOpen && (
+            <div className="author-image-library-panel" aria-label="Wybór wgranego zdjęcia">
+              <div className="author-image-library-heading">
+                <strong>Wybierz zdjęcie do wpisu</strong>
+                <button type="button" onClick={() => setIsImageLibraryOpen(false)}>Zamknij</button>
+              </div>
+              {isImageLibraryLoading ? (
+                <p role="status">Pobieram zdjęcia...</p>
+              ) : imageLibraryError ? (
+                <p className="author-image-library-error" role="alert">{imageLibraryError}</p>
+              ) : uploadedImages.length === 0 ? (
+                <p>Nie ma jeszcze wgranych zdjęć.</p>
+              ) : (
+                <div className="author-image-library-grid">
+                  {uploadedImages.map((imageUrl, index) => (
+                    <button
+                      className={`author-image-library-option ${form.image === imageUrl ? 'is-selected' : ''}`}
+                      key={imageUrl}
+                      type="button"
+                      aria-pressed={form.image === imageUrl}
+                      onClick={() => {
+                        onChange('image', imageUrl)
+                        setIsImageLibraryOpen(false)
+                      }}
+                    >
+                      <img src={imageUrl} alt="" loading="lazy" />
+                      <span>Zdjęcie {index + 1}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
           <label htmlFor="post-image">Adres obrazu</label>
           <input id="post-image" required type="url" value={form.image} onChange={(event) => onChange('image', event.target.value)} />
           <div className="author-editor-grid author-editor-options">
