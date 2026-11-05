@@ -32,4 +32,11 @@ class BackendApplicationTests {
 
         assertTrue(status == 200 || status == 404, "Expected public horoscope response, got " + status);
     }
+
+    @Test
+    void authorImageLibraryRequiresAuthentication() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/api/admin/uploads", String.class);
+
+        assertTrue(response.getStatusCode().value() == 401, "Expected protected image library, got " + response.getStatusCode());
+    }
 }

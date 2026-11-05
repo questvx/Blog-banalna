@@ -2,12 +2,17 @@ package pl.banalna.media;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.LinkOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -19,6 +24,8 @@ import org.springframework.web.server.ResponseStatusException;
 public class ImageStorageService {
 
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
+    private static final Pattern UPLOADED_IMAGE_FILENAME = Pattern.compile(
+            "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(?:jpg|png|gif|webp)");
     private static final Map<String, String> EXTENSIONS = Map.of(
             "image/jpeg", ".jpg",
             "image/png", ".png",
@@ -64,8 +71,47 @@ public class ImageStorageService {
         }
     }
 
+    public List<String> list() {
+        if (Files.notExists(uploadDirectory)) return List.of();
+
+        try (Stream<Path> files = Files.list(uploadDirectory)) {
+            return files
+                    .filter(path -> Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS))
+                    .filter(path -> isUploadedImageFileName(path.getFileName().toString()))
+                    .sorted(Comparator.comparing(path -> path.getFileName().toString()))
+                    .map(path -> "/uploads/" + path.getFileName())
+                    .toList();
+        } catch (IOException exception) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not list uploaded images.", exception);
+        }
+    }
+
+    public void delete(String fileName) {
+        if (!isUploadedImageFileName(fileName)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid uploaded image name.");
+        }
+
+        Path image = uploadDirectory.resolve(fileName).normalize();
+        if (!image.getParent().equals(uploadDirectory)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid upload path.");
+        }
+
+        try {
+            if (!Files.isRegularFile(image, LinkOption.NOFOLLOW_LINKS)) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Uploaded image was not found.");
+            }
+            Files.delete(image);
+        } catch (IOException exception) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not delete uploaded image.", exception);
+        }
+    }
+
     public Path getUploadDirectory() {
         return uploadDirectory;
+    }
+
+    private boolean isUploadedImageFileName(String fileName) {
+        return fileName != null && UPLOADED_IMAGE_FILENAME.matcher(fileName).matches();
     }
 
     private boolean hasExpectedSignature(byte[] bytes, String contentType) {
