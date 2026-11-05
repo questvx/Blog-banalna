@@ -71,7 +71,7 @@ public class SecurityConfig {
                         .requestMatchers(request -> "GET".equals(request.getMethod())
                                 && request.getRequestURI().endsWith("/api/horoscopes/current"))
                         .permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/health", "/api/posts", "/api/posts/**", "/api/auth/csrf", "/uploads/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/health", "/api/posts", "/api/posts/**", "/api/hero-message", "/api/auth/csrf", "/uploads/**").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/admin/**", "/api/auth/me").hasRole("AUTHOR")
                         .requestMatchers("/api/auth/logout").authenticated()
