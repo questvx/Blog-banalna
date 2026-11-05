@@ -1,12 +1,17 @@
 package pl.banalna.api;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 import pl.banalna.media.ImageStorageService;
 
@@ -20,10 +25,30 @@ public class AdminImageController {
         this.imageStorageService = imageStorageService;
     }
 
+    @GetMapping
+    public List<ImageUploadResponse> list() {
+        return imageStorageService.list().stream()
+                .map(ImageUploadResponse::new)
+                .toList();
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@RequestParam("fileName") String fileName) {
+        imageStorageService.delete(fileName);
+    }
+
     @PostMapping(consumes = "multipart/form-data")
     @ResponseStatus(HttpStatus.CREATED)
     public ImageUploadResponse upload(@RequestParam("file") MultipartFile file) {
         return new ImageUploadResponse(imageStorageService.store(file));
+    }
+
+    @PutMapping(consumes = "multipart/form-data")
+    public ImageUploadResponse replace(
+            @RequestParam("fileName") String fileName,
+            @RequestParam("file") MultipartFile file) {
+        return new ImageUploadResponse(imageStorageService.replace(fileName, file));
     }
 
     public record ImageUploadResponse(String url) {
