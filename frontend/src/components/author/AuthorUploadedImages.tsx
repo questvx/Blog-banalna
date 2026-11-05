@@ -1,12 +1,66 @@
 import { useEffect, useState, type ChangeEvent } from 'react'
+import { fetchAdminPosts, type AuthorPost } from '../../api/adminPosts'
 import { deleteAuthorImage, fetchAuthorImages, uploadAuthorImage } from '../../api/authorMedia'
 import './AuthorUploadedImages.css'
 
 const IMAGE_TYPES = 'image/jpeg,image/png,image/gif,image/webp'
 
+type ImageUsage = {
+  postId: number
+  postTitle: string
+  isMainImage: boolean
+  isInContent: boolean
+}
+
+function normalizeImageUrl(imageUrl: string): string {
+  try {
+    const url = new URL(imageUrl, window.location.origin)
+    return `${url.origin}${url.pathname}`
+  } catch {
+    return imageUrl.trim()
+  }
+}
+
+function getContentImageUrls(content: string[]): Set<string> {
+  const parser = new DOMParser()
+  const imageUrls = content.flatMap((paragraph) => {
+    const document = parser.parseFromString(paragraph, 'text/html')
+    return Array.from(document.querySelectorAll('img')).map((image) => image.getAttribute('src') ?? '')
+  })
+
+  return new Set(imageUrls.filter(Boolean).map(normalizeImageUrl))
+}
+
+function getImageUsages(posts: AuthorPost[]): Map<string, ImageUsage[]> {
+  const usagesByUrl = new Map<string, ImageUsage[]>()
+
+  for (const post of posts) {
+    const mainImageUrl = post.image ? normalizeImageUrl(post.image) : ''
+    const contentImageUrls = getContentImageUrls(post.content)
+    const referencedImageUrls = new Set(contentImageUrls)
+    if (mainImageUrl) referencedImageUrls.add(mainImageUrl)
+
+    for (const imageUrl of referencedImageUrls) {
+      const usages = usagesByUrl.get(imageUrl) ?? []
+      usages.push({
+        postId: post.id,
+        postTitle: post.title,
+        isMainImage: imageUrl === mainImageUrl,
+        isInContent: contentImageUrls.has(imageUrl),
+      })
+      usagesByUrl.set(imageUrl, usages)
+    }
+  }
+
+  return usagesByUrl
+}
+
 function AuthorUploadedImages() {
   const [images, setImages] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isCheckingUsage, setIsCheckingUsage] = useState(true)
+  const [imageUsages, setImageUsages] = useState<Map<string, ImageUsage[]>>(new Map())
+  const [usageError, setUsageError] = useState('')
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
@@ -27,6 +81,19 @@ function AuthorUploadedImages() {
       })
       .finally(() => {
         if (isMounted) setIsLoading(false)
+      })
+
+    fetchAdminPosts()
+      .then((posts) => {
+        if (isMounted) setImageUsages(getImageUsages(posts))
+      })
+      .catch((loadError: unknown) => {
+        if (isMounted) {
+          setUsageError(loadError instanceof Error ? loadError.message : 'Nie udało się pobrać wpisów.')
+        }
+      })
+      .finally(() => {
+        if (isMounted) setIsCheckingUsage(false)
       })
 
     return () => {
@@ -66,13 +133,13 @@ function AuthorUploadedImages() {
     }
   }
 
-  const handleCopyImageUrl = async (imageUrl: string) => {
+  const handleCopyImageTag = async (imageUrl: string) => {
     setError('')
     try {
-      await navigator.clipboard.writeText(imageUrl)
+      await navigator.clipboard.writeText(`<img src="${imageUrl}" alt="nie udało się załadować zdjęcia">`)
       setCopiedImage(imageUrl)
     } catch {
-      setError('Nie udało się skopiować adresu zdjęcia. Możesz otworzyć zdjęcie i skopiować jego adres ręcznie.')
+      setError('Nie udało się skopiować znacznika zdjęcia. Możesz otworzyć zdjęcie i skopiować jego adres ręcznie.')
     }
   }
 
@@ -116,6 +183,12 @@ function AuthorUploadedImages() {
 
       {error && <p className="author-uploaded-images-message is-error" role="alert">{error}</p>}
       {notice && <p className="author-uploaded-images-message" role="status">{notice}</p>}
+      {isCheckingUsage && <p className="author-uploaded-images-message" role="status">Sprawdzam, gdzie zdjęcia są używane...</p>}
+      {usageError && (
+        <p className="author-uploaded-images-message is-error" role="alert">
+          Nie udało się sprawdzić użycia zdjęć we wpisach: {usageError}
+        </p>
+      )}
 
       {isLoading ? (
         <p className="author-dashboard-empty" role="status">Pobieram zdjęcia...</p>
@@ -123,27 +196,56 @@ function AuthorUploadedImages() {
         <p className="author-dashboard-empty">Nie ma jeszcze wgranych zdjęć.</p>
       ) : (
         <div className="author-uploaded-images-grid">
-          {images.map((imageUrl, index) => (
-            <article className="author-uploaded-image" key={imageUrl}>
-              <a href={imageUrl} target="_blank" rel="noreferrer" aria-label={`Otwórz zdjęcie ${index + 1} w nowej karcie`}>
-                <img src={imageUrl} alt={`Wgrane zdjęcie ${index + 1}`} loading="lazy" />
-              </a>
-              <div className="author-uploaded-image-actions">
-                <code title={imageUrl}>{imageUrl.split('/').pop()}</code>
-                <button type="button" onClick={() => handleCopyImageUrl(imageUrl)}>
-                  {copiedImage === imageUrl ? 'Skopiowano' : 'Kopiuj adres'}
-                </button>
-                <button
-                  type="button"
-                  className="is-danger"
-                  disabled={isUploading || deletingImage !== ''}
-                  onClick={() => handleDeleteImage(imageUrl)}
-                >
-                  {deletingImage === imageUrl ? 'Usuwanie...' : 'Usuń'}
-                </button>
-              </div>
-            </article>
-          ))}
+          {images.map((imageUrl, index) => {
+            const usages = imageUsages.get(normalizeImageUrl(imageUrl)) ?? []
+
+            return (
+              <article className="author-uploaded-image" key={imageUrl}>
+                <a href={imageUrl} target="_blank" rel="noreferrer" aria-label={`Otwórz zdjęcie ${index + 1} w nowej karcie`}>
+                  <img src={imageUrl} alt={`Wgrane zdjęcie ${index + 1}`} loading="lazy" />
+                </a>
+                <div className="author-uploaded-image-usage" aria-label={`Użycie zdjęcia ${index + 1}`}>
+                  {isCheckingUsage ? (
+                    <span>Sprawdzanie użycia...</span>
+                  ) : usageError ? (
+                    <span>Nie udało się sprawdzić użycia.</span>
+                  ) : usages.length === 0 ? (
+                    <span>Nie jest używane w żadnym wpisie.</span>
+                  ) : (
+                    <>
+                      <strong>Używane w:</strong>
+                      <ul>
+                        {usages.map((usage) => (
+                          <li key={usage.postId}>
+                            <span>{usage.postTitle}</span>
+                            <small>
+                              {usage.isMainImage && 'zdjęcie główne'}
+                              {usage.isMainImage && usage.isInContent && ' · '}
+                              {usage.isInContent && 'treść'}
+                            </small>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
+                <div className="author-uploaded-image-actions">
+                  <code title={imageUrl}>{imageUrl.split('/').pop()}</code>
+                  <button type="button" onClick={() => handleCopyImageTag(imageUrl)}>
+                    {copiedImage === imageUrl ? 'Skopiowano' : 'Kopiuj znacznik <img>'}
+                  </button>
+                  <button
+                    type="button"
+                    className="is-danger"
+                    disabled={isUploading || deletingImage !== ''}
+                    onClick={() => handleDeleteImage(imageUrl)}
+                  >
+                    {deletingImage === imageUrl ? 'Usuwanie...' : 'Usuń'}
+                  </button>
+                </div>
+                </article>
+            )
+          })}
         </div>
       )}
     </section>

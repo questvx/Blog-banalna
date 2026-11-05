@@ -102,6 +102,35 @@
   width: 100%;
 }
 
+.author-uploaded-image-usage {
+  color: var(--author-muted);
+  font-size: 11px;
+  line-height: 1.45;
+  padding: 9px 10px 0;
+}
+
+.author-uploaded-image-usage ul {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+}
+
+.author-uploaded-image-usage li + li {
+  border-top: 1px solid var(--author-line);
+  margin-top: 5px;
+  padding-top: 5px;
+}
+
+.author-uploaded-image-usage li span,
+.author-uploaded-image-usage li small {
+  display: block;
+}
+
+.author-uploaded-image-usage li small {
+  color: var(--author-blue-dark);
+  font-size: 10px;
+}
+
 .author-uploaded-image-actions {
   align-items: center;
   display: flex;

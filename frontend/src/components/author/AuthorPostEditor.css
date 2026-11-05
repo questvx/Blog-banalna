@@ -143,6 +143,58 @@
   padding-top: 9px;
 }
 
+.author-editor-link-tool {
+  border-top: 1px solid var(--author-line);
+  margin-top: 12px;
+  padding-top: 10px;
+}
+
+.author-editor-link-tool h4 {
+  color: var(--author-ink);
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+
+.author-editor-link-tool input {
+  font-size: 11px !important;
+  margin-bottom: 8px !important;
+  min-height: 34px !important;
+  padding: 6px 7px !important;
+}
+
+.author-editor-link-tool button {
+  background: var(--author-blue);
+  border: 0;
+  border-radius: 3px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  min-height: 32px;
+  padding: 6px 8px;
+  width: 100%;
+}
+
+.author-editor-link-tool button:hover:not(:disabled) {
+  background: var(--author-blue-dark);
+}
+
+.author-editor-link-tool button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.author-editor-html-help .author-editor-link-error {
+  color: #8a3027;
+  margin: 0 0 7px;
+}
+
+.author-editor-html-help .author-editor-link-hint {
+  color: var(--author-muted);
+  font-size: 10px;
+  margin: 7px 0 0;
+}
+
 .author-editor-form textarea {
   line-height: 1.55;
   resize: vertical;

@@ -4,6 +4,18 @@ import { authorCategories, type AuthorPostForm } from './authorPostForm'
 import AuthorImageUploader from './AuthorImageUploader'
 import './AuthorPostEditor.css'
 
+const HTML_ESCAPE_CHARACTERS: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => HTML_ESCAPE_CHARACTERS[character])
+}
+
 type AuthorPostEditorProps = {
   form: AuthorPostForm
   editingId: number | null
@@ -19,6 +31,10 @@ function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubm
   const [isImageLibraryLoading, setIsImageLibraryLoading] = useState(false)
   const [imageLibraryError, setImageLibraryError] = useState('')
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
+  const [linkText, setLinkText] = useState('')
+  const [linkUrl, setLinkUrl] = useState('')
+  const [linkError, setLinkError] = useState('')
+  const [linkCopied, setLinkCopied] = useState(false)
 
   const handleOpenImageLibrary = async () => {
     setIsImageLibraryOpen(true)
@@ -44,6 +60,40 @@ function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubm
       return
     }
     onSubmit(event)
+  }
+
+  const handleCopyLinkTag = async () => {
+    const text = linkText.trim()
+    const address = linkUrl.trim()
+    if (!text || !address) {
+      setLinkError('Wpisz tekst linku i adres strony.')
+      return
+    }
+
+    let url: URL
+    try {
+      url = new URL(address)
+    } catch {
+      setLinkError('Wpisz poprawny adres zaczynający się od http:// lub https://.')
+      return
+    }
+
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      setLinkError('Link może prowadzić tylko do strony HTTP lub HTTPS.')
+      return
+    }
+
+    const anchor = `<a href="${escapeHtml(url.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`
+    try {
+      await navigator.clipboard.writeText(anchor)
+      setLinkCopied(true)
+    } catch {
+      setLinkCopied(false)
+      setLinkError('Nie udało się skopiować znacznika linku. Sprawdź uprawnienia przeglądarki do schowka.')
+      return
+    }
+
+    setLinkError('')
   }
 
   return (
@@ -78,9 +128,41 @@ function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubm
               <p><code>&lt;del&gt;skreślone&lt;/del&gt;</code></p>
               <p><code>&lt;br&gt;</code> — nowa linia</p>
               <p><code>&lt;blockquote&gt;cytat&lt;/blockquote&gt;</code></p>
-              <p><code>&lt;a href="https://..."&gt;link&lt;/a&gt;</code></p>
-              <p><code>&lt;img src="adres zdjęcia" alt="Opis zdjęcia"&gt;</code></p>
-              <p className="author-editor-html-note">Wpisz tekst między znacznikiem otwierającym i zamykającym.</p>
+              <p><code>&lt;a href="https://..." target="_blank" rel="noopener noreferrer"&gt;polecana strona&lt;/a&gt;</code></p>
+              <p><code>&lt;img src="WKLEJ_TU_SKOPIOWANY_ADRES" alt="Opis zdjęcia"&gt;</code></p>
+              <p className="author-editor-html-note">Adres zdjęcia skopiujesz w zakładce „Wgrane zdjęcia”. Wklej go w miejsce WKLEJ_TU_SKOPIOWANY_ADRES.</p>
+              <div className="author-editor-link-tool">
+                <h4>Dodaj link</h4>
+                <label htmlFor="post-link-text">Tekst linku</label>
+                <input
+                  id="post-link-text"
+                  placeholder="polecana strona"
+                  value={linkText}
+                  onChange={(event) => {
+                    setLinkText(event.target.value)
+                    setLinkError('')
+                    setLinkCopied(false)
+                  }}
+                />
+                <label htmlFor="post-link-url">Adres strony</label>
+                <input
+                  id="post-link-url"
+                  inputMode="url"
+                  type="text"
+                  placeholder="https://..."
+                  value={linkUrl}
+                  onChange={(event) => {
+                    setLinkUrl(event.target.value)
+                    setLinkError('')
+                    setLinkCopied(false)
+                  }}
+                />
+                {linkError && <p className="author-editor-link-error" role="alert">{linkError}</p>}
+                <button type="button" disabled={isSaving} onClick={handleCopyLinkTag}>
+                  {linkCopied ? 'Skopiowano znacznik' : 'Kopiuj znacznik linku'}
+                </button>
+                <p className="author-editor-link-hint">Wklej skopiowany znacznik w treści wpisu. Link otworzy się w nowej karcie.</p>
+              </div>
             </aside>
           </div>
           <div className="author-editor-grid">

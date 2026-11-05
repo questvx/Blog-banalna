@@ -116,6 +116,12 @@
   margin: 16px 0;
   padding-left: 16px;
 }
+.post-body img {
+  display: block;
+  height: auto;
+  margin: 18px auto;
+  max-width: 100%;
+}
 @media (max-width: 700px) {
   .post-page-shell {
     padding-inline: 20px;
