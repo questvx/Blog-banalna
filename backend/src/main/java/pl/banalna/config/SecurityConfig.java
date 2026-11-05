@@ -68,7 +68,10 @@ public class SecurityConfig {
                         .csrfTokenRepository(csrfTokenRepository)
                         .csrfTokenRequestHandler(csrfRequestHandler))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/api/health", "/api/posts", "/api/posts/**", "/api/horoscopes/current", "/api/auth/csrf", "/uploads/**").permitAll()
+                        .requestMatchers(request -> "GET".equals(request.getMethod())
+                                && request.getRequestURI().endsWith("/api/horoscopes/current"))
+                        .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/health", "/api/posts", "/api/posts/**", "/api/auth/csrf", "/uploads/**").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/admin/**", "/api/auth/me").hasRole("AUTHOR")
                         .requestMatchers("/api/auth/logout").authenticated()
