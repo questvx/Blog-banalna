@@ -2,9 +2,11 @@ package pl.banalna.media;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.LinkOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 import java.util.List;
@@ -39,6 +41,70 @@ public class ImageStorageService {
     }
 
     public String store(MultipartFile file) {
+        ValidatedImage image = readAndValidateImage(file);
+
+        try {
+            Files.createDirectories(uploadDirectory);
+            String fileName = UUID.randomUUID() + image.extension();
+            Path destination = uploadDirectory.resolve(fileName).normalize();
+            if (!destination.getParent().equals(uploadDirectory)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid upload path.");
+            }
+            Files.write(destination, image.bytes(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+            return "/uploads/" + fileName;
+        } catch (IOException exception) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not store uploaded image.", exception);
+        }
+    }
+
+    public String replace(String fileName, MultipartFile file) {
+        if (!isUploadedImageFileName(fileName)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid uploaded image name.");
+        }
+
+        Path destination = uploadDirectory.resolve(fileName).normalize();
+        if (!destination.getParent().equals(uploadDirectory)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid upload path.");
+        }
+        if (!Files.isRegularFile(destination, LinkOption.NOFOLLOW_LINKS)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Uploaded image was not found.");
+        }
+
+        ValidatedImage image = readAndValidateImage(file);
+        String existingExtension = fileName.substring(fileName.lastIndexOf('.'));
+        if (!existingExtension.equals(image.extension())) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+                    "The replacement image must use the existing file format.");
+        }
+
+        try {
+            Path temporaryFile = Files.createTempFile(uploadDirectory, "replace-", ".tmp");
+            try {
+                Files.write(
+                        temporaryFile,
+                        image.bytes(),
+                        StandardOpenOption.TRUNCATE_EXISTING,
+                        StandardOpenOption.WRITE);
+                try {
+                    Files.move(
+                            temporaryFile,
+                            destination,
+                            StandardCopyOption.ATOMIC_MOVE,
+                            StandardCopyOption.REPLACE_EXISTING);
+                } catch (AtomicMoveNotSupportedException exception) {
+                    Files.move(temporaryFile, destination, StandardCopyOption.REPLACE_EXISTING);
+                }
+            } finally {
+                Files.deleteIfExists(temporaryFile);
+            }
+            return "/uploads/" + fileName;
+        } catch (IOException exception) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not replace uploaded image.", exception);
+        }
+    }
+
+    private ValidatedImage readAndValidateImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Choose an image to upload.");
         }
@@ -54,20 +120,15 @@ public class ImageStorageService {
 
         try {
             byte[] bytes = file.getBytes();
+            if (bytes.length > MAX_FILE_SIZE) {
+                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE, "Image must be 5 MB or smaller.");
+            }
             if (!hasExpectedSignature(bytes, contentType)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The uploaded file is not a valid image of the declared type.");
             }
-
-            Files.createDirectories(uploadDirectory);
-            String fileName = UUID.randomUUID() + extension;
-            Path destination = uploadDirectory.resolve(fileName).normalize();
-            if (!destination.getParent().equals(uploadDirectory)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid upload path.");
-            }
-            Files.write(destination, bytes, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
-            return "/uploads/" + fileName;
+            return new ValidatedImage(extension, bytes);
         } catch (IOException exception) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not store uploaded image.", exception);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not read uploaded image.", exception);
         }
     }
 
@@ -141,5 +202,8 @@ public class ImageStorageService {
 
     private int unsigned(byte value) {
         return value & 0xFF;
+    }
+
+    private record ValidatedImage(String extension, byte[] bytes) {
     }
 }

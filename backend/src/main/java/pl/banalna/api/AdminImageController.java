@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -41,6 +42,13 @@ public class AdminImageController {
     @ResponseStatus(HttpStatus.CREATED)
     public ImageUploadResponse upload(@RequestParam("file") MultipartFile file) {
         return new ImageUploadResponse(imageStorageService.store(file));
+    }
+
+    @PutMapping(consumes = "multipart/form-data")
+    public ImageUploadResponse replace(
+            @RequestParam("fileName") String fileName,
+            @RequestParam("file") MultipartFile file) {
+        return new ImageUploadResponse(imageStorageService.replace(fileName, file));
     }
 
     public record ImageUploadResponse(String url) {
