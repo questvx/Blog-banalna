@@ -5,11 +5,20 @@ import './AuthorImageUploader.css'
 type AuthorImageUploaderProps = {
   imageUrl: string
   disabled: boolean
+  isImageLibraryLoading: boolean
+  onChooseFromLibrary: () => void
   onUploaded: (url: string) => void
   onUploadingChange: (isUploading: boolean) => void
 }
 
-function AuthorImageUploader({ imageUrl, disabled, onUploaded, onUploadingChange }: AuthorImageUploaderProps) {
+function AuthorImageUploader({
+  imageUrl,
+  disabled,
+  isImageLibraryLoading,
+  onChooseFromLibrary,
+  onUploaded,
+  onUploadingChange,
+}: AuthorImageUploaderProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState('')
 
@@ -46,6 +55,14 @@ function AuthorImageUploader({ imageUrl, disabled, onUploaded, onUploadingChange
             onChange={handleFileChange}
           />
         </label>
+        <button
+          className="author-image-library-button"
+          type="button"
+          disabled={disabled || isUploading || isImageLibraryLoading}
+          onClick={onChooseFromLibrary}
+        >
+          Wybierz z wgranych
+        </button>
         <span className="author-image-uploader-hint">JPEG, PNG, GIF lub WebP · maks. 5 MB</span>
       </div>
       {imageUrl && (

@@ -1,9 +1,23 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { deleteAdminPost, fetchAdminPosts, saveAdminPost, type AuthorPost } from '../../api/adminPosts'
+import {
+  addDaysToDate,
+  fetchAdminHoroscopes,
+  getCurrentHoroscopeWeekStart,
+  saveAdminHoroscope,
+  type AdminHoroscopeWeek,
+  type HoroscopeTexts,
+} from '../../api/adminHoroscopes'
 import type { AuthorSession } from '../../api/auth'
+import AuthorPostFilters, { type FeaturedFilter, type PostDateSort } from './AuthorPostFilters'
+import AuthorHeroMessageEditor from './AuthorHeroMessageEditor'
 import AuthorPostEditor from './AuthorPostEditor'
+import AuthorHoroscopeEditor from './AuthorHoroscopeEditor'
+import AuthorHoroscopeList from './AuthorHoroscopeList'
+import AuthorUploadedImages from './AuthorUploadedImages'
 import AuthorPostList from './AuthorPostList'
 import {
+  authorCategories,
   authorPostFormToInput,
   authorPostToForm,
   createEmptyAuthorPostForm,
@@ -18,7 +32,28 @@ type AuthorDashboardProps = {
   isLoggingOut: boolean
 }
 
+const uploadedImagesPath = '/autorka/wgrane-zdjecia'
+const dashboardTabs = ['posts', 'heroMessage', 'horoscope', 'images'] as const
+type DashboardTab = (typeof dashboardTabs)[number]
+const INITIAL_HOROSCOPE_WEEKS = 12
+const dashboardTabLabels: Record<DashboardTab, string> = {
+  posts: 'Posty',
+  horoscope: 'Horoskopy',
+  heroMessage: 'Wiadomość',
+  images: 'Wgrane zdjęcia',
+}
+
+function getInitialDashboardTab(): DashboardTab {
+  if (window.location.pathname === uploadedImagesPath) return 'images'
+
+  const requestedTab = new URLSearchParams(window.location.search).get('tab')
+  if (requestedTab === 'horoscope' || requestedTab === 'heroMessage') return requestedTab
+  return 'posts'
+}
+
 function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut }: AuthorDashboardProps) {
+  const isUploadedImagesPage = window.location.pathname === uploadedImagesPath
+  const [activeTab, setActiveTab] = useState<DashboardTab>(getInitialDashboardTab)
   const [posts, setPosts] = useState<AuthorPost[]>([])
   const [form, setForm] = useState<AuthorPostForm>(createEmptyAuthorPostForm)
   const [editingId, setEditingId] = useState<number | null>(null)
@@ -26,8 +61,26 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [horoscopes, setHoroscopes] = useState<AdminHoroscopeWeek[]>([])
+  const [horoscopeLoadingError, setHoroscopeLoadingError] = useState('')
+  const [horoscopeSaveError, setHoroscopeSaveError] = useState('')
+  const [isHoroscopeLoading, setIsHoroscopeLoading] = useState(true)
+  const [isHoroscopeSaving, setIsHoroscopeSaving] = useState(false)
+  const [editingHoroscopeWeek, setEditingHoroscopeWeek] = useState<string | null>(null)
+  const [horoscopeWeekCount, setHoroscopeWeekCount] = useState(INITIAL_HOROSCOPE_WEEKS)
+  const [selectedCategory, setSelectedCategory] = useState('ALL')
+  const [featuredFilter, setFeaturedFilter] = useState<FeaturedFilter>('ALL')
+  const [dateSort, setDateSort] = useState<PostDateSort>('NEWEST')
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+
+  const filteredPosts = [...posts]
+    .filter((post) => selectedCategory === 'ALL' || post.category === selectedCategory)
+    .filter((post) => featuredFilter === 'ALL'
+      || (featuredFilter === 'FEATURED' ? post.featured : !post.featured))
+    .sort((first, second) => dateSort === 'NEWEST'
+      ? second.date.localeCompare(first.date)
+      : first.date.localeCompare(second.date))
 
   useEffect(() => {
     fetchAdminPosts()
@@ -37,6 +90,25 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
       })
       .finally(() => setIsLoading(false))
   }, [])
+
+  useEffect(() => {
+    fetchAdminHoroscopes()
+      .then(setHoroscopes)
+      .catch((loadError: unknown) => {
+        setHoroscopeLoadingError(loadError instanceof Error ? loadError.message : 'Nie udało się pobrać horoskopów.')
+      })
+      .finally(() => setIsHoroscopeLoading(false))
+  }, [])
+
+  const horoscopeWeeks = useMemo(() => {
+    const weeks = new Set(horoscopes.map(({ weekStart }) => weekStart))
+    let weekStart = getCurrentHoroscopeWeekStart()
+    for (let index = 0; index < horoscopeWeekCount; index += 1) {
+      weeks.add(weekStart)
+      weekStart = addDaysToDate(weekStart, 7)
+    }
+    return [...weeks].sort()
+  }, [horoscopes, horoscopeWeekCount])
 
   const updateForm = <K extends keyof AuthorPostForm>(key: K, value: AuthorPostForm[K]) => {
     setForm((current) => ({ ...current, [key]: value }))
@@ -101,6 +173,74 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
     }
   }
 
+  const handleSaveHoroscope = async (signs: HoroscopeTexts) => {
+    if (!editingHoroscopeWeek) return
+    setHoroscopeSaveError('')
+    setNotice('')
+    setIsHoroscopeSaving(true)
+
+    try {
+      const savedHoroscope = await saveAdminHoroscope(editingHoroscopeWeek, signs)
+      setHoroscopes((current) => [
+        ...current.filter((week) => week.weekStart !== savedHoroscope.weekStart),
+        savedHoroscope,
+      ])
+      setNotice('Horoskop tygodniowy został zapisany.')
+      setEditingHoroscopeWeek(null)
+    } catch (saveError: unknown) {
+      setHoroscopeSaveError(saveError instanceof Error ? saveError.message : 'Nie udało się zapisać horoskopu.')
+    } finally {
+      setIsHoroscopeSaving(false)
+    }
+  }
+
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const currentIndex = dashboardTabs.indexOf(activeTab)
+    let nextIndex: number
+
+    switch (event.key) {
+      case 'ArrowRight':
+        nextIndex = (currentIndex + 1) % dashboardTabs.length
+        break
+      case 'ArrowLeft':
+        nextIndex = (currentIndex - 1 + dashboardTabs.length) % dashboardTabs.length
+        break
+      case 'Home':
+        nextIndex = 0
+        break
+      case 'End':
+        nextIndex = dashboardTabs.length - 1
+        break
+      default:
+        return
+    }
+
+    event.preventDefault()
+    const nextTab = dashboardTabs[nextIndex]
+    if (isUploadedImagesPage && nextTab !== 'images') {
+      window.location.href = `/autorka?tab=${nextTab}`
+      return
+    }
+    if (nextTab === 'images' && !isUploadedImagesPage) {
+      window.location.href = uploadedImagesPath
+      return
+    }
+    setActiveTab(nextTab)
+    event.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]')[nextIndex]?.focus()
+  }
+
+  const handleTabChange = (tab: DashboardTab) => {
+    if (tab === 'images') {
+      if (!isUploadedImagesPage) window.location.href = uploadedImagesPath
+      return
+    }
+    if (isUploadedImagesPage) {
+      window.location.href = `/autorka?tab=${tab}`
+      return
+    }
+    setActiveTab(tab)
+  }
+
   return (
     <main className="author-dashboard-page">
       <header className="author-dashboard-header">
@@ -116,20 +256,132 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
       <section className="author-dashboard-content" aria-labelledby="author-dashboard-title">
         <div className="author-dashboard-title-row">
           <div>
-            <p className="author-login-eyebrow">Strefa autorki</p>
-            <h1 id="author-dashboard-title">Wpisy</h1>
+            <p className="author-login-eyebrow">Panel autorki</p>
+            <h1 id="author-dashboard-title">{isUploadedImagesPage ? 'Wgrane zdjęcia' : dashboardTabLabels[activeTab]}</h1>
           </div>
-          <button className="author-dashboard-primary" type="button" onClick={openNewPost}>+ Nowy wpis</button>
+          {!isUploadedImagesPage && activeTab === 'posts' && (
+            <button className="author-dashboard-primary" type="button" onClick={openNewPost}>+ Nowy wpis</button>
+          )}
         </div>
 
-        {(error || sessionError) && <p className="author-dashboard-message is-error" role="alert">{error || sessionError}</p>}
-        {notice && <p className="author-dashboard-message is-notice" role="status">{notice}</p>}
+        <div className="author-dashboard-tabs" role="tablist" aria-label="Sekcje panelu autorki" onKeyDown={handleTabKeyDown}>
+          <button
+            id="author-tab-posts"
+            className="author-dashboard-tab"
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'posts'}
+            aria-controls="author-tabpanel"
+            tabIndex={activeTab === 'posts' ? 0 : -1}
+            onClick={() => handleTabChange('posts')}
+          >
+            Posty
+          </button>
+          <button
+            id="author-tab-heroMessage"
+            className="author-dashboard-tab"
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'heroMessage'}
+            aria-controls="author-tabpanel"
+            tabIndex={activeTab === 'heroMessage' ? 0 : -1}
+            onClick={() => handleTabChange('heroMessage')}
+          >
+            Powitanie
+          </button>
+          <button
+            id="author-tab-horoscope"
+            className="author-dashboard-tab"
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'horoscope'}
+            aria-controls="author-tabpanel"
+            tabIndex={activeTab === 'horoscope' ? 0 : -1}
+            onClick={() => handleTabChange('horoscope')}
+          >
+            Horoskopy
+          </button>
+          <a
+            id="author-tab-images"
+            className="author-dashboard-tab author-dashboard-tab-link"
+            href={uploadedImagesPath}
+            role="tab"
+            aria-selected={activeTab === 'images'}
+            aria-controls="author-tabpanel"
+            tabIndex={activeTab === 'images' ? 0 : -1}
+          >
+            Wgrane zdjęcia
+          </a>
+        </div>
 
-        {isLoading ? (
-          <p className="author-dashboard-empty" role="status">Pobieram wpisy...</p>
-        ) : (
-          <AuthorPostList posts={posts} deletingId={deletingId} onEdit={openEditPost} onDelete={handleDelete} />
+        {!isUploadedImagesPage && (error || sessionError) && <p className="author-dashboard-message is-error" role="alert">{error || sessionError}</p>}
+        {!isUploadedImagesPage && notice && <p className="author-dashboard-message is-notice" role="status">{notice}</p>}
+
+        {!isUploadedImagesPage && activeTab === 'horoscope' && horoscopeLoadingError && (
+          <p className="author-dashboard-message is-error" role="alert">{horoscopeLoadingError}</p>
         )}
+        {!isUploadedImagesPage && activeTab === 'horoscope' && horoscopeSaveError && (
+          <p className="author-dashboard-message is-error" role="alert">{horoscopeSaveError}</p>
+        )}
+
+        <div
+          className="author-dashboard-tabpanel"
+          id="author-tabpanel"
+          role="tabpanel"
+          aria-labelledby={`author-tab-${activeTab}`}
+          tabIndex={0}
+        >
+          {isUploadedImagesPage ? (
+            <AuthorUploadedImages />
+          ) : activeTab === 'posts' ? (
+            isLoading ? (
+              <p className="author-dashboard-empty" role="status">Pobieram posty...</p>
+            ) : (
+              <>
+                <AuthorPostFilters
+                  categories={authorCategories}
+                  totalCount={posts.length}
+                  resultCount={filteredPosts.length}
+                  selectedCategory={selectedCategory}
+                  featuredFilter={featuredFilter}
+                  dateSort={dateSort}
+                  onCategoryChange={setSelectedCategory}
+                  onFeaturedFilterChange={setFeaturedFilter}
+                  onDateSortChange={setDateSort}
+                />
+                <AuthorPostList
+                  posts={filteredPosts}
+                  deletingId={deletingId}
+                  emptyMessage={posts.length ? 'Nie znaleziono wpisów dla wybranych filtrów.' : 'Nie ma jeszcze żadnych wpisów.'}
+                  onEdit={openEditPost}
+                  onDelete={handleDelete}
+                />
+              </>
+            )
+          ) : activeTab === 'horoscope' && isHoroscopeLoading ? (
+            <p className="author-dashboard-empty" role="status">Pobieram horoskopy...</p>
+          ) : activeTab === 'horoscope' ? (
+            <>
+              <AuthorHoroscopeList
+                weeks={horoscopeWeeks}
+                horoscopes={horoscopes}
+                onEdit={(weekStart) => {
+                  setHoroscopeSaveError('')
+                  setEditingHoroscopeWeek(weekStart)
+                }}
+              />
+              <button
+                className="author-dashboard-more-weeks"
+                type="button"
+                onClick={() => setHoroscopeWeekCount((count) => count + INITIAL_HOROSCOPE_WEEKS)}
+              >
+                Pokaż kolejne tygodnie
+              </button>
+            </>
+          ) : (
+            <AuthorHeroMessageEditor />
+          )}
+        </div>
       </section>
 
       {isFormOpen && (
@@ -140,6 +392,16 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
           onChange={updateForm}
           onClose={closeForm}
           onSubmit={handleSave}
+        />
+      )}
+      {editingHoroscopeWeek && (
+        <AuthorHoroscopeEditor
+          key={editingHoroscopeWeek}
+          weekStart={editingHoroscopeWeek}
+          initialSigns={horoscopes.find((week) => week.weekStart === editingHoroscopeWeek)?.signs ?? {}}
+          isSaving={isHoroscopeSaving}
+          onClose={() => setEditingHoroscopeWeek(null)}
+          onSubmit={handleSaveHoroscope}
         />
       )}
     </main>

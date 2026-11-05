@@ -15,16 +15,23 @@
 .welcome-banner h1 {
   color: #4c4b48;
   font-family: var(--sans);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 500;
-  margin: 0 0 8px;
+  margin: 0 0 0px;
 }
 .welcome-banner p {
   color: #484a47;
   font-family: var(--serif);
-  font-size: 15px;
+  font-size: 17px;
   line-height: 1.35;
   margin: 0;
+  white-space: pre-line;
+}
+.welcome-message-error {
+  color: #756f68;
+  display: block;
+  font-size: 10px;
+  margin-top: 4px;
 }
 .welcome-sun {
   color: #f4c451;

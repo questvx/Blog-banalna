@@ -15,7 +15,7 @@
 .back-link {
   color: var(--muted);
   display: inline-block;
-  font-size: 11px;
+  font-size: 15px;
   margin: 20px 0;
   text-decoration: none;
 }
@@ -24,8 +24,7 @@
 }
 .post-hero-image {
   display: block;
-  height: clamp(260px, 38vw, 480px);
-  object-fit: cover;
+  height: auto;
   width: 100%;
 }
 .post-article-content {
@@ -34,14 +33,14 @@
 }
 .post-article-category {
   color: var(--coral);
-  font-size: 10px;
+  font-size: 14px;
   letter-spacing: 0.14em;
   margin: 0 0 10px;
   text-transform: uppercase;
 }
 .post-article-date {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   margin: 0 0 18px;
 }
 .post-article h1 {
@@ -56,17 +55,72 @@
 .post-article-lead {
   color: var(--ink);
   font-family: var(--serif);
-  font-size: 19px;
+  font-size: 20px;
   line-height: 1.5;
   margin: 0 0 28px;
 }
 .post-body {
-  color: var(--muted);
-  font-size: 15px;
+  font-synthesis: style;
+  color: var(--ink);
+  font-size: 17px;
   line-height: 1.8;
+  white-space: pre-line;
+}
+.post-body serif {
+  font-family: var(--serif);
+  font-size: 1.55em;
+  text-align: center;
+  line-height: 1.2;
+  display: block;
+}
+.post-body serif::first-letter {
+  font-size: 2em;
+}
+.post-body ciekawostka {
+  background: #eaf8fa;
+  border-radius: 4px;
+  display: block;
+  margin: 20px 0;
+  padding: 16px 20px;
+}
+.post-body ciekawostka::before {
+  color: var(--ink);
+  content: "💡 Ciekawostka";
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.post-body ciekawostka > :first-child {
+  margin-top: 0;
+}
+.post-body ciekawostka > :last-child {
+  margin-bottom: 0;
+}
+.post-body > .post-body-paragraph {
+  margin: 0 0 20px;
 }
 .post-body p {
-  margin: 0 0 20px;
+  margin: 0 0 12px;
+}
+.post-body p:last-child {
+  margin-bottom: 0;
+}
+.post-body ul,
+.post-body ol {
+  padding-left: 1.5em;
+}
+.post-body blockquote {
+  border-left: 3px solid var(--coral);
+  margin: 16px 0;
+  padding-left: 16px;
+}
+.post-body img {
+  display: block;
+  height: auto;
+  margin: 18px auto;
+  max-width: 100%;
 }
 @media (max-width: 700px) {
   .post-page-shell {

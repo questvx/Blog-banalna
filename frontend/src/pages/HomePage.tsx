@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Hero from '../components/Hero'
 import PostCard from '../components/PostCard'
 import Sidebar from '../components/Sidebar'
@@ -7,23 +7,36 @@ import './HomePage.css'
 
 type HomePageProps = {
   posts: Post[]
+  categories: string[]
+  selectedCategories: string[]
+  onCategoryChange: (category: string) => void
   onRandomPost: () => void
+  onShowRecommended: () => void
+  onShowAllPosts: () => void
+  showFeaturedOnly: boolean
 }
 
-const categories = ['kuchnia', 'filmy', 'książka', 'technologia', 'sport', 'dlaczego?', 'inne']
-
-function HomePage({ posts, onRandomPost }: HomePageProps) {
+function HomePage({ posts, categories, selectedCategories, onCategoryChange, onRandomPost, onShowRecommended, onShowAllPosts, showFeaturedOnly }: HomePageProps) {
   const [searchValue, setSearchValue] = useState('')
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [visibleCount, setVisibleCount] = useState(4)
   const searchRef = useRef<HTMLInputElement>(null)
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const filteredPosts = posts.filter((post) => {
     const matchesSearch = `${post.title} ${post.excerpt} ${post.category}`.toLowerCase().includes(searchValue.toLowerCase())
     const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(post.category)
-    return matchesSearch && matchesCategory
-  })
+    return matchesSearch && matchesCategory && (!showFeaturedOnly || post.featured)
+  }).sort((postA, postB) => showFeaturedOnly ? postB.date.localeCompare(postA.date) : 0)
   const visiblePosts = filteredPosts.slice(0, visibleCount)
+
+  const handleShowRecommended = () => {
+    setSearchValue('')
+    setVisibleCount(4)
+    onShowRecommended()
+  }
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [selectedCategories, showFeaturedOnly])
 
   const handleSearchChange = (value: string) => {
     setSearchValue(value)
@@ -31,9 +44,7 @@ function HomePage({ posts, onRandomPost }: HomePageProps) {
   }
 
   const handleCategoryChange = (category: string) => {
-    setSelectedCategories((currentCategories) => currentCategories.includes(category)
-      ? currentCategories.filter((currentCategory) => currentCategory !== category)
-      : [...currentCategories, category])
+    onCategoryChange(category)
     setVisibleCount(4)
   }
 
@@ -54,8 +65,14 @@ function HomePage({ posts, onRandomPost }: HomePageProps) {
       <main>
         <Hero />
         <div className="content-layout">
-          <section className="posts-column" id="najnowsze">
-            <div className="section-heading"><p className="eyebrow">z ostatnich dni</p><h2>Najnowsze wpisy</h2><span className="heading-line" /></div>
+          <section className="posts-column" id={showFeaturedOnly ? 'polecane' : 'najnowsze'}>
+            {showFeaturedOnly && (
+              <div className="featured-posts-heading">
+                <h2>Polecane wpisy</h2>
+                <button type="button" onClick={onShowAllPosts}>Pokaż wszystkie wpisy</button>
+              </div>
+            )}
+            <div className="section-heading"><p className="eyebrow">z ostatnich dni</p><h2>{showFeaturedOnly ? 'Polecane wpisy' : 'Najnowsze wpisy'}</h2><span className="heading-line" /></div>
             {visiblePosts.length > 0 ? <div className="posts-grid">
               <div className="post-column">{visiblePosts.filter((_, index) => index % 2 === 0).map((post, index) => <PostCard key={post.id} post={post} gradientIndex={index * 2} featured={index === 0} />)}</div>
               <div className="post-column">{visiblePosts.filter((_, index) => index % 2 !== 0).map((post, index) => <PostCard key={post.id} post={post} gradientIndex={index * 2 + 1} />)}</div>
@@ -70,6 +87,7 @@ function HomePage({ posts, onRandomPost }: HomePageProps) {
             selectedCategories={selectedCategories}
             onCategoryChange={handleCategoryChange}
             onRandomPost={onRandomPost}
+            onShowRecommended={handleShowRecommended}
             posts={posts}
           />
         </div>

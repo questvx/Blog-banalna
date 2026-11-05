@@ -1,5 +1,5 @@
 .author-dashboard-page {
-  background: #f3f9fd;
+  background: #fffef8;
   color: var(--author-ink);
   min-height: 100vh;
   padding-bottom: 56px;
@@ -47,9 +47,14 @@
   padding: 7px 12px;
 }
 
+
 .author-dashboard-logout:hover:not(:disabled),
 .author-post-actions button:hover:not(:disabled) {
   background: var(--author-blue-light);
+}
+
+.author-dashboard-tab-link {
+  text-decoration: none;
 }
 
 .author-dashboard-logout:disabled,
@@ -83,6 +88,113 @@
   font-size: 36px;
   font-weight: 500;
   margin: 0;
+}
+
+.author-dashboard-tabs {
+  border-bottom: 1px solid var(--author-line);
+  display: flex;
+  gap: 26px;
+  margin-bottom: 20px;
+}
+
+.author-dashboard-tab {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--author-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  margin-bottom: -1px;
+  padding: 12px 2px;
+}
+
+.author-dashboard-tab:hover {
+  color: var(--author-ink);
+}
+
+.author-dashboard-tab[aria-selected="true"] {
+  border-bottom-color: var(--author-blue);
+  color: var(--author-blue-dark);
+  font-weight: 700;
+}
+
+.author-dashboard-tab:focus-visible,
+.author-dashboard-tabpanel:focus-visible {
+  outline: 2px solid var(--author-blue);
+  outline-offset: 3px;
+}
+
+.author-dashboard-tabpanel {
+  outline: none;
+}
+
+.author-horoscope-list {
+  border-top: 1px solid var(--author-line);
+}
+
+.author-horoscope-row {
+  align-items: center;
+  background: var(--author-surface);
+  border: 1px solid var(--author-line);
+  border-top: 0;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(180px, 1fr) auto auto;
+  min-height: 82px;
+  padding: 14px 18px;
+}
+
+.author-horoscope-info h2 {
+  color: var(--author-ink);
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 0 0 5px;
+}
+
+.author-horoscope-info p {
+  color: var(--author-muted);
+  font-size: 11px;
+  margin: 0;
+}
+
+.author-horoscope-status {
+  background: #f6edda;
+  border-radius: 2px;
+  color: #80642d;
+  font-size: 10px;
+  padding: 5px 8px;
+  white-space: nowrap;
+}
+
+.author-horoscope-status.is-complete {
+  background: var(--author-blue-light);
+  color: #365d74;
+}
+
+.author-horoscope-edit,
+.author-dashboard-more-weeks {
+  background: transparent;
+  border: 1px solid var(--author-line);
+  border-radius: 3px;
+  color: var(--author-muted);
+  cursor: pointer;
+  font-size: 12px;
+  min-height: 36px;
+  padding: 7px 12px;
+}
+
+.author-horoscope-edit:hover,
+.author-dashboard-more-weeks:hover {
+  background: var(--author-blue-light);
+}
+
+.author-dashboard-more-weeks {
+  display: block;
+  margin: 18px auto 0;
+  min-height: 40px;
 }
 
 .author-dashboard-primary {
@@ -136,6 +248,110 @@
   padding: 28px;
 }
 
+.author-post-filters {
+  align-items: end;
+  background: var(--author-surface);
+  border: 1px solid var(--author-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+  margin-bottom: 14px;
+  padding: 12px 16px;
+}
+
+.author-post-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 170px;
+}
+
+.author-post-filter-field > span,
+.author-post-featured-filter legend {
+  color: var(--author-muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.author-post-filter-field select {
+  background: #fff;
+  border: 1px solid var(--author-line);
+  border-radius: 3px;
+  color: var(--author-ink);
+  font: inherit;
+  font-size: 12px;
+  min-height: 36px;
+  padding: 6px 9px;
+}
+
+.author-post-filter-field select:focus-visible {
+  border-color: var(--author-blue);
+  outline: 3px solid rgba(75, 130, 159, 0.2);
+}
+
+.author-post-featured-filter {
+  border: 0;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.author-post-featured-filter legend {
+  margin-bottom: 5px;
+  padding: 0;
+}
+
+.author-post-filter-segmented {
+  display: flex;
+  min-height: 36px;
+}
+
+.author-post-filter-segmented button {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--author-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+
+.author-post-filter-segmented button[aria-pressed="true"] {
+  background: var(--author-blue-light);
+  border-bottom-color: var(--author-blue);
+  color: var(--author-ink);
+  font-weight: 700;
+}
+
+.author-post-filter-segmented button:focus-visible,
+.author-post-filter-reset:focus-visible {
+  outline: 3px solid rgba(75, 130, 159, 0.25);
+  outline-offset: 2px;
+}
+
+.author-post-filter-count {
+  color: var(--author-muted);
+  font-size: 11px;
+  margin: 0 0 10px auto;
+  white-space: nowrap;
+}
+
+.author-post-filter-reset {
+  background: transparent;
+  border: 0;
+  color: var(--author-blue-dark);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  margin-bottom: 9px;
+  padding: 2px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
 .author-post-list {
   border-top: 1px solid var(--author-line);
 }
@@ -150,6 +366,19 @@
   grid-template-columns: minmax(180px, 1fr) auto auto auto;
   min-height: 82px;
   padding: 14px 18px;
+}
+
+.author-horoscope-row {
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.author-horoscope-info {
+  grid-column: 1 / -1;
+}
+
+.author-horoscope-edit {
+  justify-self: end;
 }
 
 .author-post-info {
@@ -181,18 +410,22 @@
 }
 
 .author-post-status.is-published {
-  background: var(--author-blue-light);
+  background: rgb(189, 250, 189);
   color: #365d74;
+  font-size: 12px;
 }
 
 .author-post-status.is-draft {
-  background: #f6edda;
-  color: #80642d;
+  background: #b2e7ff;
+  color: #1e3055;
+  font-weight: 900;
+  font-size: 12px;
 }
 
 .author-post-featured {
   background: #fff2cc;
-  color: #765b1a;
+  color: #4d3a10;
+  font-size: 12px;
 }
 
 .author-post-actions {
@@ -216,6 +449,15 @@
 
   .author-dashboard-content {
     padding: 34px 18px 0;
+  }
+
+  .author-post-filters {
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .author-post-filter-count {
+    margin-left: 0;
   }
 
   .author-post-row {

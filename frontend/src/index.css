@@ -9,6 +9,7 @@
   --peach: #f4e3d8;
   --sans: "DM Sans", sans-serif;
   --serif: "Playfair Display", Georgia, serif;
+  --aqua: #a7f5ff;
   color: var(--muted);
   font-family: var(--sans);
   font-synthesis: none;
@@ -28,4 +29,9 @@ body {
 button,
 input {
   font: inherit;
+}
+mark {
+  background: var(--aqua);
+  color: var(--ink);
+  font-style: normal;
 }

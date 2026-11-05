@@ -1,0 +1,9 @@
+target
+uploads
+.git
+.idea
+.vscode
+.env
+.env.*
+!.env.example
+*.iml
