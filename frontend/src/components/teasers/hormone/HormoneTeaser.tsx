@@ -1,4 +1,4 @@
-import type { TeaserProps } from './teasers/TeaserTypes'
+import type { TeaserProps } from '../shared/TeaserTypes'
 import './HormoneTeaser.css'
 
 function HormoneTeaser({ isVisible, isDismissed, onToggle }: TeaserProps) {

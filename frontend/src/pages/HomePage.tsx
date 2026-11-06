@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import Hero from '../components/Hero'
-import PostCard from '../components/PostCard'
-import Sidebar from '../components/Sidebar'
+import Hero from '../components/layout/Hero'
+import PostCard from '../components/posts/PostCard'
+import Sidebar from '../components/sidebar/Sidebar'
 import type { Post } from '../data/posts'
 import './HomePage.css'
 

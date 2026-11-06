@@ -1,5 +1,5 @@
-import type { AdminHoroscopeWeek } from '../../api/adminHoroscopes'
-import { getHoroscopeWeekDates, horoscopeSigns } from '../../api/adminHoroscopes'
+import type { AdminHoroscopeWeek } from '../../../api/adminHoroscopes'
+import { getHoroscopeWeekDates, horoscopeSigns } from '../../../api/adminHoroscopes'
 
 type AuthorHoroscopeListProps = {
   weeks: string[]

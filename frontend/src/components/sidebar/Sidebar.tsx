@@ -1,8 +1,8 @@
 import type { RefObject } from "react";
-import RecommendedBlock from "./sidebar/RecommendedBlock";
-import SearchBlock from "./sidebar/SearchBlock";
-import TagsBlock from "./sidebar/TagsBlock";
-import type { Post } from "../data/posts";
+import RecommendedBlock from "./RecommendedBlock";
+import SearchBlock from "./SearchBlock";
+import TagsBlock from "./TagsBlock";
+import type { Post } from "../../data/posts";
 
 type SidebarProps = {
   searchValue: string;

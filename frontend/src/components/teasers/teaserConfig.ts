@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react'
-import HormoneTeaser from '../HormoneTeaser'
-import HoroscopeTeaser from '../HoroscopeTeaser'
-import type { TeaserId, TeaserProps } from './TeaserTypes'
+import HormoneTeaser from './hormone'
+import HoroscopeTeaser from './horoscope'
+import type { TeaserId, TeaserProps } from './shared/TeaserTypes'
 
 export type TeaserDefinition = {
   id: TeaserId

@@ -1,1 +1,1 @@
-export { default as AuthorDashboard } from './AuthorDashboard'
+export { default as AuthorDashboard } from './dashboard/AuthorDashboard'

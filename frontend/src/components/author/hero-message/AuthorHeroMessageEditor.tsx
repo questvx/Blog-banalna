@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { fetchAdminHeroMessage, saveAdminHeroMessage } from '../../api/adminHeroMessage'
+import { fetchAdminHeroMessage, saveAdminHeroMessage } from '../../../api/adminHeroMessage'
 import './AuthorHeroMessageEditor.css'
 
 const MAX_MESSAGE_LENGTH = 1000

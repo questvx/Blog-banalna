@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { fetchCurrentHoroscope, getHoroscopeWeekDates, horoscopeSigns, type CurrentHoroscope } from '../api/adminHoroscopes'
-import TeaserOverlay from './teasers/TeaserOverlay'
+import { fetchCurrentHoroscope, getHoroscopeWeekDates, horoscopeSigns, type CurrentHoroscope } from '../../../api/adminHoroscopes'
+import TeaserOverlay from '../shared/TeaserOverlay'
 import './HoroscopeOverlay.css'
 
 type HoroscopeOverlayProps = {

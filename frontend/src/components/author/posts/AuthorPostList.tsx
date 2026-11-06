@@ -1,4 +1,4 @@
-import type { AuthorPost } from '../../api/adminPosts'
+import type { AuthorPost } from '../../../api/adminPosts'
 
 type AuthorPostListProps = {
   posts: AuthorPost[]

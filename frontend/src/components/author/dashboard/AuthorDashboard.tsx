@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent, type KeyboardEvent } from 'react'
-import { deleteAdminPost, fetchAdminPosts, saveAdminPost, type AuthorPost } from '../../api/adminPosts'
+import { deleteAdminPost, fetchAdminPosts, saveAdminPost, type AuthorPost } from '../../../api/adminPosts'
 import {
   addDaysToDate,
   fetchAdminHoroscopes,
@@ -7,22 +7,22 @@ import {
   saveAdminHoroscope,
   type AdminHoroscopeWeek,
   type HoroscopeTexts,
-} from '../../api/adminHoroscopes'
-import type { AuthorSession } from '../../api/auth'
-import AuthorPostFilters, { type FeaturedFilter, type PostDateSort } from './AuthorPostFilters'
-import AuthorHeroMessageEditor from './AuthorHeroMessageEditor'
-import AuthorPostEditor from './AuthorPostEditor'
-import AuthorHoroscopeEditor from './AuthorHoroscopeEditor'
-import AuthorHoroscopeList from './AuthorHoroscopeList'
-import AuthorUploadedImages from './AuthorUploadedImages'
-import AuthorPostList from './AuthorPostList'
+} from '../../../api/adminHoroscopes'
+import type { AuthorSession } from '../../../api/auth'
+import AuthorPostFilters, { type FeaturedFilter, type PostDateSort } from '../posts/AuthorPostFilters'
+import AuthorHeroMessageEditor from '../hero-message/AuthorHeroMessageEditor'
+import AuthorPostEditor from '../posts/AuthorPostEditor'
+import AuthorHoroscopeEditor from '../horoscopes/AuthorHoroscopeEditor'
+import AuthorHoroscopeList from '../horoscopes/AuthorHoroscopeList'
+import AuthorUploadedImages from '../media/AuthorUploadedImages'
+import AuthorPostList from '../posts/AuthorPostList'
 import {
   authorCategories,
   authorPostFormToInput,
   authorPostToForm,
   createEmptyAuthorPostForm,
   type AuthorPostForm,
-} from './authorPostForm'
+} from '../posts/authorPostForm'
 import './AuthorDashboard.css'
 
 type AuthorDashboardProps = {

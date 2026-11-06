@@ -1,7 +1,7 @@
 import { useState, type FormEvent, type MouseEvent } from 'react'
-import { fetchAuthorImages } from '../../api/authorMedia'
+import { fetchAuthorImages } from '../../../api/authorMedia'
 import { authorCategories, type AuthorPostForm } from './authorPostForm'
-import AuthorImageUploader from './AuthorImageUploader'
+import AuthorImageUploader from '../media/AuthorImageUploader'
 import './AuthorPostEditor.css'
 
 const HTML_ESCAPE_CHARACTERS: Record<string, string> = {

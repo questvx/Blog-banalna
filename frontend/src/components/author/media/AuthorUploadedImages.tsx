@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent } from 'react'
-import { fetchAdminPosts, type AuthorPost } from '../../api/adminPosts'
-import { deleteAuthorImage, fetchAuthorImages, replaceAuthorImage, uploadAuthorImage } from '../../api/authorMedia'
+import { fetchAdminPosts, type AuthorPost } from '../../../api/adminPosts'
+import { deleteAuthorImage, fetchAuthorImages, replaceAuthorImage, uploadAuthorImage } from '../../../api/authorMedia'
 import AuthorImageCropEditor from './AuthorImageCropEditor'
 import {
   createScaledImage,

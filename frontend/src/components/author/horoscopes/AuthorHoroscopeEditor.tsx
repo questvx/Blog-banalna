@@ -4,7 +4,7 @@ import {
   getHoroscopeWeekDates,
   horoscopeSigns,
   type HoroscopeTexts,
-} from '../../api/adminHoroscopes'
+} from '../../../api/adminHoroscopes'
 import './AuthorHoroscopeEditor.css'
 
 type AuthorHoroscopeEditorProps = {
