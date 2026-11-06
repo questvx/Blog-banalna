@@ -12,6 +12,7 @@ type TeaserOverlayProps = {
   title: string;
   children: ReactNode;
   onClose: () => void;
+  theme?: 'hormone';
 };
 
 function TeaserOverlay({
@@ -19,6 +20,7 @@ function TeaserOverlay({
   title,
   children,
   onClose,
+  theme,
 }: TeaserOverlayProps) {
   const dialogRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -100,7 +102,7 @@ function TeaserOverlay({
     >
       <section
         ref={dialogRef}
-        className="teaser-overlay"
+        className={`teaser-overlay${theme ? ` teaser-overlay--${theme}` : ''}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="teaser-overlay-title"

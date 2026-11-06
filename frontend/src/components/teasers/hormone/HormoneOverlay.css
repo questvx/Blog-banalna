@@ -1,0 +1,102 @@
+.hormone-overlay-prompt {
+  color: rgba(245, 255, 252, 0.82);
+  font-family: var(--serif);
+  font-size: 19px;
+  margin: 0 0 20px;
+}
+
+.hormone-mood-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.hormone-mood-choice {
+  background: rgba(245, 255, 252, 0.06);
+  border: 1px solid rgba(165, 255, 251, 0.2);
+  border-radius: 12px;
+  color: #f5fffc;
+  cursor: pointer;
+  font-family: var(--serif);
+  font-size: 15px;
+  min-height: 66px;
+  padding: 10px;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.hormone-mood-choice:hover {
+  background: rgba(165, 255, 251, 0.12);
+  transform: translateY(-2px);
+}
+
+.hormone-mood-choice.is-selected {
+  background: rgba(165, 255, 251, 0.18);
+  border-color: #a5fffb;
+}
+
+.hormone-mood-detail {
+  align-items: center;
+  background: rgba(165, 255, 251, 0.08);
+  border: 1px solid rgba(165, 255, 251, 0.28);
+  border-radius: 16px;
+  color: rgba(245, 255, 252, 0.88);
+  display: flex;
+  gap: 22px;
+  line-height: 1.7;
+  margin-top: 22px;
+  padding: 22px;
+}
+
+.hormone-mood-detail h3 {
+  color: #a5fffb;
+  font-family: var(--serif);
+  font-size: 25px;
+  font-weight: 400;
+  margin: 0 0 8px;
+}
+
+.hormone-mood-detail p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.hormone-mood-image {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  flex: 0 0 150px;
+  object-fit: cover;
+  width: 150px;
+}
+
+@media (max-width: 760px) {
+  .hormone-mood-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .hormone-mood-choice {
+    font-size: 13px;
+    min-height: 58px;
+    padding: 7px;
+  }
+
+  .hormone-mood-detail {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+    padding: 17px;
+  }
+
+  .hormone-mood-image {
+    flex-basis: auto;
+    max-height: 220px;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hormone-mood-choice {
+    transition: none;
+  }
+}
