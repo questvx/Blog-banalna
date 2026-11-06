@@ -2,7 +2,7 @@ export const MIN_IMAGE_SCALE_PERCENT = 10
 export const MAX_IMAGE_SCALE_PERCENT = 500
 export const POST_CARD_CROP_ASPECT_RATIOS = {
   large: 2.4,
-  small: 2,
+  small: 1.7,
 } as const
 
 export type PostCardCropType = keyof typeof POST_CARD_CROP_ASPECT_RATIOS

@@ -186,7 +186,7 @@ function AuthorImageCropEditor({ imageUrl, previewUrl, onCancel, onSave }: Autho
                   setPosition({ x: 0.5, y: 0.5 })
                 }}
               >
-                Mała karta · 2:1
+                Mała karta · 1,7:1
               </button>
             </div>
 
