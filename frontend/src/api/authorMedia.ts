@@ -13,6 +13,11 @@ function resolveImageUrl(url: string): string {
   return new URL(url, apiOrigin).toString()
 }
 
+function getImageFileName(imageUrl: string): string | undefined {
+  const encodedFileName = new URL(imageUrl).pathname.split('/').pop()
+  return encodedFileName ? decodeURIComponent(encodedFileName) : undefined
+}
+
 export async function fetchAuthorImages(): Promise<string[]> {
   const response = await fetch(`${API_URL}/admin/uploads`, { credentials: 'include' })
 
@@ -63,7 +68,7 @@ export async function replaceAuthorImage(imageUrl: string, file: File): Promise<
     throw new Error('Przeskalowany obraz może mieć maksymalnie 5 MB.')
   }
 
-  const fileName = new URL(imageUrl).pathname.split('/').pop()
+  const fileName = getImageFileName(imageUrl)
   if (!fileName) throw new Error('Nie udało się rozpoznać zdjęcia do zmiany.')
 
   const csrf = await fetchCsrfToken()
@@ -89,7 +94,7 @@ export async function replaceAuthorImage(imageUrl: string, file: File): Promise<
 }
 
 export async function deleteAuthorImage(imageUrl: string): Promise<void> {
-  const fileName = new URL(imageUrl).pathname.split('/').pop()
+  const fileName = getImageFileName(imageUrl)
   if (!fileName) throw new Error('Nie udało się rozpoznać zdjęcia do usunięcia.')
 
   const csrf = await fetchCsrfToken()
