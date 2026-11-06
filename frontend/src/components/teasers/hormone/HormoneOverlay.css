@@ -7,8 +7,8 @@
 
 .hormone-mood-grid {
   display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .hormone-mood-choice {
@@ -17,11 +17,28 @@
   border-radius: 12px;
   color: #f5fffc;
   cursor: pointer;
-  font-family: var(--serif);
-  font-size: 15px;
-  min-height: 66px;
-  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  font: inherit;
+  gap: 7px;
+  min-height: 88px;
+  padding: 14px;
+  text-align: left;
   transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.hormone-mood-choice-image {
+  align-self: center;
+  border-radius: 8px;
+  max-height: 120px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.hormone-mood-choice span {
+  color: rgba(245, 255, 252, 0.76);
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .hormone-mood-choice:hover {
@@ -50,14 +67,37 @@
 .hormone-mood-detail h3 {
   color: #a5fffb;
   font-family: var(--serif);
-  font-size: 25px;
+  font-size: 30px;
   font-weight: 400;
-  margin: 0 0 8px;
+  margin: 0 0 16px;
+}
+
+.hormone-mood-eyebrow {
+  color: rgba(165, 255, 251, 0.75);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  margin: 0 0 4px;
+}
+
+.hormone-mood-section + .hormone-mood-section {
+  margin-top: 20px;
+}
+
+.hormone-mood-section h4 {
+  color: #a5fffb;
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 400;
+  margin: 0 0 7px;
 }
 
 .hormone-mood-detail p {
   font-size: 14px;
-  margin: 0;
+  margin: 0 0 14px;
+}
+
+.hormone-mood-section p:last-child {
+  margin-bottom: 0;
 }
 
 .hormone-mood-image {
@@ -70,15 +110,18 @@
 
 @media (max-width: 760px) {
   .hormone-mood-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
   }
 }
 
 @media (max-width: 520px) {
   .hormone-mood-choice {
-    font-size: 13px;
-    min-height: 58px;
-    padding: 7px;
+    min-height: 0;
+    padding: 12px;
+  }
+
+  .hormone-mood-choice span {
+    font-size: 11px;
   }
 
   .hormone-mood-detail {

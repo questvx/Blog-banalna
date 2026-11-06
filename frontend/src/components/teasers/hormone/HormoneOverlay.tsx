@@ -27,7 +27,8 @@ function HormoneOverlay({ onClose }: HormoneOverlayProps) {
             aria-pressed={selectedMood?.id === mood.id}
             onClick={() => setSelectedMood(mood)}
           >
-            {mood.name}
+            <img className="hormone-mood-choice-image" src={mood.image} alt={mood.name} />
+            <span>{mood.shortDescription}</span>
           </button>
         ))}
       </div>
@@ -41,8 +42,16 @@ function HormoneOverlay({ onClose }: HormoneOverlayProps) {
             />
           )}
           <div>
+            <p className="hormone-mood-eyebrow">JAKI HORMON</p>
             <h3 id="hormone-mood-title">{selectedMood.name}</h3>
-            <p>{selectedMood.description}</p>
+            {selectedMood.sections.map((section, sectionIndex) => (
+              <div className="hormone-mood-section" key={`${selectedMood.id}-${sectionIndex}`}>
+                {section.heading && <h4>{section.heading}</h4>}
+                {section.paragraphs.map((paragraph, paragraphIndex) => (
+                  <p key={`${selectedMood.id}-${sectionIndex}-${paragraphIndex}`}>{paragraph}</p>
+                ))}
+              </div>
+            ))}
           </div>
         </section>
       )}
