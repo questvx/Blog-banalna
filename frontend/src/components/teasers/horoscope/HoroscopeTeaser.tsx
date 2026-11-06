@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import type { TeaserProps } from './teasers/TeaserTypes'
+import type { TeaserProps } from '../shared/TeaserTypes'
 import HoroscopeOverlay from './HoroscopeOverlay'
 import './HoroscopeTeaser.css'
 

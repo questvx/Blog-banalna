@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchHeroMessage } from '../api/heroMessage'
+import { fetchHeroMessage } from '../../api/heroMessage'
 import './Hero.css'
 
 const DEFAULT_HERO_MESSAGE = '„Dziś jestem zmotywowana tak samo jak moje kapcie;\ndo siedzenia i dumnego patrzenia na świat.”'

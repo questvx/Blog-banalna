@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Post } from '../data/posts'
+import type { Post } from '../../data/posts'
 import './PostCard.css'
 
 type PostCardProps = { post: Post; featured?: boolean; gradientIndex: number }

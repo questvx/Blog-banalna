@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent } from 'react'
-import { uploadAuthorImage } from '../../api/authorMedia'
+import { uploadAuthorImage } from '../../../api/authorMedia'
 import './AuthorImageUploader.css'
 
 type AuthorImageUploaderProps = {

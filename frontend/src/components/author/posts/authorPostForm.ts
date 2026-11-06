@@ -1,4 +1,4 @@
-import type { AuthorPost, PostInput } from '../../api/adminPosts'
+import type { AuthorPost, PostInput } from '../../../api/adminPosts'
 
 export type AuthorPostForm = {
   title: string
