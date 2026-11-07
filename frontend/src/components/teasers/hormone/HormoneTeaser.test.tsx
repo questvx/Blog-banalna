@@ -14,7 +14,7 @@ describe('HormoneTeaser', () => {
   it('opens the hormone overlay with every mood available', () => {
     openHormoneOverlay()
 
-    expect(screen.getByRole('dialog', { name: 'JAK HORMON jest DZIŚ Z TOBĄ?' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Jaki hormon jest dziś z Tobą?' })).toBeInTheDocument()
     expect(screen.getByText('Kim jesteś dzisiaj?')).toBeInTheDocument()
 
     for (const mood of hormoneMoods) {

@@ -12,7 +12,7 @@
 }
 
 .hormone-mood-choice {
-  background: rgba(245, 255, 252, 0.06);
+  background: rgba(245, 255, 252, 0.384);
   border: 1px solid rgba(165, 255, 251, 0.2);
   border-radius: 12px;
   color: #f5fffc;
@@ -30,15 +30,17 @@
 .hormone-mood-choice-image {
   align-self: center;
   border-radius: 8px;
-  max-height: 120px;
+  filter: drop-shadow(0px 0px 5px  rgb(250, 255, 250));
+  max-height: 180px;
   max-width: 100%;
   object-fit: contain;
 }
 
 .hormone-mood-choice span {
   color: rgba(245, 255, 252, 0.76);
-  font-size: 12px;
+  font-size: 17px;
   line-height: 1.5;
+  filter: drop-shadow(1px 1px 0px  rgb(27, 27, 27));
 }
 
 .hormone-mood-choice:hover {
@@ -56,7 +58,7 @@
   background: rgba(165, 255, 251, 0.08);
   border: 1px solid rgba(165, 255, 251, 0.28);
   border-radius: 16px;
-  color: rgba(245, 255, 252, 0.88);
+  color: rgb(245, 255, 252);
   display: flex;
   gap: 22px;
   line-height: 1.7;
@@ -86,13 +88,13 @@
 .hormone-mood-section h4 {
   color: #a5fffb;
   font-family: var(--serif);
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 400;
   margin: 0 0 7px;
 }
 
 .hormone-mood-detail p {
-  font-size: 14px;
+  font-size: 16px;
   margin: 0 0 14px;
 }
 

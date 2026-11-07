@@ -12,8 +12,8 @@ function HormoneOverlay({ onClose }: HormoneOverlayProps) {
 
   return (
     <TeaserOverlay
-      eyebrow="SPRAWDŹ,"
-      title="JAK HORMON jest DZIŚ Z TOBĄ?"
+      eyebrow="SPRAWDŹ SWOJE HORMONY"
+      title="Jaki hormon jest dziś z Tobą?"
       theme="hormone"
       onClose={onClose}
     >
@@ -42,7 +42,6 @@ function HormoneOverlay({ onClose }: HormoneOverlayProps) {
             />
           )}
           <div>
-            <p className="hormone-mood-eyebrow">JAKI HORMON</p>
             <h3 id="hormone-mood-title">{selectedMood.name}</h3>
             {selectedMood.sections.map((section, sectionIndex) => (
               <div className="hormone-mood-section" key={`${selectedMood.id}-${sectionIndex}`}>

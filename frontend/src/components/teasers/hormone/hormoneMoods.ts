@@ -107,8 +107,8 @@ export const hormoneMoods: HormoneMood[] = [
       {
         paragraphs: [
           'Nic Ci się dziś nie chce… Tak bardzo nie chce… I właściwie nie widzisz żadnego powodu, żeby to zmieniać.',
-          'I może to wcale nie jest zła wiadomość. Może właśnie dziś jest chwila na oddech. Nie masz ochoty nigdzie biec, niczego załatwiać, niczego nadrabiać. Chcesz po prostu poleżeć, posiedzieć, popatrzeć przez okno. I co najważniejsze — nie masz z tego powodu wyrzutów sumienia.',
-          'To nie jest zmęczenie, które Cię przygniata. Bardziej coś w rodzaju ukojenia. Jesteś spokojna, trochę obojętna na to, co zwykle trzeba zrobić. Jakbyś na chwilę unosiła się nad tym wszystkim. Lekka. I może właśnie tego potrzebujesz.',
+          'I może to wcale nie jest zła wiadomość. Może właśnie dziś jest chwila na oddech. Nie masz ochoty nigdzie biec, niczego załatwiać, niczego nadrabiać. Chcesz po prostu poleżeć, posiedzieć, popatrzeć przez okno.',
+          ' I co najważniejsze — nie masz z tego powodu wyrzutów sumienia. To nie jest zmęczenie, które Cię przygniata. Bardziej coś w rodzaju ukojenia. Jesteś spokojna, trochę obojętna na to, co zwykle trzeba zrobić. Jakbyś na chwilę unosiła się nad tym wszystkim. Lekka. I może właśnie tego potrzebujesz.',
         ],
       },
       {
