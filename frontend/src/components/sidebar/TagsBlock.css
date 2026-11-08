@@ -36,6 +36,12 @@
 .tag-list button:nth-child(6) {
   background: #c3ffcd;
 }
+.tag-list button:nth-child(7) {
+  background: #f8d3d5;
+}
+.tag-list button:nth-child(8) {
+  background: #a5fffb;
+}
 .tag-list button:hover {
   filter: brightness(0.95);
   color: var(--coral);
