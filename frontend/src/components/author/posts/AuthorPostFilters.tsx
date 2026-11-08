@@ -32,7 +32,11 @@ function AuthorPostFilters({
         <span>Kategoria</span>
         <select value={selectedCategory} onChange={(event) => onCategoryChange(event.target.value)}>
           <option value="ALL">Wszystkie kategorie</option>
-          {categories.map((category) => <option key={category} value={category}>{category}</option>)}
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category === 'ciekawostka' ? 'ciekawostka' : category}
+            </option>
+          ))}
         </select>
       </label>
 

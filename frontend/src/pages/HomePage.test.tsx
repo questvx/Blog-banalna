@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
+import type { Curiosity } from '../data/curiosities'
 import { createPost } from '../test/fixtures'
 import HomePage from './HomePage'
 
@@ -11,10 +12,11 @@ function renderHomePage(posts = [
   createPost({ id: 3, title: 'Książka na weekend', category: 'książka' }),
   createPost({ id: 4, title: 'Wieczór filmowy', category: 'filmy' }),
   createPost({ id: 5, title: 'Piąty wpis', category: 'sport' }),
-]) {
+], curiosities: Curiosity[] = []) {
   const props = {
     posts,
-    categories: ['kuchnia', 'filmy', 'książka', 'sport'],
+    curiosities,
+    categories: ['kuchnia', 'filmy', 'książka', 'sport', 'ciekawostka'],
     selectedCategories: [],
     onCategoryChange: vi.fn(),
     onRandomPost: vi.fn(),
@@ -42,6 +44,22 @@ describe('HomePage', () => {
     fireEvent.change(screen.getByRole('textbox', { name: 'Szukaj' }), { target: { value: 'brak takiego wpisu' } })
 
     expect(screen.getByText('Nie znalazłam niczego pod tą frazą. Spróbuj inaczej.')).toBeInTheDocument()
+  })
+
+  it('renders the full curiosity as a non-clickable card in the post feed', () => {
+    const curiosity: Curiosity = {
+      id: 12,
+      title: 'Dlaczego miód się nie psuje?',
+      content: 'Pełna treść ciekawostki.\nDrugi akapit.',
+      createdAt: '2026-12-01T12:00:00',
+    }
+    renderHomePage(undefined, [curiosity])
+
+    const card = screen.getByRole('article', { name: curiosity.title })
+    expect(within(card).getByRole('heading', { level: 3, name: curiosity.title })).toBeInTheDocument()
+    expect(card).toHaveTextContent('Pełna treść ciekawostki. Drugi akapit.')
+    expect(within(card).getByText('Ciekawostka')).toBeInTheDocument()
+    expect(within(card).queryByRole('link')).not.toBeInTheDocument()
   })
 
   it('loads two more posts when the user requests older posts', () => {

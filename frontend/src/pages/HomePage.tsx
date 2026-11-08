@@ -1,12 +1,19 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Hero from '../components/layout/Hero'
+import CuriosityCard from '../components/posts/CuriosityCard'
 import PostCard from '../components/posts/PostCard'
 import Sidebar from '../components/sidebar/Sidebar'
+import type { Curiosity } from '../data/curiosities'
 import type { Post } from '../data/posts'
 import './HomePage.css'
 
+type FeedEntry =
+  | { type: 'POST'; post: Post }
+  | { type: 'CURIOSITY'; curiosity: Curiosity }
+
 type HomePageProps = {
   posts: Post[]
+  curiosities: Curiosity[]
   categories: string[]
   selectedCategories: string[]
   onCategoryChange: (category: string) => void
@@ -16,7 +23,7 @@ type HomePageProps = {
   showFeaturedOnly: boolean
 }
 
-function HomePage({ posts, categories, selectedCategories, onCategoryChange, onRandomPost, onShowRecommended, onShowAllPosts, showFeaturedOnly }: HomePageProps) {
+function HomePage({ posts, curiosities, categories, selectedCategories, onCategoryChange, onRandomPost, onShowRecommended, onShowAllPosts, showFeaturedOnly }: HomePageProps) {
   const [searchValue, setSearchValue] = useState('')
   const [visibleCount, setVisibleCount] = useState(4)
   const searchRef = useRef<HTMLInputElement>(null)
@@ -25,8 +32,21 @@ function HomePage({ posts, categories, selectedCategories, onCategoryChange, onR
     const matchesSearch = `${post.title} ${post.excerpt} ${post.category}`.toLowerCase().includes(searchValue.toLowerCase())
     const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(post.category)
     return matchesSearch && matchesCategory && (!showFeaturedOnly || post.featured)
-  }).sort((postA, postB) => showFeaturedOnly ? postB.date.localeCompare(postA.date) : 0)
-  const visiblePosts = filteredPosts.slice(0, visibleCount)
+  })
+  const filteredCuriosities = showFeaturedOnly ? [] : curiosities.filter((curiosity) => {
+    const matchesSearch = `${curiosity.title} ${curiosity.content}`.toLowerCase().includes(searchValue.toLowerCase())
+    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes('ciekawostka')
+    return matchesSearch && matchesCategory
+  })
+  const filteredItems: FeedEntry[] = [
+    ...filteredPosts.map((post) => ({ type: 'POST' as const, post })),
+    ...filteredCuriosities.map((curiosity) => ({ type: 'CURIOSITY' as const, curiosity })),
+  ].sort((first, second) => {
+    const firstDate = first.type === 'POST' ? first.post.date : first.curiosity.createdAt.slice(0, 10)
+    const secondDate = second.type === 'POST' ? second.post.date : second.curiosity.createdAt.slice(0, 10)
+    return secondDate.localeCompare(firstDate)
+  })
+  const visibleItems = filteredItems.slice(0, visibleCount)
 
   const handleShowRecommended = () => {
     setSearchValue('')
@@ -50,15 +70,18 @@ function HomePage({ posts, categories, selectedCategories, onCategoryChange, onR
 
   useEffect(() => {
     const sentinel = loadMoreRef.current
-    if (!sentinel || visibleCount >= filteredPosts.length) return
+    if (!sentinel || visibleCount >= filteredItems.length) return
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setVisibleCount((count) => Math.min(count + 2, filteredPosts.length))
+      if (entry.isIntersecting) setVisibleCount((count) => Math.min(count + 2, filteredItems.length))
     }, { rootMargin: '240px' })
     observer.observe(sentinel)
     return () => observer.disconnect()
-  }, [filteredPosts.length, visibleCount])
+  }, [filteredItems.length, visibleCount])
 
-  const loadMore = () => setVisibleCount((count) => Math.min(count + 2, filteredPosts.length))
+  const loadMore = () => setVisibleCount((count) => Math.min(count + 2, filteredItems.length))
+  const renderFeedEntry = (entry: FeedEntry, gradientIndex: number, featured = false) => entry.type === 'CURIOSITY'
+    ? <CuriosityCard key={`curiosity-${entry.curiosity.id}`} curiosity={entry.curiosity} />
+    : <PostCard key={`post-${entry.post.id}`} post={entry.post} gradientIndex={gradientIndex} featured={featured} />
 
   return (
     <div className="site-shell">
@@ -73,11 +96,11 @@ function HomePage({ posts, categories, selectedCategories, onCategoryChange, onR
               </div>
             )}
             <div className="section-heading"><p className="eyebrow">z ostatnich dni</p><h2>{showFeaturedOnly ? 'Polecane wpisy' : 'Najnowsze wpisy'}</h2><span className="heading-line" /></div>
-            {visiblePosts.length > 0 ? <div className="posts-grid">
-              <div className="post-column">{visiblePosts.filter((_, index) => index % 2 === 0).map((post, index) => <PostCard key={post.id} post={post} gradientIndex={index * 2} featured={index === 0} />)}</div>
-              <div className="post-column">{visiblePosts.filter((_, index) => index % 2 !== 0).map((post, index) => <PostCard key={post.id} post={post} gradientIndex={index * 2 + 1} />)}</div>
+            {visibleItems.length > 0 ? <div className="posts-grid">
+              <div className="post-column">{visibleItems.filter((_, index) => index % 2 === 0).map((entry, index) => renderFeedEntry(entry, index * 2, index === 0 && entry.type === 'POST'))}</div>
+              <div className="post-column">{visibleItems.filter((_, index) => index % 2 !== 0).map((entry, index) => renderFeedEntry(entry, index * 2 + 1))}</div>
             </div> : <p className="empty-state">Nie znalazłam niczego pod tą frazą. Spróbuj inaczej.</p>}
-            {visibleCount < filteredPosts.length && visiblePosts.length > 0 && <><div className="load-more-sentinel" ref={loadMoreRef} /><button className="load-more" type="button" onClick={loadMore}>pokaż starsze wpisy <span aria-hidden="true">↓</span></button></>}
+            {visibleCount < filteredItems.length && visibleItems.length > 0 && <><div className="load-more-sentinel" ref={loadMoreRef} /><button className="load-more" type="button" onClick={loadMore}>pokaż starsze wpisy <span aria-hidden="true">↓</span></button></>}
           </section>
           <Sidebar
             searchValue={searchValue}
