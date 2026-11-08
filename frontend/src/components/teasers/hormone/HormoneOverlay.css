@@ -8,11 +8,24 @@
 .hormone-mood-grid {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
+.hormone-mood-choice:nth-child(4) {
+  grid-column: 2 / span 2;
+}
+
+.hormone-mood-choice:nth-child(5) {
+  grid-column: 4 / span 2;
+}
+
+/*
 .hormone-mood-choice {
-  background: rgba(245, 255, 252, 0.384);
+  background: linear-gradient(
+    to bottom,
+    rgba(222, 255, 233, 0.055) 0%,
+    rgba(228, 252, 246, 0.616) 100%
+  );
   border: 1px solid rgba(165, 255, 251, 0.2);
   border-radius: 12px;
   color: #f5fffc;
@@ -25,37 +38,77 @@
   padding: 14px;
   text-align: left;
   transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+} */
+
+.hormone-mood-choice {
+  background: rgba(245, 255, 252, 0.432);
+
+  background: linear-gradient(
+    to bottom,
+    rgba(223, 252, 248, 0.151) 10%,
+    rgba(255, 255, 255, 0.829) 50%,
+    rgba(200, 252, 239, 0.5) 100%
+  );
+  background-position: center top;
+  background-size: 100% 200%;
+  border: 1px solid rgba(165, 255, 251, 0.2);
+  border-radius: 12px;
+  color: #f5fffc;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  font: inherit;
+  gap: 7px;
+  min-height: 88px;
+  padding: 14px;
+  text-align: left;
+  transition:
+    background-position 0.35s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+  grid-column: span 2;
 }
 
 .hormone-mood-choice-image {
   align-self: center;
   border-radius: 8px;
-  filter: drop-shadow(0px 0px 5px  rgb(250, 255, 250));
+  filter: drop-shadow(0 0 5px rgb(250 255 250))
+    drop-shadow(0 0 10px rgb(250 255 250));
   max-height: 180px;
   max-width: 100%;
   object-fit: contain;
 }
 
+
 .hormone-mood-choice span {
-  color: rgba(245, 255, 252, 0.76);
-  font-size: 17px;
+  color: rgba(12, 12, 12, 0.849);
+  font-size: 16px;
   line-height: 1.5;
-  filter: drop-shadow(1px 1px 0px  rgb(27, 27, 27));
+  font-weight: 500;
+   /* filter: drop-shadow(1px 1px 0px  rgb(150, 148, 148));  */
 }
 
 .hormone-mood-choice:hover {
-  background: rgba(165, 255, 251, 0.12);
+  background-position: center bottom;
+  border-color: rgba(165, 255, 251, 0.55);
   transform: translateY(-2px);
 }
 
 .hormone-mood-choice.is-selected {
-  background: rgba(165, 255, 251, 0.18);
+  background-position: center bottom;
   border-color: #a5fffb;
+  box-shadow: 0 5px 16px rgba(165, 255, 251, 0.16);
+  transform: translateY(-2px) scale(1.01);
+}
+
+.hormone-mood-choice:active {
+  transform: translateY(0) scale(0.995);
 }
 
 .hormone-mood-detail {
   align-items: center;
-  background: rgba(165, 255, 251, 0.08);
+  background: rgba(165, 255, 250, 0.171);
   border: 1px solid rgba(165, 255, 251, 0.28);
   border-radius: 16px;
   color: rgb(245, 255, 252);
@@ -107,7 +160,8 @@
   border-radius: 12px;
   flex: 0 0 150px;
   object-fit: cover;
-  width: 150px;
+  width: 200px;
+  filter: drop-shadow(0px 0px 30px  rgb(250, 255, 250));
 }
 
 @media (max-width: 760px) {

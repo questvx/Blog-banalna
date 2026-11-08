@@ -19,7 +19,6 @@ describe('HormoneTeaser', () => {
 
     for (const mood of hormoneMoods) {
       const choice = screen.getByRole('button', { name: new RegExp(mood.name) })
-      expect(choice).toHaveAttribute('aria-pressed', 'false')
       expect(choice).toHaveTextContent(mood.shortDescription)
       expect(screen.getByRole('img', { name: mood.name })).toBeInTheDocument()
     }
@@ -30,18 +29,17 @@ describe('HormoneTeaser', () => {
     fireEvent.click(screen.getByRole('button', { name: new RegExp(mood.name) }))
 
     expect(screen.getByRole('heading', { name: mood.name })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: new RegExp(mood.name) })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.queryByRole('group', { name: 'Wybierz swój nastrój' })).not.toBeInTheDocument()
+    expect(screen.queryByText('Kim jesteś dzisiaj?')).not.toBeInTheDocument()
     expect(screen.getByText(mood.sections[0].paragraphs[1])).toBeInTheDocument()
   })
 
-  it('lets the reader change mood and close the overlay with Escape', () => {
+  it('shows only the selected mood and closes the overlay with Escape', () => {
     openHormoneOverlay()
     fireEvent.click(screen.getByRole('button', { name: /ZŁOŚNICA/ }))
-    fireEvent.click(screen.getByRole('button', { name: /KOCIAK/ }))
 
-    expect(screen.getByRole('button', { name: /ZŁOŚNICA/ })).toHaveAttribute('aria-pressed', 'false')
-    expect(screen.getByRole('button', { name: /KOCIAK/ })).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getByRole('heading', { name: 'A co na to hormony?' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'ZŁOŚNICA' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /KOCIAK/ })).not.toBeInTheDocument()
 
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()

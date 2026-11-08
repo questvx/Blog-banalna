@@ -1,0 +1,60 @@
+.post-card.curiosity-card {
+  background: linear-gradient(135deg, #f3faff 0%, #e1f1ff 58%, #d2eaff 100%);
+  border: 1px solid rgba(73, 132, 184, 0.24);
+  border-radius: 35px;
+}
+
+.curiosity-card-label {
+  background: #c9e5fb;
+  border-radius: 999px;
+  color: #24577d;
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin-bottom: 0;
+  padding: 5px 9px;
+  text-transform: uppercase;
+}
+
+.curiosity-card-header {
+  height: 22px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.curiosity-card-bulb {
+  font-size: 42px;
+  line-height: 1;
+  position: absolute;
+  right: -13px;
+  top: 50%;
+  transform: translateY(-20%);
+  transform-origin: center;
+  transition: transform 200ms ease;
+}
+
+.curiosity-card:hover .curiosity-card-bulb {
+  transform: translateY(-20%) scale(1.1);
+}
+
+.curiosity-card .post-content h3 {
+  color: var(--ink);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.curiosity-card-body {
+  color: #344b5c;
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 10px 0 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .curiosity-card-bulb {
+    transition: none;
+  }
+}

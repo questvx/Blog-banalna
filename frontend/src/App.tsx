@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import AuthorLogin from './pages/AuthorLogin'
 import { fetchPosts } from './api/posts'
+import { fetchCuriosities } from './api/curiosities'
 import Footer from './components/layout/Footer'
 import Header from './components/layout/Header'
 import TeaserManager from './components/teasers/TeaserManager'
 import type { Post } from './data/posts'
+import type { Curiosity } from './data/curiosities'
 import HomePage from './pages/HomePage'
 import PostPage from './pages/posts/PostPage'
 
-const categories = ['kuchnia', 'filmy', 'książka', 'technologia', 'sport', 'dlaczego?', 'inne']
+const categories = ['kuchnia', 'filmy', 'książka', 'technologia', 'sport', 'dlaczego?', 'inne', 'ciekawostka']
 
 function getPostFromHash(posts: Post[]) {
   const match = window.location.hash.match(/^#post-(\d+)$/)
@@ -18,6 +20,7 @@ function getPostFromHash(posts: Post[]) {
 
 function BlogApp() {
   const [posts, setPosts] = useState<Post[]>([])
+  const [curiosities, setCuriosities] = useState<Curiosity[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string>()
   const [post, setPost] = useState<Post>()
@@ -25,9 +28,10 @@ function BlogApp() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
 
   useEffect(() => {
-    fetchPosts()
-      .then((loadedPosts) => {
+    Promise.all([fetchPosts(), fetchCuriosities()])
+      .then(([loadedPosts, loadedCuriosities]) => {
         setPosts(loadedPosts)
+        setCuriosities(loadedCuriosities)
         setPost(getPostFromHash(loadedPosts))
       })
       .catch((fetchError: unknown) => {
@@ -85,7 +89,7 @@ function BlogApp() {
       <Header onSearchFocus={() => document.getElementById('post-search')?.focus()} />
       {post
         ? <PostPage post={post} posts={posts} categories={categories} selectedCategories={selectedCategories} onCategoryChange={handleCategoryChangeFromPost} onRandomPost={handleRandomPost} onShowRecommended={handleShowRecommended} showFeaturedOnly={showFeaturedOnly} />
-        : <HomePage posts={posts} categories={categories} selectedCategories={selectedCategories} onCategoryChange={handleCategoryChange} onRandomPost={handleRandomPost} onShowRecommended={handleShowRecommended} onShowAllPosts={handleShowAllPosts} showFeaturedOnly={showFeaturedOnly} />}
+        : <HomePage posts={posts} curiosities={curiosities} categories={categories} selectedCategories={selectedCategories} onCategoryChange={handleCategoryChange} onRandomPost={handleRandomPost} onShowRecommended={handleShowRecommended} onShowAllPosts={handleShowAllPosts} showFeaturedOnly={showFeaturedOnly} />}
       <Footer />
       <TeaserManager />
     </div>

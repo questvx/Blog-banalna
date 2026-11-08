@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { deleteAdminPost, fetchAdminPosts, saveAdminPost, type AuthorPost } from '../../../api/adminPosts'
 import {
+  deleteAdminCuriosity,
+  fetchAdminCuriosities,
+  saveAdminCuriosity,
+  type AdminCuriosity,
+  type CuriosityInput,
+} from '../../../api/adminCuriosities'
+import {
   addDaysToDate,
   fetchAdminHoroscopes,
   getCurrentHoroscopeWeekStart,
@@ -15,7 +22,8 @@ import AuthorPostEditor from '../posts/AuthorPostEditor'
 import AuthorHoroscopeEditor from '../horoscopes/AuthorHoroscopeEditor'
 import AuthorHoroscopeList from '../horoscopes/AuthorHoroscopeList'
 import AuthorUploadedImages from '../media/AuthorUploadedImages'
-import AuthorPostList from '../posts/AuthorPostList'
+import AuthorPostList, { type AuthorListEntry } from '../posts/AuthorPostList'
+import AuthorCuriosityEditor from '../curiosities/AuthorCuriosityEditor'
 import {
   authorCategories,
   authorPostFormToInput,
@@ -36,6 +44,7 @@ const uploadedImagesPath = '/autorka/wgrane-zdjecia'
 const dashboardTabs = ['posts', 'heroMessage', 'horoscope', 'images'] as const
 type DashboardTab = (typeof dashboardTabs)[number]
 const INITIAL_HOROSCOPE_WEEKS = 12
+const curiosityCategory = 'ciekawostka'
 const dashboardTabLabels: Record<DashboardTab, string> = {
   posts: 'Posty',
   horoscope: 'Horoskopy',
@@ -55,12 +64,19 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
   const isUploadedImagesPage = window.location.pathname === uploadedImagesPath
   const [activeTab, setActiveTab] = useState<DashboardTab>(getInitialDashboardTab)
   const [posts, setPosts] = useState<AuthorPost[]>([])
+  const [curiosities, setCuriosities] = useState<AdminCuriosity[]>([])
   const [form, setForm] = useState<AuthorPostForm>(createEmptyAuthorPostForm)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isCuriosityEditorOpen, setIsCuriosityEditorOpen] = useState(false)
+  const [editingCuriosity, setEditingCuriosity] = useState<AdminCuriosity | null>(null)
+  const [isCuriositySaving, setIsCuriositySaving] = useState(false)
+  const [curiosityError, setCuriosityError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const [isCuriosityLoading, setIsCuriosityLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [deletingCuriosityId, setDeletingCuriosityId] = useState<number | null>(null)
   const [horoscopes, setHoroscopes] = useState<AdminHoroscopeWeek[]>([])
   const [horoscopeLoadingError, setHoroscopeLoadingError] = useState('')
   const [horoscopeSaveError, setHoroscopeSaveError] = useState('')
@@ -82,6 +98,23 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
       ? second.date.localeCompare(first.date)
       : first.date.localeCompare(second.date))
 
+  const filteredCuriosities = selectedCategory === 'ALL' || selectedCategory === curiosityCategory
+    ? curiosities
+    : []
+  const authorListEntries: AuthorListEntry[] = [
+    ...(featuredFilter === 'FEATURED' ? [] : filteredCuriosities.map((curiosity) => ({
+      type: 'CURIOSITY' as const,
+      curiosity,
+    }))),
+    ...filteredPosts.map((post) => ({ type: 'POST' as const, post })),
+  ].sort((first, second) => {
+    const firstDate = first.type === 'POST' ? first.post.date : first.curiosity.createdAt.slice(0, 10)
+    const secondDate = second.type === 'POST' ? second.post.date : second.curiosity.createdAt.slice(0, 10)
+    return dateSort === 'NEWEST'
+      ? secondDate.localeCompare(firstDate)
+      : firstDate.localeCompare(secondDate)
+  })
+
   useEffect(() => {
     fetchAdminPosts()
       .then(setPosts)
@@ -89,6 +122,15 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
         setError(loadError instanceof Error ? loadError.message : 'Nie udało się pobrać wpisów.')
       })
       .finally(() => setIsLoading(false))
+  }, [])
+
+  useEffect(() => {
+    fetchAdminCuriosities()
+      .then(setCuriosities)
+      .catch((loadError: unknown) => {
+        setError(loadError instanceof Error ? loadError.message : 'Nie udało się pobrać ciekawostek.')
+      })
+      .finally(() => setIsCuriosityLoading(false))
   }, [])
 
   useEffect(() => {
@@ -122,6 +164,27 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
     setNotice('')
   }
 
+  const openNewCuriosity = () => {
+    setEditingCuriosity(null)
+    setIsCuriosityEditorOpen(true)
+    setCuriosityError('')
+    setError('')
+    setNotice('')
+  }
+
+  const openEditCuriosity = (curiosity: AdminCuriosity) => {
+    setEditingCuriosity(curiosity)
+    setIsCuriosityEditorOpen(true)
+    setCuriosityError('')
+    setError('')
+    setNotice('')
+  }
+
+  const closeCuriosityEditor = () => {
+    setIsCuriosityEditorOpen(false)
+    setEditingCuriosity(null)
+  }
+
   const openEditPost = (post: AuthorPost) => {
     setForm(authorPostToForm(post))
     setEditingId(post.id)
@@ -152,6 +215,45 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
       setError(saveError instanceof Error ? saveError.message : 'Nie udało się zapisać wpisu.')
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handleSaveCuriosity = async (curiosity: CuriosityInput) => {
+    setCuriosityError('')
+    setNotice('')
+    setIsCuriositySaving(true)
+
+    try {
+      const savedCuriosity = await saveAdminCuriosity(editingCuriosity?.id ?? null, curiosity)
+      setCuriosities((current) => editingCuriosity === null
+        ? [savedCuriosity, ...current]
+        : current.map((item) => item.id === savedCuriosity.id ? savedCuriosity : item))
+      setNotice(editingCuriosity === null
+        ? 'Ciekawostka została dodana.'
+        : 'Zmiany ciekawostki zostały zapisane.')
+      closeCuriosityEditor()
+    } catch (saveError: unknown) {
+      setCuriosityError(saveError instanceof Error ? saveError.message : 'Nie udało się zapisać ciekawostki.')
+    } finally {
+      setIsCuriositySaving(false)
+    }
+  }
+
+  const handleDeleteCuriosity = async (curiosity: AdminCuriosity) => {
+    if (!window.confirm(`Czy na pewno usunąć ciekawostkę „${curiosity.title}”? Tej operacji nie można cofnąć.`)) return
+    setError('')
+    setNotice('')
+    setDeletingCuriosityId(curiosity.id)
+
+    try {
+      await deleteAdminCuriosity(curiosity.id)
+      setCuriosities((current) => current.filter((item) => item.id !== curiosity.id))
+      if (editingCuriosity?.id === curiosity.id) closeCuriosityEditor()
+      setNotice('Ciekawostka została usunięta.')
+    } catch (deleteError: unknown) {
+      setError(deleteError instanceof Error ? deleteError.message : 'Nie udało się usunąć ciekawostki.')
+    } finally {
+      setDeletingCuriosityId(null)
     }
   }
 
@@ -260,7 +362,10 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
             <h1 id="author-dashboard-title">{isUploadedImagesPage ? 'Wgrane zdjęcia' : dashboardTabLabels[activeTab]}</h1>
           </div>
           {!isUploadedImagesPage && activeTab === 'posts' && (
-            <button className="author-dashboard-primary" type="button" onClick={openNewPost}>+ Nowy wpis</button>
+            <div className="author-dashboard-actions">
+              <button className="author-dashboard-primary" type="button" onClick={openNewPost}>+ Nowy wpis</button>
+              <button className="author-dashboard-secondary" type="button" onClick={openNewCuriosity}>+ Nowa ciekawostka</button>
+            </div>
           )}
         </div>
 
@@ -334,14 +439,14 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
           {isUploadedImagesPage ? (
             <AuthorUploadedImages />
           ) : activeTab === 'posts' ? (
-            isLoading ? (
-              <p className="author-dashboard-empty" role="status">Pobieram posty...</p>
+            isLoading || isCuriosityLoading ? (
+              <p className="author-dashboard-empty" role="status">Pobieram wpisy i ciekawostki...</p>
             ) : (
               <>
                 <AuthorPostFilters
-                  categories={authorCategories}
-                  totalCount={posts.length}
-                  resultCount={filteredPosts.length}
+                  categories={[...authorCategories, curiosityCategory]}
+                  totalCount={posts.length + curiosities.length}
+                  resultCount={authorListEntries.length}
                   selectedCategory={selectedCategory}
                   featuredFilter={featuredFilter}
                   dateSort={dateSort}
@@ -350,11 +455,16 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
                   onDateSortChange={setDateSort}
                 />
                 <AuthorPostList
-                  posts={filteredPosts}
+                  entries={authorListEntries}
                   deletingId={deletingId}
-                  emptyMessage={posts.length ? 'Nie znaleziono wpisów dla wybranych filtrów.' : 'Nie ma jeszcze żadnych wpisów.'}
+                  deletingCuriosityId={deletingCuriosityId}
+                  emptyMessage={posts.length + curiosities.length
+                    ? 'Nie znaleziono wpisów dla wybranych filtrów.'
+                    : 'Nie ma jeszcze żadnych wpisów.'}
                   onEdit={openEditPost}
                   onDelete={handleDelete}
+                  onEditCuriosity={openEditCuriosity}
+                  onDeleteCuriosity={handleDeleteCuriosity}
                 />
               </>
             )
@@ -392,6 +502,16 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
           onChange={updateForm}
           onClose={closeForm}
           onSubmit={handleSave}
+        />
+      )}
+      {isCuriosityEditorOpen && (
+        <AuthorCuriosityEditor
+          key={editingCuriosity?.id ?? 'new'}
+          curiosity={editingCuriosity}
+          error={curiosityError}
+          isSaving={isCuriositySaving}
+          onClose={closeCuriosityEditor}
+          onSubmit={handleSaveCuriosity}
         />
       )}
       {editingHoroscopeWeek && (

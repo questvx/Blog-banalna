@@ -37,7 +37,15 @@ function TeaserOverlay({
 
       const paddingTop = parseFloat(styles.paddingTop);
       const paddingBottom = parseFloat(styles.paddingBottom);
-      setHeight(content.scrollHeight + paddingTop + paddingBottom);
+      const borderTop = parseFloat(styles.borderTopWidth);
+      const borderBottom = parseFloat(styles.borderBottomWidth);
+      setHeight(
+        content.scrollHeight +
+          paddingTop +
+          paddingBottom +
+          borderTop +
+          borderBottom,
+      );
     };
 
     updateHeight();
@@ -128,6 +136,7 @@ function TeaserOverlay({
 
           {children}
         </div>
+
       </section>
     </div>
   );

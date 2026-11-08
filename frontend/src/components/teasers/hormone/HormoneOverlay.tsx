@@ -17,22 +17,7 @@ function HormoneOverlay({ onClose }: HormoneOverlayProps) {
       theme="hormone"
       onClose={onClose}
     >
-      <p className="hormone-overlay-prompt">Kim jesteś dzisiaj?</p>
-      <div className="hormone-mood-grid" role="group" aria-label="Wybierz swój nastrój">
-        {hormoneMoods.map((mood) => (
-          <button
-            key={mood.id}
-            className={`hormone-mood-choice${selectedMood?.id === mood.id ? ' is-selected' : ''}`}
-            type="button"
-            aria-pressed={selectedMood?.id === mood.id}
-            onClick={() => setSelectedMood(mood)}
-          >
-            <img className="hormone-mood-choice-image" src={mood.image} alt={mood.name} />
-            <span>{mood.shortDescription}</span>
-          </button>
-        ))}
-      </div>
-      {selectedMood && (
+      {selectedMood ? (
         <section className="hormone-mood-detail" aria-live="polite" aria-labelledby="hormone-mood-title">
           {selectedMood.image && (
             <img
@@ -53,6 +38,23 @@ function HormoneOverlay({ onClose }: HormoneOverlayProps) {
             ))}
           </div>
         </section>
+      ) : (
+        <>
+          <p className="hormone-overlay-prompt">Kim jesteś dzisiaj?</p>
+          <div className="hormone-mood-grid" role="group" aria-label="Wybierz swój nastrój">
+            {hormoneMoods.map((mood) => (
+              <button
+                key={mood.id}
+                className="hormone-mood-choice"
+                type="button"
+                onClick={() => setSelectedMood(mood)}
+              >
+                <img className="hormone-mood-choice-image" src={mood.image} alt={mood.name} />
+                <span>{mood.shortDescription}</span>
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </TeaserOverlay>
   )
