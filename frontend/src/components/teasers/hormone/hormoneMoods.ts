@@ -55,7 +55,7 @@ export const hormoneMoods: HormoneMood[] = [
   {
     id: 'krolowa-swiata',
     name: 'KRÓLOWA ŚWIATA',
-    shortDescription: 'To dziś Ty. Masz energię, nowe pomysły wyskakują Ci z głowy jeden za drugim i jesteś przekonana, że dzisiaj naprawdę możesz to zrobić. Bo niby dlaczego nie?',
+    shortDescription: 'To dziś Ty. Masz energię, nowe pomysły wyskakują Ci z głowy jeden za drugim i jesteś przekonana, że dzisiaj naprawdę możesz to zrobić.',
     image: krolowaSwiataImage,
     sections: [
       {
