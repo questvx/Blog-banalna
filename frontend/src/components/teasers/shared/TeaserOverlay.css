@@ -31,6 +31,14 @@
   transition: height 0.55s ease;
 }
 
+.teaser-overlay--hormone {
+  background:
+    radial-gradient(ellipse at top right, rgba(91, 199, 186, 0.2), transparent 44%),
+    #123638;
+  border-color: rgba(165, 255, 251, 0.36);
+  overflow-y: auto;
+}
+
 .teaser-overlay-content {
   width: 100%;
 }
@@ -70,6 +78,14 @@
   font-size: clamp(28px, 6vw, 38px);
   font-weight: 400;
   margin: 0 45px 12px 0;
+}
+
+.teaser-overlay--hormone .teaser-overlay-eyebrow {
+  color: #a5fffb;
+}
+
+.teaser-overlay--hormone .teaser-overlay-title {
+  color: #f5fffc;
 }
 @media (max-width: 520px) {
   .teaser-overlay-backdrop {

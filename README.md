@@ -13,7 +13,7 @@
 
 | Area | Technologies |
 | --- | --- |
-| Frontend | React 19, TypeScript, Vite 8, Oxlint |
+| Frontend | React 19, TypeScript, Vite 8, Vitest, Testing Library, Oxlint |
 | Backend | Java 21, Spring Boot 3.5, Spring Web, Spring Security, Spring Data JPA |
 | Database | MySQL, Flyway migrations |
 | Authentication | Server-side sessions, CSRF protection |
@@ -97,8 +97,13 @@ mvn test
 # frontend/
 npm run lint
 npm run build
+npm test
+npm run test:watch
+npm run test:coverage
 npm run preview
 ```
+
+Frontend tests run in jsdom and cover key visitor flows, author login, post CRUD and filtering, hero-message and horoscope editors, safe post content, image uploads/scaling/cropping, and teaser behavior. `npm run test:coverage` prints a coverage summary and creates an HTML report in `frontend/coverage/`.
 
 ## Configuration
 
@@ -125,7 +130,5 @@ For production, use HTTPS, set `SESSION_COOKIE_SECURE=true`, provide secrets thr
 ## Preview photos: Author interface
 <img width="1913" height="940" alt="image" src="https://github.com/user-attachments/assets/601a359f-9c1b-4230-99b3-1d1361bb9bec" />
 <img width="1915" height="939" alt="image" src="https://github.com/user-attachments/assets/cc86ce6b-baba-43b0-b29f-c495fd405a25" />
-
-
 
 
