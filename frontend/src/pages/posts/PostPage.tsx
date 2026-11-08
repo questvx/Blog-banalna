@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import Sidebar from '../../components/Sidebar'
-import SafePostContent from '../../components/SafePostContent'
+import Sidebar from '../../components/sidebar/Sidebar'
+import SafePostContent from '../../components/posts/SafePostContent'
 import type { Post } from '../../data/posts'
 import './PostPage.css'
 

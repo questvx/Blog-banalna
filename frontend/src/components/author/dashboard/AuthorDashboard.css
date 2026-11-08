@@ -1,0 +1,537 @@
+.author-dashboard-page {
+  background: #fffef8;
+  color: var(--author-ink);
+  min-height: 100vh;
+  padding-bottom: 56px;
+}
+
+.author-dashboard-header {
+  align-items: center;
+  background: var(--author-surface);
+  border-bottom: 1px solid var(--author-line);
+  display: flex;
+  justify-content: space-between;
+  min-height: 76px;
+  padding: 14px max(24px, calc((100vw - 1120px) / 2));
+}
+
+.author-dashboard-wordmark {
+  color: var(--author-ink);
+  font-family: var(--serif);
+  font-size: 24px;
+  font-style: italic;
+  text-decoration: none;
+}
+
+.author-dashboard-account {
+  align-items: center;
+  color: var(--author-muted);
+  display: flex;
+  font-size: 12px;
+  gap: 18px;
+}
+
+.author-dashboard-account strong {
+  color: var(--author-ink);
+}
+
+.author-dashboard-logout,
+.author-post-actions button {
+  background: transparent;
+  border: 1px solid var(--author-line);
+  border-radius: 3px;
+  color: var(--author-muted);
+  cursor: pointer;
+  font-size: 12px;
+  min-height: 36px;
+  padding: 7px 12px;
+}
+
+
+.author-dashboard-logout:hover:not(:disabled),
+.author-post-actions button:hover:not(:disabled) {
+  background: var(--author-blue-light);
+}
+
+.author-dashboard-tab-link {
+  text-decoration: none;
+}
+
+.author-dashboard-logout:disabled,
+.author-post-actions button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.author-dashboard-content {
+  margin: 0 auto;
+  max-width: 1120px;
+  padding: 48px 24px 0;
+}
+
+.author-dashboard-title-row {
+  align-items: end;
+  border-bottom: 1px solid var(--author-line);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 22px;
+}
+
+.author-dashboard-title-row .author-login-eyebrow {
+  margin-bottom: 7px;
+}
+
+.author-dashboard-title-row h1 {
+  color: var(--author-ink);
+  font-family: var(--serif);
+  font-size: 36px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.author-dashboard-tabs {
+  border-bottom: 1px solid var(--author-line);
+  display: flex;
+  gap: 26px;
+  margin-bottom: 20px;
+}
+
+.author-dashboard-tab {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--author-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  margin-bottom: -1px;
+  padding: 12px 2px;
+}
+
+.author-dashboard-tab:hover {
+  color: var(--author-ink);
+}
+
+.author-dashboard-tab[aria-selected="true"] {
+  border-bottom-color: var(--author-blue);
+  color: var(--author-blue-dark);
+  font-weight: 700;
+}
+
+.author-dashboard-tab:focus-visible,
+.author-dashboard-tabpanel:focus-visible {
+  outline: 2px solid var(--author-blue);
+  outline-offset: 3px;
+}
+
+.author-dashboard-tabpanel {
+  outline: none;
+}
+
+.author-horoscope-list {
+  border-top: 1px solid var(--author-line);
+}
+
+.author-horoscope-row {
+  align-items: center;
+  background: var(--author-surface);
+  border: 1px solid var(--author-line);
+  border-top: 0;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(180px, 1fr) auto auto;
+  min-height: 82px;
+  padding: 14px 18px;
+}
+
+.author-horoscope-info h2 {
+  color: var(--author-ink);
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 0 0 5px;
+}
+
+.author-horoscope-info p {
+  color: var(--author-muted);
+  font-size: 11px;
+  margin: 0;
+}
+
+.author-horoscope-status {
+  background: #f6edda;
+  border-radius: 2px;
+  color: #80642d;
+  font-size: 10px;
+  padding: 5px 8px;
+  white-space: nowrap;
+}
+
+.author-horoscope-status.is-complete {
+  background: var(--author-blue-light);
+  color: #365d74;
+}
+
+.author-horoscope-edit,
+.author-dashboard-more-weeks {
+  background: transparent;
+  border: 1px solid var(--author-line);
+  border-radius: 3px;
+  color: var(--author-muted);
+  cursor: pointer;
+  font-size: 12px;
+  min-height: 36px;
+  padding: 7px 12px;
+}
+
+.author-horoscope-edit:hover,
+.author-dashboard-more-weeks:hover {
+  background: var(--author-blue-light);
+}
+
+.author-dashboard-more-weeks {
+  display: block;
+  margin: 18px auto 0;
+  min-height: 40px;
+}
+
+.author-dashboard-primary {
+  background: var(--author-blue);
+  border: 1px solid var(--author-blue);
+  border-radius: 3px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  min-height: 42px;
+  padding: 9px 16px;
+  white-space: nowrap;
+}
+
+.author-dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.author-dashboard-secondary {
+  background: transparent;
+  border: 1px solid var(--author-blue);
+  border-radius: 3px;
+  color: var(--author-blue-dark);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  min-height: 42px;
+  padding: 9px 16px;
+  white-space: nowrap;
+}
+
+.author-dashboard-primary:hover:not(:disabled) {
+  background: var(--author-blue-dark);
+}
+
+.author-dashboard-secondary:hover:not(:disabled) {
+  background: var(--author-blue-light);
+}
+
+.author-dashboard-primary:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.author-dashboard-secondary:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.author-dashboard-message {
+  border-left: 3px solid;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 16px;
+  padding: 10px 13px;
+}
+
+.author-dashboard-message.is-error {
+  background: #fff1ef;
+  border-color: #bf5a4b;
+  color: #8a3027;
+}
+
+.author-dashboard-message.is-notice {
+  background: var(--author-blue-light);
+  border-color: var(--author-blue);
+  color: #365d74;
+}
+
+.author-dashboard-empty {
+  background: var(--author-surface);
+  border: 1px solid var(--author-line);
+  color: var(--author-muted);
+  font-size: 14px;
+  margin: 0;
+  padding: 28px;
+}
+
+.author-post-filters {
+  align-items: end;
+  background: var(--author-surface);
+  border: 1px solid var(--author-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+  margin-bottom: 14px;
+  padding: 12px 16px;
+}
+
+.author-post-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 170px;
+}
+
+.author-post-filter-field > span,
+.author-post-featured-filter legend {
+  color: var(--author-muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.author-post-filter-field select {
+  background: #fff;
+  border: 1px solid var(--author-line);
+  border-radius: 3px;
+  color: var(--author-ink);
+  font: inherit;
+  font-size: 12px;
+  min-height: 36px;
+  padding: 6px 9px;
+}
+
+.author-post-filter-field select:focus-visible {
+  border-color: var(--author-blue);
+  outline: 3px solid rgba(75, 130, 159, 0.2);
+}
+
+.author-post-featured-filter {
+  border: 0;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.author-post-featured-filter legend {
+  margin-bottom: 5px;
+  padding: 0;
+}
+
+.author-post-filter-segmented {
+  display: flex;
+  min-height: 36px;
+}
+
+.author-post-filter-segmented button {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--author-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+
+.author-post-filter-segmented button[aria-pressed="true"] {
+  background: var(--author-blue-light);
+  border-bottom-color: var(--author-blue);
+  color: var(--author-ink);
+  font-weight: 700;
+}
+
+.author-post-filter-segmented button:focus-visible,
+.author-post-filter-reset:focus-visible {
+  outline: 3px solid rgba(75, 130, 159, 0.25);
+  outline-offset: 2px;
+}
+
+.author-post-filter-count {
+  color: var(--author-muted);
+  font-size: 11px;
+  margin: 0 0 10px auto;
+  white-space: nowrap;
+}
+
+.author-post-filter-reset {
+  background: transparent;
+  border: 0;
+  color: var(--author-blue-dark);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  margin-bottom: 9px;
+  padding: 2px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+.author-post-list {
+  border-top: 1px solid var(--author-line);
+}
+
+.author-post-row {
+  align-items: center;
+  background: var(--author-surface);
+  border: 1px solid var(--author-line);
+  border-top: 0;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(180px, 1fr) auto auto auto;
+  min-height: 82px;
+  padding: 14px 18px;
+}
+
+.author-horoscope-row {
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.author-horoscope-info {
+  grid-column: 1 / -1;
+}
+
+.author-horoscope-edit {
+  justify-self: end;
+}
+
+.author-post-info {
+  min-width: 0;
+}
+
+.author-post-info h2 {
+  color: var(--author-ink);
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 0 0 5px;
+  overflow-wrap: anywhere;
+}
+
+.author-post-info p {
+  color: var(--author-muted);
+  font-size: 11px;
+  margin: 0;
+}
+
+.author-post-status,
+.author-post-curiosity,
+.author-post-featured {
+  border-radius: 2px;
+  font-size: 10px;
+  padding: 5px 8px;
+  white-space: nowrap;
+}
+
+.author-post-curiosity {
+  background: #fce4ec;
+  color: #9d174d;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.author-post-status.is-published {
+  background: rgb(189, 250, 189);
+  color: #365d74;
+  font-size: 12px;
+}
+
+.author-post-status.is-draft {
+  background: #b2e7ff;
+  color: #1e3055;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.author-post-featured {
+  background: #fff2cc;
+  color: #4d3a10;
+  font-size: 12px;
+}
+
+.author-post-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.author-post-actions .is-danger {
+  border-color: #e5c9c4;
+  color: #9a473d;
+}
+
+.author-post-actions .is-danger:hover:not(:disabled) {
+  background: #fff1ef;
+}
+
+@media (max-width: 760px) {
+  .author-dashboard-header {
+    padding-inline: 18px;
+  }
+
+  .author-dashboard-content {
+    padding: 34px 18px 0;
+  }
+
+  .author-post-filters {
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .author-post-filter-count {
+    margin-left: 0;
+  }
+
+  .author-post-row {
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .author-post-info {
+    grid-column: 1 / -1;
+  }
+
+  .author-post-actions {
+    justify-content: end;
+  }
+}
+
+@media (max-width: 480px) {
+  .author-dashboard-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .author-dashboard-account {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .author-dashboard-title-row h1 {
+    font-size: 31px;
+  }
+
+  .author-dashboard-primary {
+    padding-inline: 11px;
+  }
+
+  .author-dashboard-secondary {
+    padding-inline: 11px;
+  }
+}

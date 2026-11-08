@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { teaserSettings } from './teaserConfig'
-import type { TeaserId } from './TeaserTypes'
+import type { TeaserId } from './shared/TeaserTypes'
 
 function TeaserManager() {
   const [visibleTeasers, setVisibleTeasers] = useState<Record<TeaserId, boolean>>({} as Record<TeaserId, boolean>)
