@@ -17,7 +17,7 @@
   border: 0;
   color: var(--ink);
   cursor: pointer;
-  font-size: 11px;
+  font-size: 12px;
   padding: 7px 9px;
   transition: all 0.2s ease-in-out;
 }
