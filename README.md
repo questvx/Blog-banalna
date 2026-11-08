@@ -35,7 +35,7 @@ Install and start Docker Desktop, then open PowerShell in the repository root:
 Copy-Item .env.example .env
 ```
 
-Edit `.env` and replace all placeholder passwords. Start the blog with:
+Edit `.env` and replace all placeholder passwords. Compose builds the backend from the `backend` branch and the frontend from the `frontend` branch, so both latest pushed versions are included even though the code is maintained on separate branches. An internet connection is required during the build. Start the blog with:
 
 ```powershell
 docker compose up --build -d
@@ -125,7 +125,6 @@ For production, use HTTPS, set `SESSION_COOKIE_SECURE=true`, provide secrets thr
 ## Preview photos: Author interface
 <img width="1913" height="940" alt="image" src="https://github.com/user-attachments/assets/601a359f-9c1b-4230-99b3-1d1361bb9bec" />
 <img width="1915" height="939" alt="image" src="https://github.com/user-attachments/assets/cc86ce6b-baba-43b0-b29f-c495fd405a25" />
-
 
 
 

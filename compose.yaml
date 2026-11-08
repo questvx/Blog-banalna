@@ -20,7 +20,7 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: https://github.com/questvx/Blog-banalna.git#backend:backend
     environment:
       DB_URL: jdbc:mysql://db:3306/banalna?serverTimezone=UTC
       DB_USERNAME: ${DB_USERNAME:-banalna}
@@ -39,7 +39,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: https://github.com/questvx/Blog-banalna.git#frontend:frontend
     ports:
       - "8088:80"
     depends_on:
