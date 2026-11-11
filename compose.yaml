@@ -1,3 +1,5 @@
+name: blog-banalna-feature-docker-setup
+
 services:
   db:
     image: mysql:8.4

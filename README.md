@@ -49,7 +49,7 @@ Stop the containers without removing saved posts or uploaded images:
 docker compose down
 ```
 
-The database and uploaded images are kept in Docker volumes. Do not use `docker compose down -v` unless you want to permanently delete that local content.
+The database and uploaded images are kept in Docker volumes. The Compose project name is fixed so extracting this branch's ZIP under a different folder name won't silently create a new database or uploads volume. Do not use `docker compose down -v` unless you want to permanently delete that local content.
 
 ### Prerequisites
 
@@ -130,5 +130,4 @@ For production, use HTTPS, set `SESSION_COOKIE_SECURE=true`, provide secrets thr
 ## Preview photos: Author interface
 <img width="1913" height="940" alt="image" src="https://github.com/user-attachments/assets/601a359f-9c1b-4230-99b3-1d1361bb9bec" />
 <img width="1915" height="939" alt="image" src="https://github.com/user-attachments/assets/cc86ce6b-baba-43b0-b29f-c495fd405a25" />
-
 
