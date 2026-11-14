@@ -7,6 +7,7 @@
 - Presents published articles with categories, featured content, and individual article pages.
 - Provides an author area for creating, editing, filtering, and deleting posts.
 - Supports draft and published post statuses and image uploads.
+- Lets the author freely crop source images or save separate, non-destructive crops for large and small post cards; full post pages keep the complete image.
 - Keeps public content separate from authenticated editorial operations.
 
 ## Tech stack
@@ -50,6 +51,24 @@ docker compose down
 ```
 
 The database and uploaded images are kept in Docker volumes. The Compose project name is fixed so extracting this branch's ZIP under a different folder name won't silently create a new database or uploads volume. Do not use `docker compose down -v` unless you want to permanently delete that local content.
+
+### Run a separate version without replacing the existing one
+
+To test a new version alongside the current one, start it with a different Compose project name and host port in PowerShell:
+
+```powershell
+$env:APP_PORT = '8089'
+docker compose -p blog-banalna-v2 up --build -d
+Remove-Item Env:APP_PORT
+```
+
+Open `http://localhost:8089`. The different project name gives this version its own containers, database volume, and uploads volume; the existing version and its data are left in place. The new database starts empty: copying existing posts or uploads requires a separate backup and restore. Stop only this version with:
+
+```powershell
+docker compose -p blog-banalna-v2 down
+```
+
+Do not add `-v` if you want to keep its data. To update the existing version instead, continue using `docker compose up --build -d` without `-p`; it will keep using the existing project's volumes.
 
 ### Prerequisites
 
@@ -130,4 +149,3 @@ For production, use HTTPS, set `SESSION_COOKIE_SECURE=true`, provide secrets thr
 ## Preview photos: Author interface
 <img width="1913" height="940" alt="image" src="https://github.com/user-attachments/assets/601a359f-9c1b-4230-99b3-1d1361bb9bec" />
 <img width="1915" height="939" alt="image" src="https://github.com/user-attachments/assets/cc86ce6b-baba-43b0-b29f-c495fd405a25" />
-

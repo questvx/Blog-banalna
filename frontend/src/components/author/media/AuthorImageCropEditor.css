@@ -63,6 +63,7 @@
   min-width: 0;
 }
 
+.author-image-crop-modes,
 .author-image-crop-aspects {
   display: flex;
   flex-wrap: wrap;
@@ -70,6 +71,7 @@
   margin-bottom: 12px;
 }
 
+.author-image-crop-modes button,
 .author-image-crop-aspects button,
 .author-image-crop-actions button {
   background: #fff;
@@ -83,6 +85,7 @@
   padding: 8px 11px;
 }
 
+.author-image-crop-modes button[aria-pressed="true"],
 .author-image-crop-aspects button[aria-pressed="true"] {
   background: var(--author-blue-light);
   border-color: var(--author-blue);

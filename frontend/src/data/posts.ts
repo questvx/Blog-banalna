@@ -1,3 +1,5 @@
+import type { ImageCardCrops } from './imageCardCrops'
+
 export type Post = {
   id: number
   title: string
@@ -8,6 +10,7 @@ export type Post = {
   image: string
   featured?: boolean
   status?: 'DRAFT' | 'PUBLISHED'
+  cardCrops?: ImageCardCrops | null
 }
 
 export const posts: Post[] = [

@@ -14,15 +14,20 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 import pl.banalna.media.ImageStorageService;
+import pl.banalna.media.ImageCardCropService;
 
 @RestController
 @RequestMapping("/api/admin/uploads")
 public class AdminImageController {
 
     private final ImageStorageService imageStorageService;
+    private final ImageCardCropService imageCardCropService;
 
-    public AdminImageController(ImageStorageService imageStorageService) {
+    public AdminImageController(
+            ImageStorageService imageStorageService,
+            ImageCardCropService imageCardCropService) {
         this.imageStorageService = imageStorageService;
+        this.imageCardCropService = imageCardCropService;
     }
 
     @GetMapping
@@ -36,6 +41,7 @@ public class AdminImageController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@RequestParam("fileName") String fileName) {
         imageStorageService.delete(fileName);
+        imageCardCropService.delete(fileName);
     }
 
     @PostMapping(consumes = "multipart/form-data")
