@@ -312,6 +312,13 @@ function AuthorUploadedImages() {
         <div className="author-uploaded-images-grid">
           {images.map((imageUrl, index) => {
             const usages = imageUsages.get(normalizeImageUrl(imageUrl)) ?? []
+            const imageUsageClass = isCheckingUsage || usageError
+              ? ''
+              : usages.some((usage) => usage.isMainImage)
+                ? 'is-main-image'
+                : usages.some((usage) => usage.isInContent)
+                  ? 'is-content-image'
+                  : 'is-unused'
             const dimensions = imageDimensions[imageUrl]
             const percentage = Number(scalePercent)
             const canPreviewScale = Number.isInteger(percentage)
@@ -322,7 +329,7 @@ function AuthorUploadedImages() {
             const previewUrl = getVersionedImageUrl(imageUrl, imageVersions[imageUrl])
 
             return (
-              <article className="author-uploaded-image" key={imageUrl}>
+              <article className={`author-uploaded-image ${imageUsageClass}`} key={imageUrl}>
                 <a href={previewUrl} target="_blank" rel="noreferrer" aria-label={`Otwórz zdjęcie ${index + 1} w nowej karcie`}>
                   <img
                     src={previewUrl}

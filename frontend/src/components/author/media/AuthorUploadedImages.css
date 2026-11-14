@@ -87,6 +87,21 @@
   min-width: 0;
 }
 
+.author-uploaded-image.is-unused {
+  background: #fff0ee;
+  border-color: #e8c1bc;
+}
+
+.author-uploaded-image.is-main-image {
+  background: #edf7ef;
+  border-color: #b9d8bf;
+}
+
+.author-uploaded-image.is-content-image {
+  background: #eef5ff;
+  border-color: #bfd1ee;
+}
+
 .author-uploaded-image > a {
   align-items: center;
   background: #f5f5f1;
@@ -94,6 +109,18 @@
   height: 220px;
   justify-content: center;
   overflow: hidden;
+}
+
+.author-uploaded-image.is-unused > a {
+  background: #fde3df;
+}
+
+.author-uploaded-image.is-main-image > a {
+  background: #dff0e3;
+}
+
+.author-uploaded-image.is-content-image > a {
+  background: #e1edff;
 }
 
 .author-uploaded-image img {

@@ -111,21 +111,34 @@ describe('AuthorUploadedImages', () => {
 
   it('shows main-image and in-content usages for each post', async () => {
     const sharedUrl = 'https://blog.example/uploads/zdjecie.png'
+    const mainOnlyUrl = 'https://blog.example/uploads/naglowek.png'
+    const contentOnlyUrl = 'https://blog.example/uploads/tresc.png'
     const unusedUrl = 'https://blog.example/uploads/nieuzywane.png'
     await renderImageLibrary(
-      [sharedUrl, unusedUrl],
-      [authorPost({
-        title: 'Post ze zdjęciem',
-        image: sharedUrl,
-        content: [`<img src="${sharedUrl}" alt="Wpis">`, '<img src="https://blog.example/uploads/tresc.png">'],
-      })],
+      [sharedUrl, mainOnlyUrl, contentOnlyUrl, unusedUrl],
+      [
+        authorPost({
+          title: 'Post ze zdjęciem',
+          image: mainOnlyUrl,
+          content: [`<img src="${sharedUrl}" alt="Wpis">`, `<img src="${contentOnlyUrl}">`],
+        }),
+        authorPost({
+          title: 'Post ze wspólnym zdjęciem',
+          image: sharedUrl,
+          content: [`<img src="${sharedUrl}" alt="Wpis">`],
+        }),
+      ],
     )
 
     const sharedUsage = screen.getByLabelText('Użycie zdjęcia 1')
     expect(within(sharedUsage).getByText('Post ze zdjęciem')).toBeInTheDocument()
     expect(sharedUsage).toHaveTextContent('zdjęcie główne')
     expect(sharedUsage).toHaveTextContent('treść')
-    expect(screen.getByLabelText('Użycie zdjęcia 2')).toHaveTextContent('Nie jest używane w żadnym wpisie.')
+    expect(screen.getByAltText('Wgrane zdjęcie 1').closest('.author-uploaded-image')).toHaveClass('is-main-image')
+    expect(screen.getByAltText('Wgrane zdjęcie 2').closest('.author-uploaded-image')).toHaveClass('is-main-image')
+    expect(screen.getByAltText('Wgrane zdjęcie 3').closest('.author-uploaded-image')).toHaveClass('is-content-image')
+    expect(screen.getByAltText('Wgrane zdjęcie 4').closest('.author-uploaded-image')).toHaveClass('is-unused')
+    expect(screen.getByLabelText('Użycie zdjęcia 4')).toHaveTextContent('Nie jest używane w żadnym wpisie.')
   })
 
   it('copies the complete image tag with the fallback alt text', async () => {
