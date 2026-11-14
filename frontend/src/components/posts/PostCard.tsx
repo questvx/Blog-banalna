@@ -1,18 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import {
-  getCardCropRect,
-  getCropImageElementStyle,
-  type PostCardCropType,
-} from '../../data/imageCardCrops'
 import type { Post } from '../../data/posts'
 import './PostCard.css'
 
-type PostCardProps = { post: Post; featured?: boolean; gradientIndex: number; cropType?: PostCardCropType }
+type PostCardProps = { post: Post; featured?: boolean; gradientIndex: number }
 
-function PostCard({ post, featured = false, gradientIndex, cropType = featured ? 'large' : 'small' }: PostCardProps) {
+function PostCard({ post, featured = false, gradientIndex }: PostCardProps) {
   const cardRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(false)
-  const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number }>()
 
   useEffect(() => {
     const card = cardRef.current
@@ -32,23 +26,7 @@ function PostCard({ post, featured = false, gradientIndex, cropType = featured ?
   return (
     <article ref={cardRef} className={`post-card post-card-gradient-${(gradientIndex % 6) + 1} ${featured ? 'post-card-featured' : ''} ${isVisible ? 'post-card-visible' : ''}`}>
       <a className="post-image" href={`#post-${post.id}`} aria-label={`Przeczytaj: ${post.title}`}>
-        <img
-          src={post.image}
-          alt=""
-          loading="lazy"
-          onLoad={(event) => setImageDimensions({
-            width: event.currentTarget.naturalWidth,
-            height: event.currentTarget.naturalHeight,
-          })}
-          style={post.cardCrops && imageDimensions
-            ? getCropImageElementStyle(getCardCropRect(
-              imageDimensions.width,
-              imageDimensions.height,
-              cropType,
-              post.cardCrops[cropType],
-            ))
-            : undefined}
-        />
+        <img src={post.image} alt="" loading="lazy" />
         <span className="post-category">{post.category}</span>
       </a>
       <div className="post-content">

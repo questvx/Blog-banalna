@@ -79,9 +79,9 @@ function HomePage({ posts, curiosities, categories, selectedCategories, onCatego
   }, [filteredItems.length, visibleCount])
 
   const loadMore = () => setVisibleCount((count) => Math.min(count + 2, filteredItems.length))
-  const renderFeedEntry = (entry: FeedEntry, gradientIndex: number, featured = false, cropType: 'large' | 'small') => entry.type === 'CURIOSITY'
+  const renderFeedEntry = (entry: FeedEntry, gradientIndex: number, featured = false) => entry.type === 'CURIOSITY'
     ? <CuriosityCard key={`curiosity-${entry.curiosity.id}`} curiosity={entry.curiosity} />
-    : <PostCard key={`post-${entry.post.id}`} post={entry.post} gradientIndex={gradientIndex} featured={featured} cropType={cropType} />
+    : <PostCard key={`post-${entry.post.id}`} post={entry.post} gradientIndex={gradientIndex} featured={featured} />
 
   return (
     <div className="site-shell">
@@ -97,8 +97,8 @@ function HomePage({ posts, curiosities, categories, selectedCategories, onCatego
             )}
             <div className="section-heading"><p className="eyebrow">z ostatnich dni</p><h2>{showFeaturedOnly ? 'Polecane wpisy' : 'Najnowsze wpisy'}</h2><span className="heading-line" /></div>
             {visibleItems.length > 0 ? <div className="posts-grid">
-              <div className="post-column">{visibleItems.filter((_, index) => index % 2 === 0).map((entry, index) => renderFeedEntry(entry, index * 2, index === 0 && entry.type === 'POST', 'large'))}</div>
-              <div className="post-column">{visibleItems.filter((_, index) => index % 2 !== 0).map((entry, index) => renderFeedEntry(entry, index * 2 + 1, false, 'small'))}</div>
+              <div className="post-column">{visibleItems.filter((_, index) => index % 2 === 0).map((entry, index) => renderFeedEntry(entry, index * 2, index === 0 && entry.type === 'POST'))}</div>
+              <div className="post-column">{visibleItems.filter((_, index) => index % 2 !== 0).map((entry, index) => renderFeedEntry(entry, index * 2 + 1))}</div>
             </div> : <p className="empty-state">Nie znalazłam niczego pod tą frazą. Spróbuj inaczej.</p>}
             {visibleCount < filteredItems.length && visibleItems.length > 0 && <><div className="load-more-sentinel" ref={loadMoreRef} /><button className="load-more" type="button" onClick={loadMore}>pokaż starsze wpisy <span aria-hidden="true">↓</span></button></>}
           </section>

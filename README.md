@@ -7,7 +7,6 @@
 - Presents published articles with categories, featured content, and individual article pages.
 - Provides an author area for creating, editing, filtering, and deleting posts.
 - Supports draft and published post statuses and image uploads.
-- Lets the author freely crop source images or save separate, non-destructive crops for large and small post cards; full post pages keep the complete image.
 - Keeps public content separate from authenticated editorial operations.
 
 ## Tech stack

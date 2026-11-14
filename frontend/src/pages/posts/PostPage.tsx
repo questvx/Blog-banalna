@@ -37,7 +37,7 @@ function PostPage({ post, posts, categories, selectedCategories, onCategoryChang
             <div className="post-body">
               {post.content.map((paragraph, index) => (
                 <div className="post-body-paragraph" key={`${index}-${paragraph}`}>
-                  <SafePostContent content={paragraph} posts={posts} />
+                  <SafePostContent content={paragraph} />
                 </div>
               ))}
             </div>

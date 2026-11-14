@@ -171,14 +171,6 @@ public class ImageStorageService {
         return uploadDirectory;
     }
 
-    public boolean exists(String fileName) {
-        if (!isUploadedImageFileName(fileName)) return false;
-
-        Path image = uploadDirectory.resolve(fileName).normalize();
-        return image.getParent().equals(uploadDirectory)
-                && Files.isRegularFile(image, LinkOption.NOFOLLOW_LINKS);
-    }
-
     private boolean isUploadedImageFileName(String fileName) {
         return fileName != null && UPLOADED_IMAGE_FILENAME.matcher(fileName).matches();
     }

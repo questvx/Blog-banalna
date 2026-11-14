@@ -1,54 +1,53 @@
 package pl.banalna.post;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import pl.banalna.media.ImageCardCropResponse;
-import pl.banalna.media.ImageCardCropService;
 
 @Service
 public class PostService {
 
     private final PostRepository postRepository;
-    private final ImageCardCropService imageCardCropService;
 
-    public PostService(PostRepository postRepository, ImageCardCropService imageCardCropService) {
+    public PostService(PostRepository postRepository) {
         this.postRepository = postRepository;
-        this.imageCardCropService = imageCardCropService;
     }
 
     public List<PostResponse> findPublished() {
-        return toResponses(postRepository.findAllByStatusOrderByPublishedDateDesc(PostStatus.PUBLISHED));
+        return postRepository.findAllByStatusOrderByPublishedDateDesc(PostStatus.PUBLISHED).stream()
+                .map(PostResponse::from)
+                .toList();
     }
 
     public PostResponse findPublishedById(Long id) {
         return postRepository.findByIdAndStatus(id, PostStatus.PUBLISHED)
-                .map(this::toResponse)
+                .map(PostResponse::from)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
     }
 
     public List<PostResponse> findAllForAuthor() {
-        return toResponses(postRepository.findAll());
+        return postRepository.findAll().stream()
+                .map(PostResponse::from)
+                .toList();
     }
 
     public PostResponse findByIdForAuthor(Long id) {
         return postRepository.findById(id)
-                .map(this::toResponse)
+                .map(PostResponse::from)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
     }
 
     public PostResponse create(PostRequest request) {
-        return toResponse(postRepository.save(new Post(request)));
+        return PostResponse.from(postRepository.save(new Post(request)));
     }
 
     public PostResponse update(Long id, PostRequest request) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
         post.update(request);
-        return toResponse(postRepository.save(post));
+        return PostResponse.from(postRepository.save(post));
     }
 
     public void delete(Long id) {
@@ -56,23 +55,5 @@ public class PostService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
         }
         postRepository.deleteById(id);
-    }
-
-    private List<PostResponse> toResponses(List<Post> posts) {
-        Map<String, ImageCardCropResponse> cardCrops = imageCardCropService.findForImageUrls(
-                posts.stream().map(Post::getImageUrl).toList());
-        return posts.stream()
-                .map(post -> PostResponse.from(
-                        post,
-                        cardCrops.get(ImageCardCropService.fileNameFromImageUrl(post.getImageUrl()))))
-                .toList();
-    }
-
-    private PostResponse toResponse(Post post) {
-        String fileName = ImageCardCropService.fileNameFromImageUrl(post.getImageUrl());
-        ImageCardCropResponse cardCrops = fileName == null
-                ? null
-                : imageCardCropService.findForImageUrls(List.of(post.getImageUrl())).get(fileName);
-        return PostResponse.from(post, cardCrops);
     }
 }

@@ -1,13 +1,8 @@
 import { useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent } from 'react'
 import {
-  getCardCropRect,
-  getCropPreviewStyle,
-  type ImageCardCrops,
-  type NormalizedCropRect,
-  type PostCardCropType,
-} from '../../../data/imageCardCrops'
-import {
   createCroppedImage,
+  POST_CARD_CROP_ASPECT_RATIOS,
+  type PostCardCropType,
   type ProcessedImage,
 } from './authorImageProcessing'
 import './AuthorImageCropEditor.css'
@@ -15,13 +10,21 @@ import './AuthorImageCropEditor.css'
 type AuthorImageCropEditorProps = {
   imageUrl: string
   previewUrl: string
-  initialCardCrops: ImageCardCrops
   onCancel: () => void
-  onSaveCroppedImage: (image: ProcessedImage) => Promise<void>
-  onSaveCardCrops: (crops: Omit<ImageCardCrops, 'fileName'>) => Promise<void>
+  onSave: (image: ProcessedImage) => Promise<void>
 }
 
 type ImageDimensions = {
+  width: number
+  height: number
+}
+
+type CropPosition = {
+  x: number
+  y: number
+}
+
+type CropRect = CropPosition & {
   width: number
   height: number
 }
@@ -33,126 +36,102 @@ type CropDrag = {
   positionY: number
 }
 
-const initialFreeCrop: NormalizedCropRect = {
-  x: 0.1,
-  y: 0.1,
-  width: 0.8,
-  height: 0.8,
-}
+function getCropSize(dimensions: ImageDimensions, aspectRatio: number, zoomPercent: number) {
+  const sourceAspectRatio = dimensions.width / dimensions.height
+  const baseWidth = sourceAspectRatio > aspectRatio ? aspectRatio / sourceAspectRatio : 1
+  const baseHeight = sourceAspectRatio > aspectRatio ? 1 : sourceAspectRatio / aspectRatio
+  const zoom = zoomPercent / 100
 
-function getCropPosition(rect: NormalizedCropRect) {
   return {
-    x: Math.max(0, Math.min(1, rect.x / Math.max(0.0001, 1 - rect.width))),
-    y: Math.max(0, Math.min(1, rect.y / Math.max(0.0001, 1 - rect.height))),
+    width: baseWidth / zoom,
+    height: baseHeight / zoom,
   }
 }
 
-function AuthorImageCropEditor({
-  imageUrl,
-  previewUrl,
-  initialCardCrops,
-  onCancel,
-  onSaveCroppedImage,
-  onSaveCardCrops,
-}: AuthorImageCropEditorProps) {
+function getCardPreviewRect(crop: CropRect, dimensions: ImageDimensions, aspectRatio: number): CropRect {
+  const cropAspectRatio = crop.width * dimensions.width / (crop.height * dimensions.height)
+
+  if (cropAspectRatio > aspectRatio) {
+    const width = crop.width * aspectRatio / cropAspectRatio
+    return { x: crop.x + (crop.width - width) / 2, y: crop.y, width, height: crop.height }
+  }
+
+  const height = crop.height * cropAspectRatio / aspectRatio
+  return { x: crop.x, y: crop.y + (crop.height - height) / 2, width: crop.width, height }
+}
+
+function getCardPreviewStyle(imageUrl: string, rect: CropRect): CSSProperties {
+  const horizontalPosition = rect.width >= 1 ? 50 : rect.x / (1 - rect.width) * 100
+  const verticalPosition = rect.height >= 1 ? 50 : rect.y / (1 - rect.height) * 100
+
+  return {
+    backgroundImage: `url("${imageUrl}")`,
+    backgroundPosition: `${horizontalPosition}% ${verticalPosition}%`,
+    backgroundSize: `${100 / rect.width}% ${100 / rect.height}%`,
+  }
+}
+
+function AuthorImageCropEditor({ imageUrl, previewUrl, onCancel, onSave }: AuthorImageCropEditorProps) {
   const [dimensions, setDimensions] = useState<ImageDimensions | null>(null)
-  const [mode, setMode] = useState<'free' | 'post-card'>('free')
-  const [activeCropType, setActiveCropType] = useState<PostCardCropType>('large')
-  const [freeCrop, setFreeCrop] = useState<NormalizedCropRect>(initialFreeCrop)
-  const [cardCrops, setCardCrops] = useState<Omit<ImageCardCrops, 'fileName'>>({
-    large: { ...initialCardCrops.large },
-    small: { ...initialCardCrops.small },
-  })
+  const [cropType, setCropType] = useState<PostCardCropType>('large')
+  const [zoomPercent, setZoomPercent] = useState(100)
+  const [position, setPosition] = useState<CropPosition>({ x: 0.5, y: 0.5 })
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState('')
   const dragRef = useRef<CropDrag | null>(null)
 
-  const activeSettings = cardCrops[activeCropType]
-  const cropRect = dimensions
-    ? mode === 'free'
-      ? freeCrop
-      : getCardCropRect(dimensions.width, dimensions.height, activeCropType, activeSettings)
+  const aspectRatio = POST_CARD_CROP_ASPECT_RATIOS[cropType]
+  const cropSize = dimensions ? getCropSize(dimensions, aspectRatio, zoomPercent) : null
+  const cropRect = cropSize ? {
+    x: position.x * (1 - cropSize.width),
+    y: position.y * (1 - cropSize.height),
+    ...cropSize,
+  } : null
+  const largePreviewRect = cropRect && dimensions
+    ? getCardPreviewRect(cropRect, dimensions, POST_CARD_CROP_ASPECT_RATIOS.large)
     : null
-  const largePreviewRect = dimensions
-    ? getCardCropRect(dimensions.width, dimensions.height, 'large', cardCrops.large)
+  const smallPreviewRect = cropRect && dimensions
+    ? getCardPreviewRect(cropRect, dimensions, POST_CARD_CROP_ASPECT_RATIOS.small)
     : null
-  const smallPreviewRect = dimensions
-    ? getCardCropRect(dimensions.width, dimensions.height, 'small', cardCrops.small)
-    : null
-  const cropPosition = cropRect ? getCropPosition(cropRect) : { x: 0.5, y: 0.5 }
 
   const handleBackdropMouseDown = (event: MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget && !isSaving) onCancel()
   }
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (!cropRect || isSaving) return
+    if (!cropSize || !dimensions || isSaving) return
     event.preventDefault()
     event.currentTarget.setPointerCapture(event.pointerId)
     dragRef.current = {
       pointerX: event.clientX,
       pointerY: event.clientY,
-      positionX: cropPosition.x,
-      positionY: cropPosition.y,
+      positionX: position.x,
+      positionY: position.y,
     }
   }
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current
     const stage = event.currentTarget.parentElement
-    if (!drag || !stage || !cropRect) return
+    if (!drag || !stage || !cropSize) return
 
     const stageBounds = stage.getBoundingClientRect()
-    const maxX = Math.max(0, 1 - cropRect.width)
-    const maxY = Math.max(0, 1 - cropRect.height)
+    const maxX = Math.max(0, 1 - cropSize.width)
+    const maxY = Math.max(0, 1 - cropSize.height)
     const deltaX = maxX > 0 ? (event.clientX - drag.pointerX) / (stageBounds.width * maxX) : 0
     const deltaY = maxY > 0 ? (event.clientY - drag.pointerY) / (stageBounds.height * maxY) : 0
-    const position = {
+    setPosition({
       x: Math.max(0, Math.min(1, drag.positionX + deltaX)),
       y: Math.max(0, Math.min(1, drag.positionY + deltaY)),
-    }
-
-    if (mode === 'free') {
-      setFreeCrop((current) => ({
-        ...current,
-        x: position.x * (1 - current.width),
-        y: position.y * (1 - current.height),
-      }))
-    } else {
-      setCardCrops((current) => ({
-        ...current,
-        [activeCropType]: {
-          ...current[activeCropType],
-          positionX: Math.round(position.x * 100),
-          positionY: Math.round(position.y * 100),
-        },
-      }))
-    }
+    })
   }
 
   const handlePointerUp = () => {
     dragRef.current = null
   }
 
-  const updateCardCrop = (key: 'zoomPercent' | 'positionX' | 'positionY', value: number) => {
-    setCardCrops((current) => ({
-      ...current,
-      [activeCropType]: { ...current[activeCropType], [key]: value },
-    }))
-  }
-
-  const updateFreeCrop = (key: 'width' | 'height', value: number) => {
-    const size = value / 100
-    setFreeCrop((current) => ({
-      ...current,
-      x: key === 'width' ? Math.min(current.x, 1 - size) : current.x,
-      y: key === 'height' ? Math.min(current.y, 1 - size) : current.y,
-      [key]: size,
-    }))
-  }
-
   const handleSave = async () => {
-    if (!dimensions || !cropRect) {
+    if (!dimensions) {
       setError('Poczekaj, aż zdjęcie zostanie wczytane.')
       return
     }
@@ -160,25 +139,20 @@ function AuthorImageCropEditor({
     setError('')
     setIsSaving(true)
     try {
-      if (mode === 'post-card') {
-        await onSaveCardCrops(cardCrops)
-      } else {
-        const croppedImage = await createCroppedImage(imageUrl, cropRect)
-        await onSaveCroppedImage(croppedImage)
-      }
+      const croppedImage = await createCroppedImage(
+        imageUrl,
+        cropType,
+        zoomPercent,
+        position.x,
+        position.y,
+      )
+      await onSave(croppedImage)
     } catch (saveError: unknown) {
-      setError(saveError instanceof Error ? saveError.message : 'Nie udało się zapisać kadru zdjęcia.')
+      setError(saveError instanceof Error ? saveError.message : 'Nie udało się przyciąć zdjęcia.')
     } finally {
       setIsSaving(false)
     }
   }
-
-  const activeFrameStyle: CSSProperties | undefined = cropRect ? {
-    height: `${cropRect.height * 100}%`,
-    left: `${cropRect.x * 100}%`,
-    top: `${cropRect.y * 100}%`,
-    width: `${cropRect.width * 100}%`,
-  } : undefined
 
   return (
     <div className="author-image-crop-backdrop" role="presentation" onMouseDown={handleBackdropMouseDown}>
@@ -186,54 +160,41 @@ function AuthorImageCropEditor({
         <div className="author-image-crop-heading">
           <div>
             <p className="author-login-eyebrow">Wgrane zdjęcia</p>
-            <h2 id="author-image-crop-title">Kadruj zdjęcie</h2>
+            <h2 id="author-image-crop-title">Przytnij zdjęcie</h2>
           </div>
           <button type="button" aria-label="Zamknij przycinanie" disabled={isSaving} onClick={onCancel}>×</button>
         </div>
 
-        <div className="author-image-crop-modes" aria-label="Sposób kadrowania">
-          <button
-            type="button"
-            aria-pressed={mode === 'free'}
-            onClick={() => setMode('free')}
-          >
-            Przytnij zdjęcie
-          </button>
-          <button
-            type="button"
-            aria-pressed={mode === 'post-card'}
-            onClick={() => setMode('post-card')}
-          >
-            Kadruj na karcie wpisu
-          </button>
-        </div>
-
-        {mode === 'post-card' && (
-          <div className="author-image-crop-aspects" aria-label="Rozmiar karty">
-            <button
-              type="button"
-              aria-pressed={activeCropType === 'large'}
-              onClick={() => setActiveCropType('large')}
-            >
-              Duża karta
-            </button>
-            <button
-              type="button"
-              aria-pressed={activeCropType === 'small'}
-              onClick={() => setActiveCropType('small')}
-            >
-              Mała karta
-            </button>
-          </div>
-        )}
-
         <div className="author-image-crop-layout">
           <div className="author-image-crop-main">
+            <div className="author-image-crop-aspects" aria-label="Proporcje karty">
+              <button
+                type="button"
+                aria-pressed={cropType === 'large'}
+                onClick={() => {
+                  setCropType('large')
+                  setPosition({ x: 0.5, y: 0.5 })
+                }}
+              >
+                Duża karta · 2,4:1
+              </button>
+              <button
+                type="button"
+                aria-pressed={cropType === 'small'}
+                onClick={() => {
+                  setCropType('small')
+                  setPosition({ x: 0.5, y: 0.5 })
+                }}
+              >
+                Mała karta · 1,7:1
+              </button>
+            </div>
+
             <div className="author-image-crop-stage-wrap">
               <div className="author-image-crop-stage">
                 <img
                   src={previewUrl}
-                  alt="Zdjęcie do kadrowania"
+                  alt="Zdjęcie do przycięcia"
                   onLoad={(event) => {
                     setDimensions({
                       width: event.currentTarget.naturalWidth,
@@ -246,7 +207,12 @@ function AuthorImageCropEditor({
                   <div
                     className="author-image-crop-frame"
                     aria-label="Przeciągnij, aby przesunąć kadr"
-                    style={activeFrameStyle}
+                    style={{
+                      height: `${cropRect.height * 100}%`,
+                      left: `${cropRect.x * 100}%`,
+                      top: `${cropRect.y * 100}%`,
+                      width: `${cropRect.width * 100}%`,
+                    }}
                     onPointerDown={handlePointerDown}
                     onPointerMove={handlePointerMove}
                     onPointerUp={handlePointerUp}
@@ -258,95 +224,43 @@ function AuthorImageCropEditor({
               </div>
             </div>
 
-            {mode === 'free' ? (
-              <div className="author-image-crop-controls">
-                <label htmlFor="author-image-crop-width">Szerokość kadru: {Math.round(freeCrop.width * 100)}%</label>
-                <input
-                  id="author-image-crop-width"
-                  type="range"
-                  min="10"
-                  max="100"
-                  value={Math.round(freeCrop.width * 100)}
-                  disabled={!dimensions || isSaving}
-                  onChange={(event) => updateFreeCrop('width', Number(event.target.value))}
-                />
-                <label htmlFor="author-image-crop-height">Wysokość kadru: {Math.round(freeCrop.height * 100)}%</label>
-                <input
-                  id="author-image-crop-height"
-                  type="range"
-                  min="10"
-                  max="100"
-                  value={Math.round(freeCrop.height * 100)}
-                  disabled={!dimensions || isSaving}
-                  onChange={(event) => updateFreeCrop('height', Number(event.target.value))}
-                />
-                <label htmlFor="author-image-crop-horizontal">Pozycja pozioma: {Math.round(cropPosition.x * 100)}%</label>
-                <input
-                  id="author-image-crop-horizontal"
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={Math.round(cropPosition.x * 100)}
-                  disabled={!cropRect || cropRect.width >= 1 || isSaving}
-                  onChange={(event) => setFreeCrop((current) => ({
-                    ...current,
-                    x: Number(event.target.value) / 100 * (1 - current.width),
-                  }))}
-                />
-                <label htmlFor="author-image-crop-vertical">Pozycja pionowa: {Math.round(cropPosition.y * 100)}%</label>
-                <input
-                  id="author-image-crop-vertical"
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={Math.round(cropPosition.y * 100)}
-                  disabled={!cropRect || cropRect.height >= 1 || isSaving}
-                  onChange={(event) => setFreeCrop((current) => ({
-                    ...current,
-                    y: Number(event.target.value) / 100 * (1 - current.height),
-                  }))}
-                />
-              </div>
-            ) : (
-              <div className="author-image-crop-controls">
-                <label htmlFor="author-image-crop-zoom">Powiększenie kadru: {activeSettings.zoomPercent}%</label>
-                <input
-                  id="author-image-crop-zoom"
-                  type="range"
-                  min="100"
-                  max="300"
-                  step="1"
-                  value={activeSettings.zoomPercent}
-                  disabled={!dimensions || isSaving}
-                  onChange={(event) => updateCardCrop('zoomPercent', Number(event.target.value))}
-                />
-                <label htmlFor="author-image-crop-horizontal">Pozycja pozioma: {activeSettings.positionX}%</label>
-                <input
-                  id="author-image-crop-horizontal"
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={activeSettings.positionX}
-                  disabled={!cropRect || cropRect.width >= 1 || isSaving}
-                  onChange={(event) => updateCardCrop('positionX', Number(event.target.value))}
-                />
-                <label htmlFor="author-image-crop-vertical">Pozycja pionowa: {activeSettings.positionY}%</label>
-                <input
-                  id="author-image-crop-vertical"
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={activeSettings.positionY}
-                  disabled={!cropRect || cropRect.height >= 1 || isSaving}
-                  onChange={(event) => updateCardCrop('positionY', Number(event.target.value))}
-                />
-              </div>
-            )}
+            <div className="author-image-crop-controls">
+              <label htmlFor="author-image-crop-zoom">Powiększenie kadru: {zoomPercent}%</label>
+              <input
+                id="author-image-crop-zoom"
+                type="range"
+                min="100"
+                max="300"
+                step="1"
+                value={zoomPercent}
+                disabled={!dimensions || isSaving}
+                onChange={(event) => setZoomPercent(Number(event.target.value))}
+              />
+              <label htmlFor="author-image-crop-horizontal">Pozycja pozioma: {Math.round(position.x * 100)}%</label>
+              <input
+                id="author-image-crop-horizontal"
+                type="range"
+                min="0"
+                max="100"
+                value={Math.round(position.x * 100)}
+                disabled={!cropSize || cropSize.width >= 1 || isSaving}
+                onChange={(event) => setPosition((current) => ({ ...current, x: Number(event.target.value) / 100 }))}
+              />
+              <label htmlFor="author-image-crop-vertical">Pozycja pionowa: {Math.round(position.y * 100)}%</label>
+              <input
+                id="author-image-crop-vertical"
+                type="range"
+                min="0"
+                max="100"
+                value={Math.round(position.y * 100)}
+                disabled={!cropSize || cropSize.height >= 1 || isSaving}
+                onChange={(event) => setPosition((current) => ({ ...current, y: Number(event.target.value) / 100 }))}
+              />
+            </div>
 
             {dimensions && cropRect && (
               <p className="author-image-crop-dimensions">
                 Kadr: {Math.round(cropRect.width * dimensions.width)} × {Math.round(cropRect.height * dimensions.height)} px
-                {mode === 'post-card' && ' · zapis nie zmienia oryginalnego zdjęcia'}
               </p>
             )}
           </div>
@@ -360,7 +274,7 @@ function AuthorImageCropEditor({
                   className="author-image-crop-preview is-large"
                   role="img"
                   aria-label="Podgląd kadru na dużej karcie"
-                  style={getCropPreviewStyle(previewUrl, largePreviewRect)}
+                  style={getCardPreviewStyle(previewUrl, largePreviewRect)}
                 />
               </div>
             )}
@@ -371,28 +285,22 @@ function AuthorImageCropEditor({
                   className="author-image-crop-preview is-small"
                   role="img"
                   aria-label="Podgląd kadru na małej karcie"
-                  style={getCropPreviewStyle(previewUrl, smallPreviewRect)}
+                  style={getCardPreviewStyle(previewUrl, smallPreviewRect)}
                 />
               </div>
             )}
             <p className="author-image-crop-preview-note">
-              {mode === 'free'
-                ? 'Ustaw dowolną szerokość i wysokość kadru. Zapis zastąpi oryginalne zdjęcie.'
-                : 'Ustawienia dużej i małej karty są niezależne. Zdjęcie w treści wpisu pozostanie w całości.'}
+              Siatka pokazuje kadr wybranej proporcji. Przeciągnij kadr lub użyj suwaków, aby zmienić jego położenie.
             </p>
           </aside>
         </div>
 
-        <p className="author-image-crop-hint">
-          {mode === 'free'
-            ? 'Przeciągnij kadr, aby go przesunąć. Użyj suwaków, by niezależnie zmienić jego szerokość i wysokość.'
-            : 'Przeciągnij kadr albo użyj suwaków. Przycięcie służy wyłącznie do wyświetlania na karcie wpisu.'}
-        </p>
+        <p className="author-image-crop-hint">Proporcje kart są przybliżone. Przycinanie GIF-ów i animowanych WebP nie jest obsługiwane.</p>
         {error && <p className="author-image-crop-error" role="alert">{error}</p>}
         <div className="author-image-crop-actions">
           <button type="button" disabled={isSaving} onClick={onCancel}>Anuluj</button>
           <button type="button" disabled={!dimensions || isSaving} onClick={handleSave}>
-            {isSaving ? 'Zapisywanie...' : mode === 'free' ? 'Zapisz przycięte zdjęcie' : 'Zapisz kadry kart'}
+            {isSaving ? 'Zapisywanie...' : 'Zapisz przycięcie'}
           </button>
         </div>
       </section>

@@ -498,7 +498,6 @@ function AuthorDashboard({ session, error: sessionError, onLogout, isLoggingOut 
         <AuthorPostEditor
           form={form}
           editingId={editingId}
-          posts={posts}
           isSaving={isSaving}
           onChange={updateForm}
           onClose={closeForm}

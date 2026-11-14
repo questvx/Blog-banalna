@@ -2,7 +2,6 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AuthorPost } from '../../../api/adminPosts'
 import { fetchAdminPosts } from '../../../api/adminPosts'
-import { fetchAdminImageCardCrops, saveAdminImageCardCrops } from '../../../api/adminImageCardCrops'
 import {
   deleteAuthorImage,
   fetchAuthorImages,
@@ -14,10 +13,6 @@ import AuthorUploadedImages from './AuthorUploadedImages'
 import { createScaledImage } from './authorImageProcessing'
 
 vi.mock('../../../api/adminPosts', () => ({ fetchAdminPosts: vi.fn() }))
-vi.mock('../../../api/adminImageCardCrops', () => ({
-  fetchAdminImageCardCrops: vi.fn(),
-  saveAdminImageCardCrops: vi.fn(),
-}))
 vi.mock('../../../api/authorMedia', () => ({
   deleteAuthorImage: vi.fn(),
   fetchAuthorImages: vi.fn(),
@@ -33,53 +28,28 @@ vi.mock('./AuthorImageCropEditor', () => ({
   default: ({
     imageUrl,
     onCancel,
-    onSaveCroppedImage,
-    onSaveCardCrops,
-  }: {
-    imageUrl: string
-    onCancel: () => void
-    onSaveCroppedImage: (image: { file: File; width: number; height: number }) => void
-    onSaveCardCrops: (crops: {
-      large: { zoomPercent: number; positionX: number; positionY: number }
-      small: { zoomPercent: number; positionX: number; positionY: number }
-    }) => void
-  }) => (
+    onSave,
+  }: { imageUrl: string; onCancel: () => void; onSave: (image: { file: File; width: number; height: number }) => void }) => (
     <div role="dialog" aria-label="Przytnij zdjęcie">
       <span>{imageUrl}</span>
       <button type="button" onClick={onCancel}>Anuluj kadr</button>
       <button
         type="button"
-        onClick={() => onSaveCroppedImage({ file: new File(['crop'], 'cropped.png', { type: 'image/png' }), width: 640, height: 360 })}
+        onClick={() => onSave({ file: new File(['crop'], 'cropped.png', { type: 'image/png' }), width: 640, height: 360 })}
       >
-        Zapisz przycięte zdjęcie
-      </button>
-      <button
-        type="button"
-        onClick={() => onSaveCardCrops({
-          large: { zoomPercent: 120, positionX: 30, positionY: 40 },
-          small: { zoomPercent: 150, positionX: 60, positionY: 70 },
-        })}
-      >
-        Zapisz kadry kart
+        Zapisz kadr
       </button>
     </div>
   ),
 }))
 
 const mockedFetchPosts = vi.mocked(fetchAdminPosts)
-const mockedFetchCardCrops = vi.mocked(fetchAdminImageCardCrops)
-const mockedSaveCardCrops = vi.mocked(saveAdminImageCardCrops)
 const mockedFetchImages = vi.mocked(fetchAuthorImages)
 const mockedDeleteImage = vi.mocked(deleteAuthorImage)
 const mockedReplaceImage = vi.mocked(replaceAuthorImage)
 const mockedUploadImage = vi.mocked(uploadAuthorImage)
 const mockedCreateScaledImage = vi.mocked(createScaledImage)
 const imageUrl = 'https://blog.example/uploads/zdjecie.png'
-const cardCrops = {
-  fileName: 'zdjecie.png',
-  large: { zoomPercent: 100, positionX: 50, positionY: 50 },
-  small: { zoomPercent: 100, positionX: 50, positionY: 50 },
-}
 
 function authorPost(overrides: Partial<AuthorPost> = {}): AuthorPost {
   return {
@@ -92,7 +62,6 @@ function authorPost(overrides: Partial<AuthorPost> = {}): AuthorPost {
 async function renderImageLibrary(images = [imageUrl], posts: AuthorPost[] = []) {
   mockedFetchImages.mockResolvedValue(images)
   mockedFetchPosts.mockResolvedValue(posts)
-  mockedFetchCardCrops.mockResolvedValue(cardCrops)
   render(<AuthorUploadedImages />)
   await screen.findByText('Nie jest używane w żadnym wpisie.')
 }
@@ -101,8 +70,6 @@ describe('AuthorUploadedImages', () => {
   beforeEach(() => {
     mockedFetchImages.mockReset()
     mockedFetchPosts.mockReset()
-    mockedFetchCardCrops.mockReset()
-    mockedSaveCardCrops.mockReset()
     mockedDeleteImage.mockReset()
     mockedReplaceImage.mockReset()
     mockedUploadImage.mockReset()
@@ -196,30 +163,11 @@ describe('AuthorUploadedImages', () => {
     await renderImageLibrary()
     fireEvent.click(screen.getByRole('button', { name: 'Przytnij zdjęcie' }))
 
-    expect(await screen.findByRole('dialog', { name: 'Przytnij zdjęcie' })).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Zapisz przycięte zdjęcie' }))
+    expect(screen.getByRole('dialog', { name: 'Przytnij zdjęcie' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Zapisz kadr' }))
 
-    expect(await screen.findByText('Oryginalne zdjęcie przycięto do 640 × 360 px.')).toBeInTheDocument()
+    expect(await screen.findByText('Zdjęcie przycięto do 640 × 360 px.')).toBeInTheDocument()
     expect(mockedReplaceImage).toHaveBeenCalledOnce()
-  })
-
-  it('saves card crop metadata without replacing the uploaded image', async () => {
-    mockedSaveCardCrops.mockResolvedValue({
-      fileName: 'zdjecie.png',
-      large: { zoomPercent: 120, positionX: 30, positionY: 40 },
-      small: { zoomPercent: 150, positionX: 60, positionY: 70 },
-    })
-    await renderImageLibrary()
-    fireEvent.click(screen.getByRole('button', { name: 'Przytnij zdjęcie' }))
-    await screen.findByRole('dialog', { name: 'Przytnij zdjęcie' })
-    fireEvent.click(screen.getByRole('button', { name: 'Zapisz kadry kart' }))
-
-    expect(await screen.findByText(/oryginalne zdjęcie nie zostało zmienione/i)).toBeInTheDocument()
-    expect(mockedSaveCardCrops).toHaveBeenCalledWith('zdjecie.png', {
-      large: { zoomPercent: 120, positionX: 30, positionY: 40 },
-      small: { zoomPercent: 150, positionX: 60, positionY: 70 },
-    })
-    expect(mockedReplaceImage).not.toHaveBeenCalled()
   })
 
   it('deletes an image only after confirmation', async () => {
