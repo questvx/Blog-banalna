@@ -1,11 +1,9 @@
+import type { NormalizedCropRect } from '../../../data/imageCardCrops'
+export { POST_CARD_CROP_ASPECT_RATIOS } from '../../../data/imageCardCrops'
+export type { PostCardCropType } from '../../../data/imageCardCrops'
+
 export const MIN_IMAGE_SCALE_PERCENT = 10
 export const MAX_IMAGE_SCALE_PERCENT = 500
-export const POST_CARD_CROP_ASPECT_RATIOS = {
-  large: 2.4,
-  small: 1.7,
-} as const
-
-export type PostCardCropType = keyof typeof POST_CARD_CROP_ASPECT_RATIOS
 
 export type ProcessedImage = {
   file: File
@@ -145,30 +143,24 @@ export async function createScaledImage(imageUrl: string, scalePercent: number):
 
 export async function createCroppedImage(
   imageUrl: string,
-  cropType: PostCardCropType,
-  zoomPercent: number,
-  positionX: number,
-  positionY: number,
+  cropRect: NormalizedCropRect,
 ): Promise<ProcessedImage> {
-  const aspectRatio = POST_CARD_CROP_ASPECT_RATIOS[cropType]
-  if (!Number.isFinite(zoomPercent) || zoomPercent < 100 || zoomPercent > 300) {
-    throw new Error('Powiększenie kadru musi mieścić się w zakresie 100–300%.')
-  }
-  if (!Number.isFinite(positionX) || !Number.isFinite(positionY)) {
-    throw new Error('Nie udało się odczytać położenia kadru.')
+  const { x, y, width: cropWidthPercent, height: cropHeightPercent } = cropRect
+  if (!Number.isFinite(x) || !Number.isFinite(y)
+    || !Number.isFinite(cropWidthPercent) || !Number.isFinite(cropHeightPercent)
+    || x < 0 || y < 0 || cropWidthPercent <= 0 || cropHeightPercent <= 0
+    || x + cropWidthPercent > 1 || y + cropHeightPercent > 1) {
+    throw new Error('Nie udało się odczytać położenia i rozmiaru kadru.')
   }
 
   const source = await loadImageForEditing(imageUrl)
   try {
     const sourceWidth = source.image.naturalWidth
     const sourceHeight = source.image.naturalHeight
-    const sourceAspectRatio = sourceWidth / sourceHeight
-    const baseWidth = sourceAspectRatio > aspectRatio ? sourceHeight * aspectRatio : sourceWidth
-    const baseHeight = baseWidth / aspectRatio
-    const cropWidth = baseWidth * 100 / zoomPercent
-    const cropHeight = baseHeight * 100 / zoomPercent
-    const cropX = (sourceWidth - cropWidth) * Math.max(0, Math.min(1, positionX))
-    const cropY = (sourceHeight - cropHeight) * Math.max(0, Math.min(1, positionY))
+    const cropWidth = sourceWidth * cropWidthPercent
+    const cropHeight = sourceHeight * cropHeightPercent
+    const cropX = sourceWidth * x
+    const cropY = sourceHeight * y
     const width = Math.max(1, Math.round(cropWidth))
     const height = Math.max(1, Math.round(cropHeight))
     validateOutputDimensions(width, height)

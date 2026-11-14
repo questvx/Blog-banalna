@@ -1,7 +1,9 @@
 import { useEffect, useState, type ChangeEvent } from 'react'
 import { fetchAdminPosts, type AuthorPost } from '../../../api/adminPosts'
+import { fetchAdminImageCardCrops, saveAdminImageCardCrops } from '../../../api/adminImageCardCrops'
 import { deleteAuthorImage, fetchAuthorImages, replaceAuthorImage, uploadAuthorImage } from '../../../api/authorMedia'
 import AuthorImageCropEditor from './AuthorImageCropEditor'
+import type { ImageCardCrops } from '../../../data/imageCardCrops'
 import {
   createScaledImage,
   MAX_IMAGE_SCALE_PERCENT,
@@ -84,9 +86,11 @@ function AuthorUploadedImages() {
   const [deletingImage, setDeletingImage] = useState('')
   const [scalingImage, setScalingImage] = useState('')
   const [scalePercent, setScalePercent] = useState('100')
-  const [isScaling, setIsScaling] = useState(false)
+  const [isProcessingImage, setIsProcessingImage] = useState(false)
   const [scaleError, setScaleError] = useState('')
   const [croppingImage, setCroppingImage] = useState('')
+  const [cropSettings, setCropSettings] = useState<ImageCardCrops | null>(null)
+  const [loadingCropImage, setLoadingCropImage] = useState('')
 
   useEffect(() => {
     let isMounted = true
@@ -174,7 +178,7 @@ function AuthorUploadedImages() {
     setScaleError('')
     setError('')
     setNotice('')
-    setIsScaling(true)
+    setIsProcessingImage(true)
     try {
       const scaledImage = await createScaledImage(imageUrl, percentage)
       await replaceAuthorImage(imageUrl, scaledImage.file)
@@ -188,7 +192,28 @@ function AuthorUploadedImages() {
     } catch (scaleError: unknown) {
       setScaleError(scaleError instanceof Error ? scaleError.message : 'Nie udało się przeskalować zdjęcia.')
     } finally {
-      setIsScaling(false)
+      setIsProcessingImage(false)
+    }
+  }
+
+  const handleOpenCropEditor = async (imageUrl: string) => {
+    const fileName = new URL(imageUrl).pathname.split('/').pop()
+    if (!fileName) {
+      setError('Nie udało się rozpoznać zdjęcia do kadrowania.')
+      return
+    }
+
+    setError('')
+    setNotice('')
+    setLoadingCropImage(imageUrl)
+    try {
+      const settings = await fetchAdminImageCardCrops(decodeURIComponent(fileName))
+      setCropSettings(settings)
+      setCroppingImage(imageUrl)
+    } catch (loadError: unknown) {
+      setError(loadError instanceof Error ? loadError.message : 'Nie udało się pobrać ustawień kadru.')
+    } finally {
+      setLoadingCropImage('')
     }
   }
 
@@ -197,7 +222,7 @@ function AuthorUploadedImages() {
 
     setError('')
     setNotice('')
-    setIsScaling(true)
+    setIsProcessingImage(true)
     try {
       await replaceAuthorImage(croppingImage, croppedImage.file)
       setImageVersions((current) => ({ ...current, [croppingImage]: Date.now() }))
@@ -205,10 +230,29 @@ function AuthorUploadedImages() {
         ...current,
         [croppingImage]: { width: croppedImage.width, height: croppedImage.height },
       }))
-      setNotice(`Zdjęcie przycięto do ${croppedImage.width} × ${croppedImage.height} px.`)
+      setNotice(`Oryginalne zdjęcie przycięto do ${croppedImage.width} × ${croppedImage.height} px.`)
       setCroppingImage('')
     } finally {
-      setIsScaling(false)
+      setIsProcessingImage(false)
+    }
+  }
+
+  const handleSaveCardCrops = async (crops: Omit<ImageCardCrops, 'fileName'>) => {
+    if (!croppingImage) return
+
+    const fileName = new URL(croppingImage).pathname.split('/').pop()
+    if (!fileName) throw new Error('Nie udało się rozpoznać zdjęcia do zapisania kadru.')
+
+    setError('')
+    setNotice('')
+    setIsProcessingImage(true)
+    try {
+      const savedCrops = await saveAdminImageCardCrops(decodeURIComponent(fileName), crops)
+      setCropSettings(savedCrops)
+      setNotice('Zapisano osobne kadry dla dużej i małej karty. Oryginalne zdjęcie nie zostało zmienione.')
+      setCroppingImage('')
+    } finally {
+      setIsProcessingImage(false)
     }
   }
 
@@ -238,12 +282,12 @@ function AuthorUploadedImages() {
           <p>Dodaj zdjęcia do biblioteki</p>
           <span>JPEG, PNG, GIF lub WebP · maks. 5 MB na zdjęcie</span>
         </div>
-        <label className={`author-uploaded-images-picker ${isLoading || isUploading || isScaling ? 'is-disabled' : ''}`}>
-          <span>{isUploading ? 'Wgrywanie zdjęć...' : isScaling ? 'Skalowanie zdjęcia...' : 'Wybierz zdjęcia'}</span>
+        <label className={`author-uploaded-images-picker ${isLoading || isUploading || isProcessingImage ? 'is-disabled' : ''}`}>
+          <span>{isUploading ? 'Wgrywanie zdjęć...' : isProcessingImage ? 'Przetwarzanie zdjęcia...' : 'Wybierz zdjęcia'}</span>
           <input
             accept={IMAGE_TYPES}
             aria-label="Wybierz zdjęcia do wgrania"
-            disabled={isLoading || isUploading || isScaling || deletingImage !== ''}
+            disabled={isLoading || isUploading || isProcessingImage || loadingCropImage !== '' || deletingImage !== ''}
             multiple
             type="file"
             onChange={handleUpload}
@@ -268,6 +312,13 @@ function AuthorUploadedImages() {
         <div className="author-uploaded-images-grid">
           {images.map((imageUrl, index) => {
             const usages = imageUsages.get(normalizeImageUrl(imageUrl)) ?? []
+            const imageUsageClass = isCheckingUsage || usageError
+              ? ''
+              : usages.some((usage) => usage.isMainImage)
+                ? 'is-main-image'
+                : usages.some((usage) => usage.isInContent)
+                  ? 'is-content-image'
+                  : 'is-unused'
             const dimensions = imageDimensions[imageUrl]
             const percentage = Number(scalePercent)
             const canPreviewScale = Number.isInteger(percentage)
@@ -278,7 +329,7 @@ function AuthorUploadedImages() {
             const previewUrl = getVersionedImageUrl(imageUrl, imageVersions[imageUrl])
 
             return (
-              <article className="author-uploaded-image" key={imageUrl}>
+              <article className={`author-uploaded-image ${imageUsageClass}`} key={imageUrl}>
                 <a href={previewUrl} target="_blank" rel="noreferrer" aria-label={`Otwórz zdjęcie ${index + 1} w nowej karcie`}>
                   <img
                     src={previewUrl}
@@ -321,19 +372,19 @@ function AuthorUploadedImages() {
                 <button
                   className="author-uploaded-image-scale-toggle author-uploaded-image-crop-toggle"
                   type="button"
-                  disabled={isUploading || isScaling || deletingImage !== ''}
+                  disabled={isUploading || isProcessingImage || loadingCropImage !== '' || deletingImage !== ''}
                   onClick={() => {
                     setScalingImage('')
-                    setCroppingImage(imageUrl)
+                    void handleOpenCropEditor(imageUrl)
                   }}
                 >
-                  Przytnij zdjęcie
+                  {loadingCropImage === imageUrl ? 'Wczytuję ustawienia...' : 'Przytnij zdjęcie'}
                 </button>
                 <button
                   className="author-uploaded-image-scale-toggle"
                   type="button"
                   aria-expanded={scalingImage === imageUrl}
-                  disabled={isUploading || isScaling || deletingImage !== ''}
+                  disabled={isUploading || isProcessingImage || loadingCropImage !== '' || deletingImage !== ''}
                   onClick={() => {
                     setScalingImage((current) => current === imageUrl ? '' : imageUrl)
                     setScalePercent('100')
@@ -353,7 +404,7 @@ function AuthorUploadedImages() {
                         max={MAX_IMAGE_SCALE_PERCENT}
                         step="1"
                         value={scalePercent}
-                        disabled={isScaling}
+                        disabled={isProcessingImage}
                         onChange={(event) => {
                           setScalePercent(event.target.value)
                           setScaleError('')
@@ -373,12 +424,12 @@ function AuthorUploadedImages() {
                     <div className="author-uploaded-image-scale-actions">
                       <button
                         type="button"
-                        disabled={!canPreviewScale || isUploading || isScaling || deletingImage !== ''}
+                        disabled={!canPreviewScale || isUploading || isProcessingImage || deletingImage !== ''}
                         onClick={() => handleScaleImage(imageUrl)}
                       >
-                        {isScaling ? 'Skalowanie...' : 'Zastosuj rozmiar'}
+                        {isProcessingImage ? 'Przetwarzanie...' : 'Zastosuj rozmiar'}
                       </button>
-                      <button type="button" disabled={isScaling} onClick={() => setScalingImage('')}>Anuluj</button>
+                      <button type="button" disabled={isProcessingImage} onClick={() => setScalingImage('')}>Anuluj</button>
                     </div>
                   </div>
                 )}
@@ -390,7 +441,7 @@ function AuthorUploadedImages() {
                   <button
                     type="button"
                     className="is-danger"
-                    disabled={isUploading || isScaling || deletingImage !== ''}
+                    disabled={isUploading || isProcessingImage || loadingCropImage !== '' || deletingImage !== ''}
                     onClick={() => handleDeleteImage(imageUrl)}
                   >
                     {deletingImage === imageUrl ? 'Usuwanie...' : 'Usuń'}
@@ -401,12 +452,14 @@ function AuthorUploadedImages() {
           })}
         </div>
       )}
-      {croppingImage && (
+      {croppingImage && cropSettings && (
         <AuthorImageCropEditor
           imageUrl={croppingImage}
           previewUrl={getVersionedImageUrl(croppingImage, imageVersions[croppingImage])}
+          initialCardCrops={cropSettings}
           onCancel={() => setCroppingImage('')}
-          onSave={handleCropImage}
+          onSaveCroppedImage={handleCropImage}
+          onSaveCardCrops={handleSaveCardCrops}
         />
       )}
     </section>
