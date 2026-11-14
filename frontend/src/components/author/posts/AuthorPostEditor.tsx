@@ -1,5 +1,6 @@
 import { useState, type FormEvent, type MouseEvent } from 'react'
 import { fetchAuthorImages } from '../../../api/authorMedia'
+import type { AuthorPost } from '../../../api/adminPosts'
 import { authorCategories, type AuthorPostForm } from './authorPostForm'
 import AuthorImageUploader from '../media/AuthorImageUploader'
 import './AuthorPostEditor.css'
@@ -19,13 +20,14 @@ function escapeHtml(value: string): string {
 type AuthorPostEditorProps = {
   form: AuthorPostForm
   editingId: number | null
+  posts: AuthorPost[]
   isSaving: boolean
   onChange: <K extends keyof AuthorPostForm>(key: K, value: AuthorPostForm[K]) => void
   onClose: () => void
   onSubmit: (event: FormEvent<HTMLFormElement>) => void
 }
 
-function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubmit }: AuthorPostEditorProps) {
+function AuthorPostEditor({ form, editingId, posts, isSaving, onChange, onClose, onSubmit }: AuthorPostEditorProps) {
   const [isImageUploading, setIsImageUploading] = useState(false)
   const [isImageLibraryOpen, setIsImageLibraryOpen] = useState(false)
   const [isImageLibraryLoading, setIsImageLibraryLoading] = useState(false)
@@ -35,6 +37,10 @@ function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubm
   const [linkUrl, setLinkUrl] = useState('')
   const [linkError, setLinkError] = useState('')
   const [linkCopied, setLinkCopied] = useState(false)
+  const [recommendedPostId, setRecommendedPostId] = useState('')
+  const [recommendationError, setRecommendationError] = useState('')
+  const [recommendationCopied, setRecommendationCopied] = useState(false)
+  const recommendedPosts = posts.filter((post) => post.status === 'PUBLISHED' && post.id !== editingId)
 
   const handleOpenImageLibrary = async () => {
     setIsImageLibraryOpen(true)
@@ -94,6 +100,23 @@ function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubm
     }
 
     setLinkError('')
+  }
+
+  const handleCopyRecommendationTag = async () => {
+    const recommendedPost = recommendedPosts.find((post) => post.id === Number(recommendedPostId))
+    if (!recommendedPost) {
+      setRecommendationError('Wybierz opublikowany wpis do polecenia.')
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(`<polecajka id="${recommendedPost.id}"></polecajka>`)
+      setRecommendationCopied(true)
+      setRecommendationError('')
+    } catch {
+      setRecommendationCopied(false)
+      setRecommendationError('Nie udało się skopiować znacznika polecajki. Sprawdź uprawnienia przeglądarki do schowka.')
+    }
   }
 
   return (
@@ -162,6 +185,41 @@ function AuthorPostEditor({ form, editingId, isSaving, onChange, onClose, onSubm
                   {linkCopied ? 'Skopiowano znacznik' : 'Kopiuj znacznik linku'}
                 </button>
                 <p className="author-editor-link-hint">Wklej skopiowany znacznik w treści wpisu. Link otworzy się w nowej karcie.</p>
+              </div>
+              <div className="author-editor-recommendation-tool">
+                <h4>Poleć inny wpis</h4>
+                {recommendedPosts.length > 0 ? (
+                  <>
+                    <label htmlFor="post-recommendation-target">Wpis do polecenia</label>
+                    <select
+                      id="post-recommendation-target"
+                      value={recommendedPostId}
+                      onChange={(event) => {
+                        setRecommendedPostId(event.target.value)
+                        setRecommendationError('')
+                        setRecommendationCopied(false)
+                      }}
+                    >
+                      <option value="">Wybierz wpis</option>
+                      {recommendedPosts.map((post) => (
+                        <option key={post.id} value={post.id}>{post.title}</option>
+                      ))}
+                    </select>
+                    {recommendationError && <p className="author-editor-link-error" role="alert">{recommendationError}</p>}
+                    <button
+                      type="button"
+                      disabled={isSaving || !recommendedPostId}
+                      onClick={handleCopyRecommendationTag}
+                    >
+                      {recommendationCopied ? 'Skopiowano polecajkę' : 'Kopiuj polecajkę'}
+                    </button>
+                    <p className="author-editor-link-hint">
+                      Wklej znacznik w treści. Zapisuje ID wpisu, więc odnośnik działa także po przeniesieniu strony na hosting.
+                    </p>
+                  </>
+                ) : (
+                  <p className="author-editor-link-hint">Brak innych opublikowanych wpisów do polecenia.</p>
+                )}
               </div>
             </aside>
           </div>

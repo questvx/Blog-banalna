@@ -143,26 +143,30 @@
   padding-top: 9px;
 }
 
-.author-editor-link-tool {
+.author-editor-link-tool,
+.author-editor-recommendation-tool {
   border-top: 1px solid var(--author-line);
   margin-top: 12px;
   padding-top: 10px;
 }
 
-.author-editor-link-tool h4 {
+.author-editor-link-tool h4,
+.author-editor-recommendation-tool h4 {
   color: var(--author-ink);
   font-size: 13px;
   margin: 0 0 8px;
 }
 
-.author-editor-link-tool input {
+.author-editor-link-tool input,
+.author-editor-recommendation-tool select {
   font-size: 11px !important;
   margin-bottom: 8px !important;
   min-height: 34px !important;
   padding: 6px 7px !important;
 }
 
-.author-editor-link-tool button {
+.author-editor-link-tool button,
+.author-editor-recommendation-tool button {
   background: var(--author-blue);
   border: 0;
   border-radius: 3px;
@@ -175,11 +179,13 @@
   width: 100%;
 }
 
-.author-editor-link-tool button:hover:not(:disabled) {
+.author-editor-link-tool button:hover:not(:disabled),
+.author-editor-recommendation-tool button:hover:not(:disabled) {
   background: var(--author-blue-dark);
 }
 
-.author-editor-link-tool button:disabled {
+.author-editor-link-tool button:disabled,
+.author-editor-recommendation-tool button:disabled {
   cursor: wait;
   opacity: 0.6;
 }
