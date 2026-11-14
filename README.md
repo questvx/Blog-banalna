@@ -35,7 +35,7 @@ Install and start Docker Desktop, then open PowerShell in the repository root:
 Copy-Item .env.example .env
 ```
 
-Edit `.env` and replace all placeholder passwords. Compose builds the backend and frontend from the source files included in the extracted repository. An internet connection is required to download Docker base images if they are not already available locally. Start the blog with:
+Edit `.env` and replace all placeholder passwords. Compose builds the backend and frontend from the `backend` and `frontend` GitHub branches. An internet connection is required to fetch those sources and download Docker base images if they are not already available locally. Start or update the blog with:
 
 ```powershell
 docker compose up --build -d
@@ -49,7 +49,25 @@ Stop the containers without removing saved posts or uploaded images:
 docker compose down
 ```
 
-The database and uploaded images are kept in Docker volumes. Do not use `docker compose down -v` unless you want to permanently delete that local content.
+The database and uploaded images are kept in Docker volumes. The Compose project name is fixed so extracting this branch's ZIP under a different folder name won't silently create a new database or uploads volume. To keep using an author's existing posts and images, keep the same `.env` and use the default project name with `docker compose up --build -d`; do not pass a different `-p` name or use `docker compose down -v`.
+
+### Run a separate version without replacing the existing one
+
+To test a new version alongside the current one, start it with a different Compose project name and host port in PowerShell:
+
+```powershell
+$env:APP_PORT = '8089'
+docker compose -p blog-banalna-v2 up --build -d
+Remove-Item Env:APP_PORT
+```
+
+Open `http://localhost:8089`. The different project name gives this version its own containers, database volume, and uploads volume; the existing version and its data are left in place. The new database starts empty: copying existing posts or uploads requires a separate backup and restore. Stop only this version with:
+
+```powershell
+docker compose -p blog-banalna-v2 down
+```
+
+Do not add `-v` if you want to keep its data. To update the existing version instead, continue using `docker compose up --build -d` without `-p`; it will keep using the existing project's volumes.
 
 ### Prerequisites
 
@@ -130,5 +148,3 @@ For production, use HTTPS, set `SESSION_COOKIE_SECURE=true`, provide secrets thr
 ## Preview photos: Author interface
 <img width="1913" height="940" alt="image" src="https://github.com/user-attachments/assets/601a359f-9c1b-4230-99b3-1d1361bb9bec" />
 <img width="1915" height="939" alt="image" src="https://github.com/user-attachments/assets/cc86ce6b-baba-43b0-b29f-c495fd405a25" />
-
-
