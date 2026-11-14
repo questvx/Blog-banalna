@@ -35,7 +35,7 @@ Install and start Docker Desktop, then open PowerShell in the repository root:
 Copy-Item .env.example .env
 ```
 
-Edit `.env` and replace all placeholder passwords. Compose builds the backend and frontend from the source files included in the extracted repository. An internet connection is required to download Docker base images if they are not already available locally. Start the blog with:
+Edit `.env` and replace all placeholder passwords. Compose builds the backend and frontend from the `backend` and `frontend` GitHub branches. An internet connection is required to fetch those sources and download Docker base images if they are not already available locally. Start or update the blog with:
 
 ```powershell
 docker compose up --build -d
@@ -49,7 +49,7 @@ Stop the containers without removing saved posts or uploaded images:
 docker compose down
 ```
 
-The database and uploaded images are kept in Docker volumes. The Compose project name is fixed so extracting this branch's ZIP under a different folder name won't silently create a new database or uploads volume. Do not use `docker compose down -v` unless you want to permanently delete that local content.
+The database and uploaded images are kept in Docker volumes. The Compose project name is fixed so extracting this branch's ZIP under a different folder name won't silently create a new database or uploads volume. To keep using an author's existing posts and images, keep the same `.env` and use the default project name with `docker compose up --build -d`; do not pass a different `-p` name or use `docker compose down -v`.
 
 ### Run a separate version without replacing the existing one
 
