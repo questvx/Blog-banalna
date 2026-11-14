@@ -89,9 +89,14 @@ describe('author image processing constraints', () => {
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it('rejects crop zoom values outside the supported range before downloading', async () => {
-    await expect(createCroppedImage('https://blog.example/photo.jpg', 'small', 99, 0.5, 0.5)).rejects.toThrow(
-      'Powiększenie kadru musi mieścić się w zakresie 100–300%.',
+  it('rejects a freeform crop outside the image before downloading', async () => {
+    await expect(createCroppedImage('https://blog.example/photo.jpg', {
+      x: 0.8,
+      y: 0.5,
+      width: 0.4,
+      height: 0.5,
+    })).rejects.toThrow(
+      'Nie udało się odczytać położenia i rozmiaru kadru.',
     )
     expect(fetchMock).not.toHaveBeenCalled()
   })
@@ -108,13 +113,18 @@ describe('author image processing constraints', () => {
     expect(revokeObjectURL).toHaveBeenCalledWith('blob:source-image')
   })
 
-  it('creates a crop with the selected small-card ratio and bounded position', async () => {
+  it('creates a freeform crop without changing its aspect ratio', async () => {
     const { drawImage, revokeObjectURL } = prepareImageProcessing(1600, 900)
 
-    const result = await createCroppedImage('https://blog.example/photo.jpg', 'small', 200, 0.25, 1.5)
+    const result = await createCroppedImage('https://blog.example/photo.jpg', {
+      x: 0.1,
+      y: 0.2,
+      width: 0.5,
+      height: 0.3,
+    })
 
-    expect(result).toMatchObject({ width: 765, height: 450 })
-    expect(drawImage).toHaveBeenCalledWith(expect.anything(), 208.75, 450, 765, 450, 0, 0, 765, 450)
+    expect(result).toMatchObject({ width: 800, height: 270 })
+    expect(drawImage).toHaveBeenCalledWith(expect.anything(), 160, 180, 800, 270, 0, 0, 800, 270)
     expect(revokeObjectURL).toHaveBeenCalledWith('blob:source-image')
   })
 })
